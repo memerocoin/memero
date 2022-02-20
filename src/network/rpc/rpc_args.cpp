@@ -32,6 +32,7 @@
 #include "tools/epee/include/string_tools.h"
 
 #include <boost/algorithm/string.hpp>
+#include <boost/system/error_code.hpp>
 
 namespace cryptonote
 {
@@ -100,9 +101,6 @@ namespace cryptonote
       std::for_each(access_control_origins.begin(), access_control_origins.end(), std::bind(&boost::trim<std::string>, std::placeholders::_1, std::locale::classic()));
       config.access_control_origins = std::move(access_control_origins);
     }
-
-    config.ssl_options = 
-        epee::net_utils::ssl_support_t::e_ssl_support_disabled;
 
     return {std::move(config)};
   }

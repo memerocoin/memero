@@ -576,7 +576,6 @@ namespace nodetool
       return res;
 
     //try to bind
-    m_ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
     for (auto& zone : m_network_zones)
     {
       zone.second.m_net_server.get_config_object().set_handler(this);
@@ -599,7 +598,7 @@ namespace nodetool
           ipv6_port = zone.second.m_port_ipv6;
           LOG_GLOBAL_INFO("Binding P2P (IPv6) on " << zone.second.m_bind_ipv6_address << ":" << zone.second.m_port_ipv6);
         }
-        res = zone.second.m_net_server.init_server(zone.second.m_port, zone.second.m_bind_ip, ipv6_port, ipv6_addr, m_use_ipv6, m_require_ipv4, epee::net_utils::ssl_support_t::e_ssl_support_disabled);
+        res = zone.second.m_net_server.init_server(zone.second.m_port, zone.second.m_bind_ip, ipv6_port, ipv6_addr, m_use_ipv6, m_require_ipv4);
         LOG_ERROR_AND_RETURN_UNLESS(res, false, "Failed to bind P2P server");
       }
     }
@@ -999,7 +998,7 @@ namespace nodetool
         << (last_seen_stamp ? epee::misc_utils::get_time_interval_string(time(NULL) - last_seen_stamp):"never")
         << ")...");
 
-    auto con = zone.m_connect(zone, na, m_ssl_support);
+    auto con = zone.m_connect(zone, na);
     if(!con)
     {
       bool is_priority = is_priority_node(na);
@@ -1061,7 +1060,7 @@ namespace nodetool
                                   << (last_seen_stamp ? epee::misc_utils::get_time_interval_string(time(NULL) - last_seen_stamp):"never")
                                   << ")...");
 
-    auto con = zone.m_connect(zone, na, m_ssl_support);
+    auto con = zone.m_connect(zone, na);
     if (!con) {
       bool is_priority = is_priority_node(na);
 
@@ -2223,20 +2222,20 @@ namespace nodetool
   }
 
   std::optional<p2p_connection_context_t<typename t_payload_net_handler::connection_context>>
-  node_server::socks_connect(network_zone& zone, const epee::net_utils::network_address& remote, epee::net_utils::ssl_support_t ssl_support)
+  node_server::socks_connect(network_zone& zone, const epee::net_utils::network_address& remote)
   {
     auto result = socks_connect_internal(zone.m_net_server.get_stop_signal(), zone.m_net_server.get_io_service(), zone.m_proxy_address, remote);
     if (result) // if no error
     {
       p2p_connection_context context{};
-      if (zone.m_net_server.add_connection(context, std::move(*result), remote, ssl_support))
+      if (zone.m_net_server.add_connection(context, std::move(*result), remote))
         return {std::move(context)};
     }
     return std::nullopt;
   }
 
   std::optional<p2p_connection_context_t<typename t_payload_net_handler::connection_context>>
-  node_server::public_connect(network_zone& zone, epee::net_utils::network_address const& na, epee::net_utils::ssl_support_t ssl_support)
+  node_server::public_connect(network_zone& zone, epee::net_utils::network_address const& na)
   {
     bool is_ipv4 = na.get_type_id() == epee::net_utils::ipv4_network_address::get_type_id();
     bool is_ipv6 = na.get_type_id() == epee::net_utils::ipv6_network_address::get_type_id();
@@ -2267,7 +2266,7 @@ namespace nodetool
     typename net_server::t_connection_context con{};
     const bool res = zone.m_net_server.connect(address, port,
       zone.m_config.m_net_config.connection_timeout,
-      con, "0.0.0.0", ssl_support);
+      con, "0.0.0.0");
 
     if (res)
       return {std::move(con)};

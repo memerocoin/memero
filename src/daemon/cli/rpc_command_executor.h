@@ -41,7 +41,6 @@
 #include "cryptonote/functional/helper.hpp"
 
 #include "tools/common/rpc_client.h"
-#include "tools/epee/include/net/net_ssl.h"
 
 namespace daemonize {
 
@@ -54,7 +53,6 @@ public:
   t_rpc_command_executor(
       uint32_t ip
     , uint16_t port
-    , const epee::net_utils::ssl_options_t& ssl_options
     );
 
   ~t_rpc_command_executor();

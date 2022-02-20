@@ -154,12 +154,8 @@ int main(int argc, char const * argv[])
   }
 
   try {
-
-    const auto ssl_options =
-      epee::net_utils::ssl_support_t::e_ssl_support_disabled;
-
     daemonize::t_command_server
-      rpc_commands{rpc_ip, rpc_port, std::move(ssl_options)};
+      rpc_commands{rpc_ip, rpc_port};
 
     if (rpc_commands.process_command_vec(command))
       {

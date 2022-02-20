@@ -109,7 +109,7 @@ connection_basic_pimpl::connection_basic_pimpl(const std::string &name) : m_peer
 int connection_basic_pimpl::m_default_tos;
 
 // methods:
-connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::shared_ptr<connection_basic_shared_state> state, ssl_support_t ssl_support)
+connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::shared_ptr<connection_basic_shared_state> state)
 	:
 	m_state(std::move(state)),
 	mI( std::make_unique<connection_basic_pimpl>("peer") ),
@@ -117,8 +117,7 @@ connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::sha
 	socket_(GET_IO_SERVICE(sock)),
 	m_want_close_connection(false),
 	m_was_shutdown(false),
-	m_is_multithreaded(false),
-	m_ssl_support(ssl_support)
+	m_is_multithreaded(false)
 {
 	// add nullptr checks if removed
 	assert(m_state != nullptr); // release runtime check in get_context

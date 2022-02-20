@@ -43,7 +43,6 @@ public:
   t_command_server(
       uint32_t ip
     , uint16_t port
-    , const epee::net_utils::ssl_options_t& ssl_options
     );
 
   bool process_command_str(const std::string& cmd);

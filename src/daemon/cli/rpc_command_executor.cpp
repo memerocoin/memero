@@ -127,7 +127,6 @@ namespace {
 t_rpc_command_executor::t_rpc_command_executor(
     uint32_t ip
   , uint16_t port
-  , const epee::net_utils::ssl_options_t& ssl_options
   )
 {
   m_rpc_client = std::make_unique<tools::t_rpc_client>(ip, port);
@@ -403,7 +402,6 @@ bool t_rpc_command_executor::print_connections() {
 
   tools::msg_writer() << std::setw(30) << std::left << "Remote Host"
       << std::setw(8) << "Type"
-      << std::setw(6) << "SSL"
       << std::setw(20) << "Peer id"
       << std::setw(20) << "Support Flags"
       << std::setw(30) << "Recv/Sent (inactive,sec)"
@@ -424,7 +422,6 @@ bool t_rpc_command_executor::print_connections() {
      //<< std::setw(30) << std::left << in_out
      << std::setw(30) << std::left << address
      << std::setw(8) << (get_address_type_name((epee::net_utils::address_type)info.address_type))
-     << std::setw(6) << (info.ssl ? "yes" : "no")
      << std::setw(20) << info.peer_id
      << std::setw(20) << info.support_flags
      << std::setw(30) << std::to_string(info.recv_count) + "("  + std::to_string(info.recv_idle_time) + ")/" + std::to_string(info.send_count) + "(" + std::to_string(info.send_idle_time) + ")"

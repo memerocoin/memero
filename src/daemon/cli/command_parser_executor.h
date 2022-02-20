@@ -40,7 +40,6 @@ public:
   t_command_parser_executor(
       uint32_t ip
     , uint16_t port
-    , const epee::net_utils::ssl_options_t& ssl_options
     );
 
   bool print_peer_list(const std::vector<std::string>& args);

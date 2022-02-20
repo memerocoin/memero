@@ -30,7 +30,6 @@
 
 
 #include "tools/common/command_line.h"
-#include "tools/epee/include/net/net_ssl.h"
 
 #include "config/network.hpp"
 
@@ -65,15 +64,11 @@ namespace cryptonote
     //! \return Arguments specified by user, or `std::nullopt` if error
     static std::optional<rpc_args> process(const boost::program_options::variables_map& vm, const bool any_cert_option = false);
 
-    //! \return SSL arguments specified by user, or `std::nullopt` if error
-    static std::optional<epee::net_utils::ssl_options_t> process_ssl(const boost::program_options::variables_map& vm, const bool any_cert_option = false);
-
     std::string bind_ip;
     std::string bind_ipv6_address;
     bool use_ipv6;
     bool require_ipv4;
     std::vector<std::string> access_control_origins;
-    epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
   };
 
   namespace rpc_server {

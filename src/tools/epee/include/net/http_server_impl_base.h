@@ -54,8 +54,8 @@ namespace epee
 
     bool init(const std::string& bind_port = "0", const std::string& bind_ip = "0.0.0.0",
       const std::string& bind_ipv6_address = "::", bool use_ipv6 = false, bool require_ipv4 = true,
-      std::vector<std::string> access_control_origins = std::vector<std::string>(),
-      epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_disabled)
+      std::vector<std::string> access_control_origins = std::vector<std::string>()
+     )
     {
 
       //set self as callback handler
@@ -73,7 +73,7 @@ namespace epee
       {
         LOG_GLOBAL_INFO("Binding RPC (IPv6) on " << bind_ipv6_address << ":" << bind_port);
       }
-      bool res = m_net_server.init_server(bind_port, bind_ip, bind_port, bind_ipv6_address, use_ipv6, require_ipv4, std::move(ssl_options));
+      bool res = m_net_server.init_server(bind_port, bind_ip, bind_port, bind_ipv6_address, use_ipv6, require_ipv4);
       if(!res)
       {
         LOG_ERROR("Failed to bind RPC server");

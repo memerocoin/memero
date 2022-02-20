@@ -37,9 +37,8 @@ using namespace cryptonote;
 t_command_parser_executor::t_command_parser_executor(
     uint32_t ip
   , uint16_t port
-  , const epee::net_utils::ssl_options_t& ssl_options
   )
-  : m_executor(ip, port, ssl_options)
+  : m_executor(ip, port)
 {}
 
 bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& args)

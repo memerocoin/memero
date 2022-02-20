@@ -42,7 +42,6 @@
 
 
 #include "tools/epee/include/net/net_utils_base.h"
-#include "tools/epee/include/net/net_ssl.h"
 
 #include "tools/epee/include/syncobj.h"
 
@@ -55,23 +54,15 @@ namespace net_utils
 
 	class connection_basic_shared_state
 	{
-		ssl_options_t ssl_options_;
 	public:
 		std::atomic<long> sock_count;
 		std::atomic<long> sock_number;
 
 		connection_basic_shared_state()
-		  : ssl_options_(ssl_support_t::e_ssl_support_disabled),
+		  :
 		    sock_count(0),
 		    sock_number(0)
 		{}
-
-		void configure_ssl(ssl_options_t src)
-		{
-			ssl_options_ = std::move(src);
-		}
-
-		const ssl_options_t& ssl_options() const noexcept { return ssl_options_; }
 	};
 
   /************************************************************************/
@@ -106,22 +97,19 @@ class connection_basic { // not-templated base class for rapid developmet of som
     boost::asio::io_service::strand strand_;
     /// Socket for the connection.
     boost::asio::ip::tcp::socket socket_;
-    ssl_support_t m_ssl_support;
 
 	public:
 		// first counter is the ++/-- count of current sockets, the other socket_number is only-increasing ++ number generator
-		connection_basic(boost::asio::ip::tcp::socket&& socket, std::shared_ptr<connection_basic_shared_state> state, ssl_support_t ssl_support);
-		connection_basic(boost::asio::io_service &io_service, std::shared_ptr<connection_basic_shared_state> state, ssl_support_t ssl_support);
+		connection_basic(boost::asio::ip::tcp::socket&& socket, std::shared_ptr<connection_basic_shared_state> state);
+		connection_basic(boost::asio::io_service &io_service, std::shared_ptr<connection_basic_shared_state> state);
 
 		virtual ~connection_basic() noexcept(false);
 
                 //! \return `shared_state` object passed in construction (ptr never changes).
 		connection_basic_shared_state& get_state() noexcept { return *m_state; /* verified in constructor */ }
-		connection_basic(boost::asio::io_service& io_service, std::atomic<long> &ref_sock_count, std::atomic<long> &sock_number, ssl_support_t ssl);
+		connection_basic(boost::asio::io_service& io_service, std::atomic<long> &ref_sock_count, std::atomic<long> &sock_number);
 
 		boost::asio::ip::tcp::socket& socket() { return socket_; }
-		ssl_support_t get_ssl_support() const { return m_ssl_support; }
-		void disable_ssl() { m_ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled; }
 
 		template<typename MutableBufferSequence, typename ReadHandler>
 		void async_read_some(const MutableBufferSequence &buffers, ReadHandler &&handler)

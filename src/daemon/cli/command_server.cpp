@@ -44,9 +44,8 @@ namespace p = std::placeholders;
 t_command_server::t_command_server(
     uint32_t ip
   , uint16_t port
-  , const epee::net_utils::ssl_options_t& ssl_options
   )
-  : m_parser(ip, port, ssl_options)
+  : m_parser(ip, port)
   , m_command_lookup()
 {
   m_command_lookup.set_handler(
