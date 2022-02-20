@@ -37,7 +37,6 @@ namespace usage
 {
 
   constexpr char USAGE_START_MINING[] = "start-mining [<number_of_threads>]";
-  constexpr char USAGE_SET_DAEMON[] = "set-daemon <host>[:<port>]";
   constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
   constexpr char USAGE_INCOMING[] = "in [available|unavailable] [verbose] [index=<N1>[,<N2>[,...]]]";
   constexpr char USAGE_TRANSFER[] = "transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)";

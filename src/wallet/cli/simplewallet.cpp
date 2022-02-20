@@ -453,10 +453,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("stop-mining",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::stop_mining, std::placeholders::_1),
                            ("Stop mining in the daemon."));
-  m_cmd_binder.set_handler("set-daemon",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::set_daemon, std::placeholders::_1),
-                           (USAGE_SET_DAEMON),
-                           ("Set another daemon to connect to."));
   m_cmd_binder.set_handler("refresh",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::refresh, std::placeholders::_1),
                            ("Synchronize the transactions and balance."));
@@ -1203,51 +1199,6 @@ bool simple_wallet::stop_mining(const std::vector<std::string>& args)
     success_msg_writer() << ("Mining stopped in daemon");
   else
     fail_msg_writer() << ("mining has NOT been stopped: ") << err;
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::set_daemon(const std::vector<std::string>& args)
-{
-  std::string daemon_url;
-
-  if (args.size() < 1)
-  {
-    PRINT_USAGE(USAGE_SET_DAEMON);
-    return true;
-  }
-
-  std::regex rgx("^(.*://)?([A-Za-z0-9\\-\\.]+)(:[0-9]+)?");
-  std::cmatch match;
-  // If user input matches URL regex
-  if (std::regex_match(args[0].c_str(), match, rgx))
-  {
-    if (match.length() < 4)
-    {
-      fail_msg_writer() << ("Unexpected array length - Exited simple_wallet::set_daemon()");
-      return true;
-    }
-    // If no port has been provided, use the default from config
-    if (!match[3].length())
-    {
-      uint16_t daemon_port = get_config(m_wallet->nettype()).RPC_DEFAULT_PORT;
-      daemon_url = std::string(match[1]) + std::string(match[2]) +
-        std::string(":") + std::to_string(daemon_port);
-    } else {
-      daemon_url = args[0];
-    }
-    m_wallet->init(daemon_url);
-
-    if (!try_connect_to_daemon())
-    {
-      fail_msg_writer() << ("Failed to connect to daemon");
-      return true;
-    }
-
-    success_msg_writer() << boost::format("Daemon set to %s") % daemon_url;
-
-  } else {
-    fail_msg_writer() << ("This does not seem to be a valid daemon URL.");
-  }
   return true;
 }
 //----------------------------------------------------------------------------------------------------
