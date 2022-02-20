@@ -30,6 +30,7 @@ see: etc/other-licenses/monero/LICENSE
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/blob.hpp"
 
+#include <optional>
 #include <span>
 
 namespace epee
