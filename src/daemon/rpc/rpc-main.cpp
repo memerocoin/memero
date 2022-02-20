@@ -37,12 +37,11 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 #include "config/version/version.hpp"
 
-namespace po = boost::program_options;
-namespace fs = std::filesystem;
-
 int main(int argc, char const * argv[])
 {
   tools::on_startup();
+
+  namespace po = boost::program_options;
 
   // Build argument description
   po::options_description all_options("All");
@@ -84,14 +83,14 @@ int main(int argc, char const * argv[])
 
   if (command_line::get_arg(vm, command_line::arg_help))
     {
-      LOG_GLOBAL_INFO
-        (
-         "Usage: "
-         << std::string{argv[0]}
-         << " [options|settings]"
-         << std::endl
-         << visible_options
-         );
+      std::cout
+        << "Usage: "
+        << std::string{argv[0]}
+        << " [options|settings]"
+        << std::endl
+        << std::endl
+        << visible_options
+        ;
 
       return 0;
     }

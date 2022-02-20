@@ -61,7 +61,6 @@ int main(int argc, char const * argv[])
   po::options_description all_options("All");
   po::options_description hidden_options("Hidden");
   po::options_description visible_options("Options");
-  po::options_description core_settings("Settings");
   po::positional_options_description positional_options;
 
   command_line::add_arg(visible_options, command_line::arg_help);
