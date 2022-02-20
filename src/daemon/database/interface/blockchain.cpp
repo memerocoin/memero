@@ -33,7 +33,6 @@
 #include "math/ringct/functional/rctOps.hpp"
 
 #include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/profile_tools.h"
 
 #include <boost/range/adaptor/reversed.hpp>
 

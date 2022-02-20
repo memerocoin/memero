@@ -40,7 +40,6 @@
 
 #include "tools/common/threadpool.h"
 #include "tools/common/util.h"
-#include "tools/epee/include/profile_tools.h"
 #include "tools/epee/include/time_helper.h"
 
 #include "math/blockchain/functional/coinbase_tx.hpp"
