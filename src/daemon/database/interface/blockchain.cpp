@@ -202,16 +202,11 @@ uint64_t BlockchainDB::add_block( const std::pair<block, string_blob>& blck
   if (blk.tx_hashes.size() != txs.size())
     throw std::runtime_error("Inconsistent tx/hashes sizes");
 
-  TIME_MEASURE_START(time1);
   crypto::hash blk_hash = get_block_hash(blk);
-  TIME_MEASURE_FINISH(time1);
-  time_blk_hash += time1;
 
   uint64_t prev_height = height();
 
   // call out to add the transactions
-
-  time1 = epee::misc_utils::get_tick_count();
 
   uint64_t num_rct_outs = 0;
   string_blob miner_bd = tx_to_blob(blk.miner_tx);
@@ -231,14 +226,9 @@ uint64_t BlockchainDB::add_block( const std::pair<block, string_blob>& blck
     }
     ++tx_i;
   }
-  TIME_MEASURE_FINISH(time1);
-  time_add_transaction += time1;
 
   // call out to subclass implementation to add the block & metadata
-  time1 = epee::misc_utils::get_tick_count();
   add_block(blk, block_weight, long_term_block_weight, cumulative_difficulty, coins_generated, num_rct_outs, blk_hash);
-  TIME_MEASURE_FINISH(time1);
-  time_add_block1 += time1;
 
   set_hard_fork_version(prev_height, config::lol::constant_hf_version);
 
@@ -340,10 +330,6 @@ transaction BlockchainDB::get_tx(const crypto::hash& h) const
 void BlockchainDB::reset_stats()
 {
   num_calls = 0;
-  time_blk_hash = 0;
-  time_add_block1 = 0;
-  time_add_transaction = 0;
-  time_commit1 = 0;
 }
 
 void BlockchainDB::show_stats()
@@ -352,14 +338,6 @@ void BlockchainDB::show_stats()
     << "*********************************"
     << std::endl
     << "num_calls: " << num_calls
-    << std::endl
-    << "time_blk_hash: " << time_blk_hash << "ms"
-    << std::endl
-    << "time_add_block1: " << time_add_block1 << "ms"
-    << std::endl
-    << "time_add_transaction: " << time_add_transaction << "ms"
-    << std::endl
-    << "time_commit1: " << time_commit1 << "ms"
     << std::endl
     << "*********************************"
     << std::endl

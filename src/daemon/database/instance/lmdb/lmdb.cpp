@@ -2496,14 +2496,11 @@ bool BlockchainLMDB::tx_exists(const crypto::hash& h) const
   MDB_val_set(key, h);
   bool tx_found = false;
 
-  TIME_MEASURE_START(time1);
   auto get_result = mdb_cursor_get(m_cur_tx_indices, (MDB_val *)&zerokval, &key, MDB_GET_BOTH);
   if (get_result == 0)
     tx_found = true;
   else if (get_result != MDB_NOTFOUND)
     throw0(DB_ERROR(lmdb_error(std::string("DB error attempting to fetch transaction index from hash ") + epee::string_tools::pod_to_hex(h) + ": ", get_result).c_str()));
-
-  TIME_MEASURE_FINISH(time1);
 
   TXN_POSTFIX_RDONLY();
 
@@ -2526,9 +2523,7 @@ bool BlockchainLMDB::tx_exists(const crypto::hash& h, uint64_t& tx_id) const
 
   MDB_val_set(v, h);
 
-  TIME_MEASURE_START(time1);
   auto get_result = mdb_cursor_get(m_cur_tx_indices, (MDB_val *)&zerokval, &v, MDB_GET_BOTH);
-  TIME_MEASURE_FINISH(time1);
   if (!get_result) {
     txindex *tip = (txindex *)v.mv_data;
     tx_id = tip->data.tx_id;
@@ -3191,10 +3186,7 @@ void BlockchainLMDB::batch_commit()
   check_open();
 
   LOG_PRINT_L3("batch transaction: committing...");
-  TIME_MEASURE_START(time1);
   m_write_txn->commit();
-  TIME_MEASURE_FINISH(time1);
-  time_commit1 += time1;
   LOG_PRINT_L3("batch transaction: committed");
 
   m_write_txn = nullptr;
@@ -3226,12 +3218,9 @@ void BlockchainLMDB::batch_stop()
     throw1(DB_ERROR("batch transaction owned by other thread"));
   check_open();
   LOG_PRINT_L3("batch transaction: committing...");
-  TIME_MEASURE_START(time1);
   try
   {
     m_write_txn->commit();
-    TIME_MEASURE_FINISH(time1);
-    time_commit1 += time1;
     cleanup_batch();
   }
   catch (const std::exception &e)
@@ -3371,10 +3360,7 @@ void BlockchainLMDB::block_wtxn_stop()
   {
     if (! m_batch_active)
 	{
-      TIME_MEASURE_START(time1);
       m_write_txn->commit();
-      TIME_MEASURE_FINISH(time1);
-      time_commit1 += time1;
 
       delete m_write_txn;
       m_write_txn = nullptr;
@@ -3488,7 +3474,6 @@ void BlockchainLMDB::get_output_key(const std::span<const uint64_t> &amounts, co
     throw0(DB_ERROR("Invalid sizes of amounts and offsets"));
 
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
-  TIME_MEASURE_START(db3);
   check_open();
   outputs.clear();
   outputs.reserve(offsets.size());
@@ -3532,9 +3517,6 @@ void BlockchainLMDB::get_output_key(const std::span<const uint64_t> &amounts, co
   }
 
   TXN_POSTFIX_RDONLY();
-
-  TIME_MEASURE_FINISH(db3);
-  LOG_PRINT_L3("db3: " << db3);
 }
 
 void BlockchainLMDB::get_output_tx_and_index(const uint64_t& amount, const std::vector<uint64_t> &offsets, std::vector<tx_out_index> &indices) const
@@ -3564,13 +3546,10 @@ void BlockchainLMDB::get_output_tx_and_index(const uint64_t& amount, const std::
     tx_indices.push_back(okp->output_id);
   }
 
-  TIME_MEASURE_START(db3);
   if(tx_indices.size() > 0)
   {
     get_output_tx_and_index_from_global(tx_indices, indices);
   }
-  TIME_MEASURE_FINISH(db3);
-  LOG_PRINT_L3("db3: " << db3);
 }
 
 bool BlockchainLMDB::get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, std::vector<uint64_t> &distribution, uint64_t &base) const

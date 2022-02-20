@@ -1297,8 +1297,7 @@ namespace cryptonote
             return 1;
           }
 
-          uint64_t block_process_time_full = 0, transactions_process_time_full = 0;
-          size_t num_txs = 0, blockidx = 0;
+          size_t blockidx = 0;
           for(const block_complete_entry& block_entry: blocks)
           {
             if (m_stopping)
@@ -1308,8 +1307,6 @@ namespace cryptonote
             }
 
             // process transactions
-            TIME_MEASURE_START(transactions_process_time);
-            num_txs += block_entry.txs.size();
             std::vector<tx_verification_context> tvc;
             m_core.handle_incoming_ringcts(block_entry.txs, tvc, relay_method::block, true);
             if (tvc.size() != block_entry.txs.size())
@@ -1350,12 +1347,9 @@ namespace cryptonote
                 return 1;
               }
             }
-            TIME_MEASURE_FINISH(transactions_process_time);
-            transactions_process_time_full += transactions_process_time;
 
             // process block
 
-            TIME_MEASURE_START(block_process_time);
             block_verification_context bvc = {};
 
             m_core.handle_incoming_block(block_entry.block, pblocks.empty() ? NULL : &pblocks[blockidx], bvc, false); // <--- process block
@@ -1401,13 +1395,9 @@ namespace cryptonote
               return 1;
             }
 
-            TIME_MEASURE_FINISH(block_process_time);
-            block_process_time_full += block_process_time;
             ++blockidx;
 
           } // each download block
-
-          LOG_DEBUG(context << "Block process time (" << blocks.size() << " blocks, " << num_txs << " txs): " << block_process_time_full + transactions_process_time_full << " (" << transactions_process_time_full << "/" << block_process_time_full << ") ms");
 
           if (!m_core.cleanup_handle_incoming_blocks())
           {

@@ -526,9 +526,6 @@ private:
   void remove_transaction(const crypto::hash& tx_hash);
 
   uint64_t num_calls = 0;  //!< a performance metric
-  uint64_t time_blk_hash = 0;  //!< a performance metric
-  uint64_t time_add_block1 = 0;  //!< a performance metric
-  uint64_t time_add_transaction = 0;  //!< a performance metric
 
 protected:
 
