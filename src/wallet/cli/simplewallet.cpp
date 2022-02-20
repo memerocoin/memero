@@ -181,12 +181,6 @@ bool simple_wallet::change_password(const std::vector<std::string> &args)
   return true;
 }
 
-bool simple_wallet::welcome(const std::vector<std::string> &args)
-{
-  message_writer() << ("Welcome to Lolnero, a private ASIC friendly cryptocurrency.");
-  return true;
-}
-
 bool simple_wallet::version(const std::vector<std::string> &args)
 {
   daemon_common::show_version();
@@ -524,10 +518,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("password",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::change_password, std::placeholders::_1),
                            ("Change the wallet's password."));
-  m_cmd_binder.set_handler("welcome",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::welcome, std::placeholders::_1),
-                           (USAGE_WELCOME),
-                           ("Prints basic info about Lolnero for first time users"));
   m_cmd_binder.set_handler("version",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::version, std::placeholders::_1),
                            (USAGE_VERSION),

@@ -61,7 +61,6 @@ namespace usage
                           "     [<min height> [<max height>]]\n";
   constexpr char USAGE_RESCAN[] = "rescan [hard]";
   constexpr char USAGE_SHOW_TX[] = "tx <txid>";
-  constexpr char USAGE_WELCOME[] = "welcome";
   constexpr char USAGE_VERSION[] = "version";
   constexpr char USAGE_HELP[] = "help [<command> | all]";
 } // usage
