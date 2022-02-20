@@ -83,11 +83,11 @@ namespace usage
 } // usage
 
 namespace help {
-  constexpr std::string_view incoming = "";
-  constexpr std::string_view transfer = "";
-  constexpr std::string_view account = "";
-  constexpr std::string_view address = "";
-  constexpr std::string_view show = "";
+  constexpr std::string_view incoming = " ";
+  constexpr std::string_view transfer = " ";
+  constexpr std::string_view account = " ";
+  constexpr std::string_view address = " ";
+  constexpr std::string_view show = " ";
   constexpr std::string_view set_variable =
     "Available options:\n "
     "always-confirm-transfers <1|0>\n "
