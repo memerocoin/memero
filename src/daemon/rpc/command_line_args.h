@@ -35,15 +35,8 @@
 namespace daemon_args
 {
   const command_line::arg_descriptor<std::vector<std::string>> arg_command = {
-    "daemon_command"
+    "daemon-command"
     , "Hidden"
   };
-
-  const command_line::arg_descriptor<uint32_t> arg_max_concurrency =
-    {
-      "max-concurrency"
-      , "Max # of threads for a parallel job"
-      , 0
-    };
 
 }  // namespace daemon_args

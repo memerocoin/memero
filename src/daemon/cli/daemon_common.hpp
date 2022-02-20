@@ -38,4 +38,11 @@ namespace daemon_common {
 
   const command_line::arg_descriptor<std::string> arg_log_level =
     {"log-level", "0-4", ""};
+
+  const command_line::arg_descriptor<uint32_t> arg_max_concurrency =
+    {
+      "max-concurrency"
+      , "Max # of threads for a parallel job"
+      , 0
+    };
 }

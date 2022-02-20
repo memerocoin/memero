@@ -56,7 +56,7 @@ int main(int argc, char const * argv[])
       (core_settings, daemon_common::arg_log_level);
 
     command_line::add_arg
-      (core_settings, daemon_args::arg_max_concurrency);
+      (core_settings, daemon_common::arg_max_concurrency);
 
     daemonize::t_daemon::init_options(core_settings);
 
@@ -135,11 +135,11 @@ int main(int argc, char const * argv[])
      !command_line::is_arg_defaulted
      (
       vm
-      , daemon_args::arg_max_concurrency
+      , daemon_common::arg_max_concurrency
       )
      ) {
     tools::set_max_concurrency
-      (command_line::get_arg(vm, daemon_args::arg_max_concurrency));
+      (command_line::get_arg(vm, daemon_common::arg_max_concurrency));
   }
 
   // logging is now set up

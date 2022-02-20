@@ -82,13 +82,6 @@ namespace wallet_args
     namespace bf = std::filesystem;
     namespace po = boost::program_options;
 
-    const command_line::arg_descriptor<uint32_t> arg_max_concurrency =
-      {
-        "max-concurrency"
-        , "Max # of threads for a parallel job"
-        , 0
-      };
-
     tools::on_startup();
     tools::set_strict_default_file_permissions(true);
 
@@ -97,7 +90,7 @@ namespace wallet_args
     command_line::add_arg(desc_general, command_line::arg_version);
 
     command_line::add_arg(desc_params, daemon_common::arg_log_level);
-    command_line::add_arg(desc_params, arg_max_concurrency);
+    command_line::add_arg(desc_params, daemon_common::arg_max_concurrency);
 
     po::options_description desc_all;
     desc_all.add(desc_general).add(desc_params);
@@ -134,8 +127,16 @@ namespace wallet_args
     if (!notice.empty())
       Print(print) << notice << std::endl;
 
-    if (!command_line::is_arg_defaulted(vm, arg_max_concurrency))
-      tools::set_max_concurrency(command_line::get_arg(vm, arg_max_concurrency));
+    if (
+        !command_line::is_arg_defaulted
+        (
+         vm
+         , daemon_common::arg_max_concurrency
+         )
+        ) {
+      tools::set_max_concurrency
+        (command_line::get_arg(vm, daemon_common::arg_max_concurrency));
+    }
 
     daemon_common::show_version();
 
