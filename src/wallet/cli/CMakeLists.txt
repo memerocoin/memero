@@ -46,6 +46,8 @@ target_link_libraries(lolnero
   wallet_common
   version
 
+  daemon_common
+
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 

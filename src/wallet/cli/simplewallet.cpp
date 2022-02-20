@@ -49,14 +49,13 @@
 #include "wallet/common/controller.hpp"
 #include "wallet/mnemonics/electrum-words.h"
 
+#include "daemon/cli/daemon_common.hpp"
+
 #include "tools/common/scoped_message_writer.h"
 
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
 #include "math/consensus/consensus.hpp"
-
-#include "config/version/version.hpp"
-
 
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
@@ -191,7 +190,7 @@ bool simple_wallet::welcome(const std::vector<std::string> &args)
 
 bool simple_wallet::version(const std::vector<std::string> &args)
 {
-  message_writer() << "Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")";
+  daemon_common::show_version();
   return true;
 }
 
