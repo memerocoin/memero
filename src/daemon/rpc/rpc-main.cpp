@@ -154,5 +154,16 @@ int main(int argc, char const * argv[])
   // logging is now set up
   show_version();
 
-  return daemonize::t_daemon{vm}.run();
+  try {
+    return daemonize::t_daemon{vm}.run();
+  }
+  catch (std::exception const & ex)
+    {
+      LOG_ERROR("Exception in main! " << ex.what());
+    }
+  catch (...)
+    {
+      LOG_ERROR("Exception in main!");
+    }
+  return 1;
 }
