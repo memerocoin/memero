@@ -30,6 +30,7 @@ copyright (c) 2012-2013 The Cryptonote developers
 #include "command_line_args.h"
 
 #include "daemon/rpc/daemon.h"
+#include "daemon/cli/daemon_common.hpp"
 
 #include "network/rpc/rpc_args.h"
 #include "network/rpc/core_rpc_server.h"
@@ -38,17 +39,6 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 namespace po = boost::program_options;
 namespace fs = std::filesystem;
-
-void show_version() {
-  LOG_GLOBAL_INFO
-    (
-     "Lolnero '"
-     << LOLNERO_RELEASE_NAME
-     << "' (v"
-     << LOLNERO_VERSION_FULL
-     << ")"
-     );
-}
 
 int main(int argc, char const * argv[])
 {
@@ -108,7 +98,7 @@ int main(int argc, char const * argv[])
 
   if (command_line::get_arg(vm, command_line::arg_version))
     {
-      show_version();
+      daemon_common::show_version();
       return 0;
     }
 
@@ -152,7 +142,7 @@ int main(int argc, char const * argv[])
   }
 
   // logging is now set up
-  show_version();
+  daemon_common::show_version();
 
   try {
     return daemonize::t_daemon{vm}.run();

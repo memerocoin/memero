@@ -29,20 +29,19 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 #include "daemon_common.hpp"
 
-#include "tools/epee/include/logging.hpp"
 #include "config/version/version.hpp"
+#include <iostream>
 
 namespace daemon_common {
 
   void show_version() {
-    LOG_GLOBAL_INFO
-      (
-       "Lolnero '"
-       << LOLNERO_RELEASE_NAME
-       << "' (v"
-       << LOLNERO_VERSION_FULL
-       << ")"
-       );
+    std::cout
+      << "Lolnero '"
+      << LOLNERO_RELEASE_NAME
+      << "' (v"
+      << LOLNERO_VERSION_FULL
+      << ")"
+      << std::endl;
   }
 
 }

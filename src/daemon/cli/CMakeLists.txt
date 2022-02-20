@@ -27,6 +27,17 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+add_library(daemon_common
+  daemon_common.cpp
+  )
+
+target_link_libraries(daemon_common
+  epee_log
+  version
+
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  )
+
 add_executable(lolnerod-cli
   cli-main.cpp
   command_server.cpp
@@ -35,6 +46,7 @@ add_executable(lolnerod-cli
   )
 
 target_link_libraries(lolnerod-cli
+  daemon_common
   cryptonote_tx
   epee_storage
   network_rpc_base
@@ -56,3 +68,4 @@ set_property(TARGET lolnerod-cli
 
 
 install(TARGETS lolnerod-cli DESTINATION bin)
+

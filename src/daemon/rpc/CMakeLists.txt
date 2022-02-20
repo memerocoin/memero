@@ -36,6 +36,7 @@ target_link_libraries(lolnerod-rpc
   cryptonote_core
   cryptonote_protocol
   cryptonote_tx
+  daemon_common
   daemon_messages
   database
   epee_storage
