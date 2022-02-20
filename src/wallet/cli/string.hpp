@@ -39,7 +39,7 @@ namespace usage
   constexpr char USAGE_START_MINING[] = "start-mining [<number_of_threads>]";
   constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
   constexpr char USAGE_INCOMING[] = "in [available|unavailable] [verbose] [index=<N1>[,<N2>[,...]]]";
-  constexpr char USAGE_TRANSFER[] = "transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)";
+  constexpr char USAGE_TRANSFER[] = "transfer [output index=<N1>[,<N2>,...]] [<priority>] (<address> <amount>)";
   constexpr char USAGE_ACCOUNT[] = "account\n"
                             "  account new <label>\n"
                             "  account switch <index> \n"
@@ -70,8 +70,7 @@ namespace help {
     "Amount, Spent(\"T\"|\"F\"), \"frozen\"|\"locked\"|\"unlocked\", "
     "RingCT, Global Index, Transaction Hash, Address Index, [Public Key, Key Image] ";
 
-  constexpr std::string_view transfer =
-    "Transfer <amount> to <address>. If the parameter \"index=<N1>[,<N2>,...]\" is specified, the wallet uses outputs received by addresses of those indices. If omitted, the wallet randomly chooses address indices to be used. In any case, it tries its best not to combine outputs across multiple addresses. <priority> is the priority of the transaction. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding URI_2 or <address_2> <amount_2> etcetera (before the payment ID, if it's included)";
+  constexpr std::string_view transfer = "";
 
   constexpr std::string_view account =
     "If no arguments are specified, the wallet shows all the existing accounts along with their balances.\n"
