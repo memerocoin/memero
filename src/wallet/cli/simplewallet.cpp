@@ -218,19 +218,6 @@ bool simple_wallet::set_always_confirm_transfers(const std::vector<std::string> 
   return true;
 }
 
-bool simple_wallet::set_print_ring_members(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    parse_bool_and_use(args[1], [&](bool r) {
-      m_wallet->print_ring_members(r);
-      m_wallet->rewrite(m_wallet_file, pwd_container->password());
-    });
-  }
-  return true;
-}
-
 bool simple_wallet::set_store_tx_info(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   const auto pwd_container = get_and_verify_password();
@@ -530,7 +517,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     if (priority < wallet::functional::allowed_priority_strings.size())
       priority_string = wallet::functional::allowed_priority_strings[priority];
     success_msg_writer() << "always-confirm-transfers = " << m_wallet->always_confirm_transfers();
-    success_msg_writer() << "print-ring-members = " << m_wallet->print_ring_members();
     success_msg_writer() << "store-tx-info = " << m_wallet->store_tx_info();
     success_msg_writer() << "priority = " << priority<< " (" << priority_string << ")";
     success_msg_writer() << "unit = " << cryptonote::get_unit(cryptonote::get_default_decimal_point());
@@ -560,7 +546,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
   } while(0)
 
     CHECK_SIMPLE_VARIABLE("always-confirm-transfers", set_always_confirm_transfers, ("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("print-ring-members", set_print_ring_members, ("0 or 1"));
     CHECK_SIMPLE_VARIABLE("store-tx-info", set_store_tx_info, ("0 or 1"));
     CHECK_SIMPLE_VARIABLE("priority", set_default_priority, ("0, 1, 2, 3, or 4, or one of ") << wallet::functional::join_priority_strings(", "));
     CHECK_SIMPLE_VARIABLE("unit", set_unit, ("lolnero, millinero, micronero, nanonero, piconero"));
@@ -1487,7 +1472,7 @@ std::pair<std::string, std::string> simple_wallet::show_outputs_line(const std::
   return std::make_pair(ostr.str(), ring_str);
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, std::ostream& ostr, bool verbose)
+bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, std::ostream& ostr)
 {
   uint32_t version;
   if (!try_connect_to_daemon(false, &version))
@@ -1510,8 +1495,6 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
   {
     const cryptonote::transaction& tx = ptx_vector[n].tx;
     const wallet::logic::type::tx::tx_construction_data& construction_data = ptx_vector[n].construction_data;
-    if (verbose)
-      ostr << boost::format(tr("\nTransaction %llu/%llu: txid=%s")) % (n + 1) % ptx_vector.size() % cryptonote::get_transaction_hash(tx);
     // for each input
     std::vector<uint64_t>     spent_key_height(tx.vin.size());
     std::vector<crypto::hash> spent_key_txid  (tx.vin.size());
@@ -1532,8 +1515,6 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
       }
       const cryptonote::tx_source_entry& source = *sptr;
 
-      if (verbose)
-        ostr << boost::format(tr("\nInput %llu/%llu (%s): amount=%s")) % (i + 1) % tx.vin.size() % epee::string_tools::pod_to_hex(in_key.output_key_image) % print_money(source.amount);
       // convert relative offsets of ring member keys into absolute offsets (indices) associated with the amount
       std::vector<uint64_t> absolute_offsets = cryptonote::relative_output_offsets_to_absolute(in_key.output_relative_offsets);
       // get block heights from which those ring member keys originated
@@ -1573,8 +1554,6 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
           return false;
         }
       }
-      if (verbose)
-        ostr << ("\nOriginating block heights: ");
       spent_key_height[i] = res_outputs[source.real_output].height;
       spent_key_txid  [i] = res_outputs[source.real_output].txid;
       std::vector<uint64_t> heights(absolute_offsets.size(), 0);
@@ -1583,8 +1562,6 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
         heights[j] = res_outputs[j].height;
       }
       std::pair<std::string, std::string> ring_str = show_outputs_line(heights, blockchain_height, source.real_output);
-      if (verbose)
-        ostr << ring_str.first << ("\n|") << ring_str.second << ("|\n");
     }
     // warn if rings contain keys originating from the same tx or temporally very close block heights
     bool are_keys_from_same_tx      = false;
@@ -1872,7 +1849,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
           float days = locked_blocks / 720.0f;
           prompt << boost::format(tr(".\nThis transaction (including %s change) will unlock on block %llu, in approximately %s days (assuming 2 minutes per block)")) % cryptonote::print_money(change) % ((unsigned long long)unlock_block) % days;
         }
-        if (!process_ring_members(ptx_vector, prompt, m_wallet->print_ring_members()))
+        if (!process_ring_members(ptx_vector, prompt))
           return false;
 
         prompt << std::endl << ("Is this okay?");

@@ -96,8 +96,6 @@ namespace help {
     "Available options:\n "
     "always-confirm-transfers <1|0>\n "
     "  Whether to confirm unsplit txes.\n "
-    "print-ring-members <1|0>\n "
-    "  Whether to print detailed information about ring members during confirmation.\n "
     "store-tx-info <1|0>\n "
     "  Whether to store outgoing tx info (destination address, payment ID, tx secret key) for future reference.\n "
     "priority [0|1|2|3|4]\n "

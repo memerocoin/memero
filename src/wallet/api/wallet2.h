@@ -301,8 +301,6 @@ namespace tools
 
     bool always_confirm_transfers() const { return m_always_confirm_transfers; }
     void always_confirm_transfers(bool always) { m_always_confirm_transfers = always; }
-    bool print_ring_members() const { return m_print_ring_members; }
-    void print_ring_members(bool value) { m_print_ring_members = value; }
     bool store_tx_info() const { return m_store_tx_info; }
     void store_tx_info(bool store) { m_store_tx_info = store; }
     uint32_t get_default_priority() const { return m_default_priority; }
@@ -457,7 +455,6 @@ namespace tools
     uint64_t m_kdf_rounds;
     std::string seed_language; /*!< Language of the mnemonics (seed). */
     bool m_always_confirm_transfers;
-    bool m_print_ring_members;
     bool m_store_tx_info; /*!< request txkey to be returned in RPC, and store in the wallet cache file */
     uint32_t m_default_priority;
     uint64_t m_refresh_from_block_height;

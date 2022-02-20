@@ -223,7 +223,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended):
   m_callback(0),
   m_nettype(nettype),
   m_always_confirm_transfers(true),
-  m_print_ring_members(false),
   m_store_tx_info(true),
   m_default_priority(0),
   m_refresh_from_block_height(0),
@@ -1955,9 +1954,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   value2.SetInt(m_always_confirm_transfers ? 1 :0);
   json.AddMember("always_confirm_transfers", value2, json.GetAllocator());
 
-  value2.SetInt(m_print_ring_members ? 1 :0);
-  json.AddMember("print_ring_members", value2, json.GetAllocator());
-
   value2.SetInt(m_store_tx_info ? 1 :0);
   json.AddMember("store_tx_info", value2, json.GetAllocator());
 
@@ -2105,8 +2101,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     }
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, always_confirm_transfers, int, Int, false, true);
     m_always_confirm_transfers = field_always_confirm_transfers;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, print_ring_members, int, Int, false, true);
-    m_print_ring_members = field_print_ring_members;
     if (json.HasMember("store_tx_info"))
     {
       GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, store_tx_info, int, Int, true, true);

@@ -101,7 +101,6 @@ namespace cryptonote
     bool seed(const std::vector<std::string> &args = std::vector<std::string>());
 
     bool set_always_confirm_transfers(const std::vector<std::string> &args = std::vector<std::string>());
-    bool set_print_ring_members(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_store_tx_info(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_unit(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_merge_destinations(const std::vector<std::string> &args = std::vector<std::string>());
@@ -145,7 +144,7 @@ namespace cryptonote
     uint64_t get_daemon_blockchain_height(std::string& err);
     bool try_connect_to_daemon(bool silent = false, uint32_t* version = nullptr);
     bool ask_wallet_create_if_needed();
-    bool process_ring_members(const std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, std::ostream& ostr, bool verbose);
+    bool process_ring_members(const std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, std::ostream& ostr);
     std::string get_prompt() const;
     bool print_seed();
     void on_refresh_finished(uint64_t start_height, uint64_t fetched_blocks, bool is_init, bool received_money);
