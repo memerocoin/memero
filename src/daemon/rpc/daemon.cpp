@@ -64,6 +64,15 @@ namespace daemonize {
 
   t_daemon::~t_daemon()
   {
+    deinit_msg(protocol_str);
+    try {
+      protocol.deinit();
+      protocol.set_p2p_endpoint(nullptr);
+      deinit_done_msg(protocol_str);
+    } catch (...) {
+      deinit_error_msg(protocol_str);
+    }
+
     deinit_msg(rpc_str);
     try {
       rpc.deinit();
@@ -78,15 +87,6 @@ namespace daemonize {
       deinit_done_msg(p2p_str);
     } catch (...) {
       deinit_error_msg(p2p_str);
-    }
-
-    deinit_msg(protocol_str);
-    try {
-      protocol.deinit();
-      protocol.set_p2p_endpoint(nullptr);
-      deinit_done_msg(protocol_str);
-    } catch (...) {
-      deinit_error_msg(protocol_str);
     }
 
     deinit_msg(core_str);
