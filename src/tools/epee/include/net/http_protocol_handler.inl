@@ -469,10 +469,6 @@ namespace net_utils
 			buf += response.m_mime_tipe + "\r\n";
 		}
 
-		buf += "Last-Modified: ";
-		time_t tm;
-		time(&tm);
-		buf += epee::misc_utils::get_internet_time_str(tm) + "\r\n";
 		buf += "Accept-Ranges: bytes\r\n";
 		//Wed, 01 Dec 2010 03:27:41 GMT"
 

@@ -34,7 +34,6 @@ namespace epee
 {
 namespace misc_utils
 {
-	std::string get_internet_time_str(const time_t time_);
 	std::string get_time_interval_string(const time_t& time_);
 }
 }

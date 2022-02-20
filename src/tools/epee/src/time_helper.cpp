@@ -34,14 +34,6 @@ namespace epee
 {
 namespace misc_utils
 {
-  // https://stackoverflow.com/questions/17223096/outputting-date-and-time-in-c-using-stdchrono
-	std::string get_internet_time_str(const time_t time_)
-	{
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&time_), "%a, %d %b %Y %H:%M:%S GMT");
-    return ss.str();
-	}
-
 	std::string get_time_interval_string(const time_t& time_)
 	{
 		std::string res;
