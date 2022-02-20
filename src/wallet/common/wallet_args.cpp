@@ -82,9 +82,6 @@ namespace wallet_args
     namespace bf = std::filesystem;
     namespace po = boost::program_options;
 
-    const command_line::arg_descriptor<std::string> arg_log_level =
-      {"log-level", "0-4", ""};
-
     const command_line::arg_descriptor<uint32_t> arg_max_concurrency =
       {
         "max-concurrency"
@@ -99,7 +96,7 @@ namespace wallet_args
     command_line::add_arg(desc_general, command_line::arg_help);
     command_line::add_arg(desc_general, command_line::arg_version);
 
-    command_line::add_arg(desc_params, arg_log_level);
+    command_line::add_arg(desc_params, daemon_common::arg_log_level);
     command_line::add_arg(desc_params, arg_max_concurrency);
 
     po::options_description desc_all;
@@ -134,12 +131,6 @@ namespace wallet_args
     if (should_terminate)
       return {std::move(vm), should_terminate};
 
-    std::string log_path;
-    if (!command_line::is_arg_defaulted(vm, arg_log_level))
-    {
-      epee::mlog_set_log(command_line::get_arg(vm, arg_log_level));
-    }
-
     if (!notice.empty())
       Print(print) << notice << std::endl;
 
@@ -148,8 +139,13 @@ namespace wallet_args
 
     daemon_common::show_version();
 
-    if (!command_line::is_arg_defaulted(vm, arg_log_level)) {
-      LOG_INFO("Setting log level = " << command_line::get_arg(vm, arg_log_level));
+    if (!command_line::is_arg_defaulted(vm, daemon_common::arg_log_level)) {
+      const auto log_level = 
+        (command_line::get_arg(vm, daemon_common::arg_log_level));
+
+      epee::mlog_set_log(log_level);
+
+      LOG_INFO("Setting log level = " << log_level);
     }
 
     return {std::move(vm), should_terminate};
