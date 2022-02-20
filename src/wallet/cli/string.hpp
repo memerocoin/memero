@@ -35,28 +35,47 @@ namespace wallet
 {
 namespace usage
 {
+  constexpr char USAGE_START_MINING[] =
+    "start-mining [<number_of_threads>]";
 
-  constexpr char USAGE_START_MINING[] = "start-mining [<number_of_threads>]";
-  constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
-  constexpr char USAGE_INCOMING[] = "in [available|unavailable] [verbose] [index=<N1>[,<N2>[,...]]]";
-  constexpr char USAGE_TRANSFER[] = "transfer [output index=<N1>[,<N2>,...]] [<priority>] (<address> <amount>)";
-  constexpr char USAGE_ACCOUNT[] = "account\n"
-                            "  account new <label>\n"
-                            "  account switch <index> \n"
-                            "  account label <index> <label>\n"
-                            ;
-  constexpr char USAGE_ADDRESS[] = "address\n"
-                            "  address new <label>\n"
-                            "  address all \n"
-                            "  address <index min> [<index max>]\n"
-                            "  address label <index> <label>\n"
-                            "  address one-off <account> <subaddress>\n"
-                            ;
+  constexpr char USAGE_SHOW_BALANCE[] =
+    "balance [detail]";
+
+  constexpr char USAGE_INCOMING[] =
+    "in [available|unavailable] [verbose] [index=<N1>[,<N2>[,...]]]";
+  constexpr char USAGE_TRANSFER[] =
+    "transfer [output index=<N1>[,<N2>,...]] "
+    "[<priority>] (<address> <amount>)";
+
+  constexpr char USAGE_ACCOUNT[] =
+    "account\n"
+    "  account new <label>\n"
+    "  account switch <index> \n"
+    "  account label <index> <label>\n"
+    ;
+
+  constexpr char USAGE_ADDRESS[] =
+    "address\n"
+    "  address new <label>\n"
+    "  address all \n"
+    "  address <index min> [<index max>]\n"
+    "  address label <index> <label>\n"
+    "  address one-off <account> <subaddress>\n"
+    ;
+
   constexpr char USAGE_SET_VARIABLE[] = "set <option> [<value>]";
-  constexpr char USAGE_GET_TX_SENDER_SIGNATURE[] = "get-output-ecdh-signatures <txid> <address> [<message>]";
-  constexpr char USAGE_VERIFY_TX_SENDER_SIGNATURE[] = "verify-output-ecdh-signatures <txid> <address> <signature file> [<message>]";
-  constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
-                          "     [<min height> [<max height>]]\n";
+  constexpr char USAGE_GET_TX_SENDER_SIGNATURE[] =
+    "get-output-ecdh-signatures <txid> <address> [<message>]";
+
+  constexpr char USAGE_VERIFY_TX_SENDER_SIGNATURE[] =
+    "verify-output-ecdh-signatures <txid> <address> "
+    "<signature file> [<message>]";
+
+  constexpr char USAGE_SHOW[] =
+    "show [in|out|all|pending|failed|pool|coinbase] "
+    "[index=<N1>[,<N2>,...]]\n"
+    "     [<min height> [<max height>]]\n";
+
   constexpr char USAGE_RESCAN[] = "rescan [hard]";
   constexpr char USAGE_SHOW_TX[] = "tx <txid>";
   constexpr char USAGE_VERSION[] = "version";
@@ -97,23 +116,52 @@ namespace help {
 } // help
 
 namespace arg {
-  const command_line::arg_descriptor<std::string> arg_generate_new_wallet =
-    {"new", ("Generate new wallet and save it to <arg>"), ""};
+  const command_line::arg_descriptor<std::string>
+  arg_generate_new_wallet =
+    {
+      "new"
+      , ("Generate new wallet and save it to <arg>")
+      , ""
+    };
 
-  const command_line::arg_descriptor<std::string> arg_generate_from_spend_key =
-    {"generate-from-spend-key", ("Generate deterministic wallet from spend key"), ""};
+  const command_line::arg_descriptor<std::string>
+  arg_generate_from_spend_key =
+    {
+      "generate-from-spend-key"
+      , ("Generate deterministic wallet from spend key")
+      , ""
+    };
 
-  const command_line::arg_descriptor<std::string> arg_electrum_seed =
-    {"electrum-seed", ("Specify Electrum seed for wallet recovery/creation"), ""};
+  const command_line::arg_descriptor<std::string>
+  arg_electrum_seed =
+    {
+      "electrum-seed"
+      , ("Specify Electrum seed for wallet recovery/creation")
+      , ""
+    };
 
-  const command_line::arg_descriptor<bool> arg_restore_deterministic_wallet =
-    {"restore", ("Recover wallet using Electrum-style mnemonic seed"), false};
+  const command_line::arg_descriptor<bool>
+  arg_restore_deterministic_wallet =
+    {
+      "restore"
+      , ("Recover wallet using Electrum-style mnemonic seed")
+      , false
+    };
 
   const command_line::arg_descriptor<bool> arg_do_not_relay =
-    {"do-not-relay", ("The newly created transaction will not be relayed to the lolnero network"), false};
+    {
+      "do-not-relay"
+      , ("New transactions will not be relayed to the network")
+      , false
+    };
 
-  const command_line::arg_descriptor<std::string> arg_subaddress_lookahead =
-    {"subaddress-lookahead", ("Set subaddress lookahead sizes to <major>:<minor>"), ""};
+  const command_line::arg_descriptor<std::string>
+  arg_subaddress_lookahead =
+    {
+      "subaddress-lookahead"
+      , ("Set subaddress lookahead sizes to <account>:<subaddress>")
+      , ""
+    };
 }
 
 } // wallet

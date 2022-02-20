@@ -161,7 +161,8 @@ namespace controller {
   {
     auto r = tools::parse_subaddress_lookahead(str);
     if (!r)
-      fail_msg_writer() << ("invalid format for subaddress lookahead; must be <major>:<minor>");
+      fail_msg_writer() <<
+        ("invalid format for subaddress lookahead; must be <account>:<subaddress>");
     return r;
   }
 

@@ -549,7 +549,8 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("merge-destinations", set_merge_destinations, ("0 or 1"));
     CHECK_SIMPLE_VARIABLE("confirm-export-overwrite", set_confirm_export_overwrite, ("0 or 1"));
     CHECK_SIMPLE_VARIABLE("refresh-from-block-height", set_refresh_from_block_height, ("block height"));
-    CHECK_SIMPLE_VARIABLE("subaddress-lookahead", set_subaddress_lookahead, ("<major>:<minor>"));
+    CHECK_SIMPLE_VARIABLE
+      ("subaddress-lookahead", set_subaddress_lookahead, ("<account>:<subaddress>"));
     CHECK_SIMPLE_VARIABLE("ignore-fractional-outputs", set_ignore_fractional_outputs, ("0 or 1"));
   }
   fail_msg_writer() << ("set: unrecognized argument(s)");
