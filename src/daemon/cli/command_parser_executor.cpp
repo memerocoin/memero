@@ -156,36 +156,6 @@ bool t_command_parser_executor::print_blockchain_info(const std::vector<std::str
   return m_executor.print_blockchain_info(start_index, end_index);
 }
 
-bool t_command_parser_executor::set_log_level(const std::vector<std::string>& args)
-{
-  constexpr std::string_view set_log_usage = "use: set-log <log_level_number_0-4>.";
-  if(args.size() > 1)
-  {
-    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
-    return true;
-  }
-
-  if (args.empty())
-  {
-    std::cout << "Invalid syntax: no argument, " << set_log_usage << std::endl;
-    return true;
-  }
-
-  uint16_t l = 0;
-  if(epee::string_tools::get_xtype_from_string(l, args[0]))
-  {
-    if(4 < l)
-    {
-      std::cout << "Invalid syntax: Wrong number range, " << set_log_usage << std::endl;
-      return true;
-    }
-    return m_executor.set_log_level(l);
-  }
-
-  std::cout << "Invalid syntax: Wrong number, " << set_log_usage << std::endl;
-  return true;
-}
-
 bool t_command_parser_executor::print_block(const std::vector<std::string>& args)
 {
   bool include_hex = false;

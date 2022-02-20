@@ -460,10 +460,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("transfer", std::bind(&simple_wallet::on_command, this, &simple_wallet::transfer, std::placeholders::_1),
                            (USAGE_TRANSFER),
                            std::string(wallet::help::transfer));
-  m_cmd_binder.set_handler("set-log",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::set_log, std::placeholders::_1),
-                           (USAGE_SET_LOG),
-                           ("Change the current log detail (level must be <0-4>)."));
   m_cmd_binder.set_handler("account",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::account, std::placeholders::_1),
                            (USAGE_ACCOUNT),
@@ -578,38 +574,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
   return true;
 }
 
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::set_log(const std::vector<std::string> &args)
-{
-  if(args.size() > 1)
-  {
-    PRINT_USAGE(USAGE_SET_LOG);
-    return true;
-  }
-  if(!args.empty())
-  {
-    uint16_t level = 0;
-    if(epee::string_tools::get_xtype_from_string(level, args[0]))
-    {
-      if(4 < level)
-      {
-        fail_msg_writer() << boost::format(tr("wrong number range, use: %s")) % USAGE_SET_LOG;
-        return true;
-      }
-      epee::mlog_set_log_level(level);
-      success_msg_writer() << "New log level: " << std::to_string(level);
-    }
-    else
-    {
-      fail_msg_writer() << boost::format(tr("wrong number, use: %s")) % USAGE_SET_LOG;
-    }
-  }
-  else {
-    fail_msg_writer() << boost::format(tr("no argument, use: %s")) % USAGE_SET_LOG;
-  }
-
-  return true;
-}
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::ask_wallet_create_if_needed()
 {
