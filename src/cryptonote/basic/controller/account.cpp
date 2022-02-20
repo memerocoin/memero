@@ -36,11 +36,10 @@
 #include "math/crypto/controller/keyGen.hpp"
 
 #include "cryptonote/functional/helper.hpp"
+
 #include "tools/common/base58.h"
 #include "tools/serialization/binary_utils.h"
-
-
-
+#include "tools/epee/include/wipeable_string.h"
 
 
 namespace cryptonote

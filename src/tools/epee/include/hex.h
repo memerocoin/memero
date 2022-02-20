@@ -26,12 +26,12 @@ see: etc/other-licenses/monero/LICENSE
 #pragma once
 
 
-#include "tools/epee/include/wipeable_string.h"
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/blob.hpp"
 
-#include <optional>
 #include <span>
+#include <optional>
+#include <string>
 
 namespace epee
 {

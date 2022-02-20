@@ -34,6 +34,8 @@
 
 #include <atomic>
 #include <functional>
+#include <optional>
+#include <string>
 
 namespace tools
 {
