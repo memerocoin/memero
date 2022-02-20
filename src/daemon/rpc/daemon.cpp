@@ -180,9 +180,16 @@ namespace daemonize {
         // blocks until p2p goes down
         LOG_GLOBAL_INFO("Starting " << p2p_description << " ...");
         p2p.run();
-
         LOG_GLOBAL_INFO(p2p_description << " stopped");
-        stop_rpc();
+
+        // exiting
+        LOG_INFO("Stopping " << rpc_description << " ...");
+        rpc.send_stop_signal();
+        rpc.wait_server_stop();
+        LOG_GLOBAL_INFO(rpc_description << " stopped");
+
+        protocol.stop();
+        core.stop();
 
         return true;
       }
@@ -196,14 +203,6 @@ namespace daemonize {
         LOG_FATAL("Uncaught exception!");
         return false;
       }
-  }
-
-  void t_daemon::stop_rpc() {
-    LOG_INFO
-      ("Stopping " << rpc_description << " ...");
-    rpc.send_stop_signal();
-    rpc.wait_server_stop();
-    LOG_GLOBAL_INFO(rpc_description << " stopped");
   }
 
   void t_daemon::init_options
