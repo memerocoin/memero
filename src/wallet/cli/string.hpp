@@ -64,33 +64,11 @@ namespace usage
 } // usage
 
 namespace help {
-  constexpr std::string_view incoming =
-    "Show the incoming transfers, all or filtered by availability and address index.\n\n"
-    "Output format:\n"
-    "Amount, Spent(\"T\"|\"F\"), \"frozen\"|\"locked\"|\"unlocked\", "
-    "RingCT, Global Index, Transaction Hash, Address Index, [Public Key, Key Image] ";
-
+  constexpr std::string_view incoming = "";
   constexpr std::string_view transfer = "";
-
-  constexpr std::string_view account =
-    "If no arguments are specified, the wallet shows all the existing accounts along with their balances.\n"
-    "If the \"new\" argument is specified, the wallet creates a new account with its label initialized by the provided label text (which can be empty).\n"
-    "If the \"switch\" argument is specified, the wallet switches to the account specified by <index>.\n"
-    "If the \"label\" argument is specified, the wallet sets the label of the account specified by <index> to the provided label text.\n";
-
-  constexpr std::string_view address =
-    "If no arguments are specified or <index> is specified, the wallet shows the default or specified address. If \"all\" is specified, the wallet shows all the existing addresses in the currently selected account. If \"new \" is specified, the wallet creates a new address with the provided label text (which can be empty). If \"label\" is specified, the wallet sets the label of the address specified by <index> to the provided label text. If \"one-off\" is specified, the address for the specified index is generated and displayed, and remembered by the wallet";
-
-  constexpr std::string_view show =
-    "Show the incoming/outgoing transfers within an optional height range.\n\n"
-    "Output format:\n"
-    "In or Coinbase:    Block Number, \"block\"|\"in\",              Time, Amount,  Transaction Hash, Payment ID, Subaddress Index,                     \"-\", Note\n"
-    "Out:               Block Number, \"out\",                     Time, Amount*, Transaction Hash, Payment ID, Fee, Destinations, Input addresses**, \"-\", Note\n"
-    "Pool:                            \"pool\", \"in\",              Time, Amount,  Transaction Hash, Payment Id, Subaddress Index,                     \"-\", Note, Double Spend Note\n"
-    "Pending or Failed:               \"failed\"|\"pending\", \"out\", Time, Amount*, Transaction Hash, Payment ID, Fee, Input addresses**,               \"-\", Note\n\n"
-    "* Excluding change and fee.\n"
-    "** Set of address indices used as inputs in this transfer.";
-
+  constexpr std::string_view account = "";
+  constexpr std::string_view address = "";
+  constexpr std::string_view show = "";
   constexpr std::string_view set_variable =
     "Available options:\n "
     "always-confirm-transfers <1|0>\n "
