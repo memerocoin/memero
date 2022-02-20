@@ -55,7 +55,6 @@ namespace daemonize {
     cryptonote::core_rpc_server rpc;
     cryptonote::t_cryptonote_protocol_handler protocol;
 
-    void stop_p2p();
     void stop_rpc();
   };
 }

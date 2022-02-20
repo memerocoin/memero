@@ -172,6 +172,8 @@ namespace daemonize {
         tools::signal_handler_install([this](int type) {
           LOG_INFO("Daemon interrupted with signal: " << type);
 
+          LOG_INFO
+            ("Stopping " << p2p_description << " ...");
           p2p.send_stop_signal();
         });
 
@@ -202,13 +204,6 @@ namespace daemonize {
     rpc.send_stop_signal();
     rpc.wait_server_stop();
     LOG_GLOBAL_INFO(rpc_description << " stopped");
-  }
-
-  void t_daemon::stop_p2p()
-  {
-    LOG_INFO
-      ("Stopping " << p2p_description << " ...");
-    p2p.send_stop_signal();
   }
 
   void t_daemon::init_options
