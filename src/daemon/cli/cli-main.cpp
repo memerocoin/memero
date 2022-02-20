@@ -110,7 +110,6 @@ int main(int argc, char const * argv[])
 
   if (command_line::get_arg(vm, command_line::arg_help))
     {
-      daemon_common::show_version();
       print_help(argv[0], visible_options);
       return 0;
     }

@@ -111,9 +111,6 @@ namespace wallet_args
 
       if (command_line::get_arg(vm, command_line::arg_help))
       {
-        Print(print) << "Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")" << std::endl;
-        Print(print) << wallet_args::tr("This is the command line lolnero wallet. It needs to connect to a lolnero\n"
-												  "daemon to work correctly.") << std::endl;
         Print(print) << wallet_args::tr("Usage:") << std::endl << "  " << usage;
         Print(print) << desc_all;
         should_terminate = true;
