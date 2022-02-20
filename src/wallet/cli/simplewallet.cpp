@@ -485,10 +485,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_variable, std::placeholders::_1),
                            (USAGE_SET_VARIABLE),
                            std::string(wallet::help::set_variable));
-  m_cmd_binder.set_handler("get-output-ecdh-secret-keys",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_output_ecdh_secret_keys, std::placeholders::_1),
-                           (USAGE_GET_OUTPUT_ECDH_SECRET_KEYS),
-                           ("Get the transaction output secret keys for a given <txid>."));
   m_cmd_binder.set_handler("get-output-ecdh-signatures",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_output_ecdh_signatures, std::placeholders::_1),
                            (USAGE_GET_TX_SENDER_SIGNATURE),
@@ -1947,45 +1943,6 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
 bool simple_wallet::transfer(const std::vector<std::string> &args_)
 {
   return transfer_main(Transfer, args_);
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_output_ecdh_secret_keys(const std::vector<std::string> &args_)
-{
-  std::vector<std::string> local_args = args_;
-
-  if(local_args.size() != 1) {
-    PRINT_USAGE(USAGE_GET_OUTPUT_ECDH_SECRET_KEYS);
-    return true;
-  }
-
-  const auto maybe_txid =
-    epee::string_tools::hex_to_pod<crypto::hash>(local_args[0]);
-
-  if (!maybe_txid)
-  {
-    fail_msg_writer() << ("failed to parse txid");
-    return true;
-  }
-
-  const auto maybe_tx_output_keys =
-    m_wallet->get_output_ecdh_sec_keys(*maybe_txid);
-
-  if (maybe_tx_output_keys)
-  {
-    std::ostringstream oss;
-
-    for (const auto& k: *maybe_tx_output_keys) {
-      oss << k << std::endl;
-    }
-
-    success_msg_writer() << oss.str();
-    return true;
-  }
-  else
-  {
-    fail_msg_writer() << ("no tx keys found for this txid");
-    return true;
-  }
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::get_output_ecdh_signatures(const std::vector<std::string> &args)
