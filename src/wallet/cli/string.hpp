@@ -64,12 +64,6 @@ namespace usage
     ;
 
   constexpr char USAGE_SET_VARIABLE[] = "set <option> [<value>]";
-  constexpr char USAGE_GET_TX_SENDER_SIGNATURE[] =
-    "get-output-ecdh-signatures <txid> <address> [<message>]";
-
-  constexpr char USAGE_VERIFY_TX_SENDER_SIGNATURE[] =
-    "verify-output-ecdh-signatures <txid> <address> "
-    "<signature file> [<message>]";
 
   constexpr char USAGE_SHOW[] =
     "show [in|out|all|pending|failed|pool|coinbase] "

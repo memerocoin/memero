@@ -312,22 +312,6 @@ namespace tools
     bool ignore_fractional_outputs() const { return m_ignore_fractional_outputs; }
     void ignore_fractional_outputs(bool value) { m_ignore_fractional_outputs = value; }
 
-    std::optional<std::vector<crypto::secret_key>> get_output_ecdh_sec_keys(const crypto::hash txid) const;
-
-    std::string get_output_ecdh_signatures(const crypto::hash &txid, const cryptonote::spend_view_public_keys &address, bool is_subaddress, const std::string &message);
-
-    bool verify_output_ecdh_signatures
-    (
-     const crypto::hash &txid
-     , const cryptonote::spend_view_public_keys &address
-     , bool is_subaddress
-     , const std::string &message
-     , const std::string &sig_str
-     , std::vector<size_t> &received_indices
-     , bool &in_pool
-     , uint64_t &confirmations
-     );
-
     size_t get_num_transfer_details() const { return m_transfers.size(); }
     const transfer_details &get_transfer_details(size_t idx) const;
 

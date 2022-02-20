@@ -129,8 +129,6 @@ namespace cryptonote
     bool set_variable(const std::vector<std::string> &args);
     bool set_log(const std::vector<std::string> &args);
     bool verify_tx_key(const std::vector<std::string> &args);
-    bool get_output_ecdh_signatures(const std::vector<std::string> &args);
-    bool verify_output_ecdh_signatures(const std::vector<std::string> &args);
     bool show(const std::vector<std::string> &args);
     bool rescan_blockchain(const std::vector<std::string> &args);
     bool refresh_main(uint64_t start_height, ResetType reset, bool is_init = false);

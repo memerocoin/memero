@@ -43,20 +43,6 @@ namespace crypto {
     return reduce(h2s(h));
   }
 
-
-  // sender holds the private key of the tx output public key
-  bool verify_output_ecdh_signatures
-  (
-   const hash message_hash
-   , const public_key tx_output_public_key
-   , const std::optional<public_key> view_key_base // spend public key
-   , const schnorr_signature sig
-   ) noexcept
-  {
-    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TX_OUTPUT_SIGNATURES_V1);
-    return verify_schnorr_signature(hash_key + message_hash.blob(), tx_output_public_key, sig, view_key_base);
-  }
-
   ec_point hash_to_point_via_field(const crypto::crypto_data k) {
     return viaFieldMult8(h2p(sha3(k.data)));
   }

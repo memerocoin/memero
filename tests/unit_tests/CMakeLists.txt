@@ -116,7 +116,6 @@ add_executable(unit_tests_core
   test_peerlist.cpp
   test_protocol_pack.cpp
   test_tx_utils.cpp
-  tx_proof.cpp
 
 #  // disabled since we have different block format (different hash function)
 #  blockchain_db.cpp

@@ -34,8 +34,6 @@ add_library(wallet_logic_state
 add_library(wallet_logic_basic
   functional/helper.cpp
   functional/fee.cpp
-  pseudo_functional/proof.cpp
-  controller/proof.cpp
   )
 
 target_link_libraries(wallet_logic_basic

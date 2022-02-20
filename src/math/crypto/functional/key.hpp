@@ -61,15 +61,6 @@ namespace crypto {
   public_key to_pk(const secret_key& sk) noexcept;
 
 
-  // sender holds the private key of the tx output public key
-  bool verify_output_ecdh_signatures
-  (
-   const hash message_hash
-   , const public_key tx_output_public_key
-   , const std::optional<public_key> view_key_base // spend public key
-   , const schnorr_signature sig
-   ) noexcept;
-
   /* To send money to a key:
     * * The sender generates an shared secret derived key and includes it in transaction output.
     * * To spend the money, the receiver generates a key image from it.

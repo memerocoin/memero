@@ -37,8 +37,6 @@
 #include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/functional/helper.hpp"
 #include "wallet/logic/functional/fee.hpp"
-#include "wallet/logic/pseudo_functional/proof.hpp"
-#include "wallet/logic/controller/proof.hpp"
 
 #include "wallet/api/wallet_errors.h"
 
@@ -388,39 +386,6 @@ namespace wallet {
          );
       required[ptx.change_dts.addr].first += ptx.change_dts.amount;
       required[ptx.change_dts.addr].second = ptx.change_dts.is_subaddress;
-    }
-
-    for (const auto &r: required)
-    {
-      const spend_view_public_keys address = r.first;
-      const bool is_subaddress = r.second.second;
-
-      bool found_in_some_tx = false;
-
-      for (const auto &ptx: ptx_vector)
-      {
-        std::string proof = controller::proof::get_output_ecdh_signatures
-          (
-           ptx.output_secret_keys
-           , address
-           , is_subaddress
-           , "automatic-sanity-check"
-           );
-
-        const auto found_indices = pseudo_functional::proof::verify_output_ecdh_signatures
-          (ptx.tx, address, r.second.second, "automatic-sanity-check", proof);
-
-        if (found_indices) {
-          found_in_some_tx = true;
-          break;
-        }
-      }
-      THROW_WALLET_EXCEPTION_IF
-        (
-         !found_in_some_tx
-         , tools::error::wallet_internal_error
-         , "invalid tx proof in auto sanity check"
-         );
     }
 
     return true;
