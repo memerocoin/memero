@@ -398,9 +398,6 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
     message_writer() << "address                     - Show address.";
     message_writer() << "balance                     - Show balance.";
     message_writer() << "refresh                     - Synchronize wallet with the Lolnero network.";
-    message_writer() << "seed                        - Show secret 25 words that can be used to recover this wallet.";
-    message_writer() << "show [in|out|etc..]         - Show transactions.";
-    message_writer() << "status                      - Check current status of wallet.";
     message_writer() << "transfer <address> <amount> - Send LOL to an address.";
     message_writer() << "exit                        - Exit wallet.";
     message_writer() << "";
