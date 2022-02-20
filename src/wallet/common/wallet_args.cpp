@@ -90,15 +90,6 @@ namespace wallet_args
         , 0
       };
 
-    const command_line::arg_descriptor<std::string> arg_config_file =
-      {
-        "config-file"
-        , "Config file"
-        , ""
-        , true
-      };
-
-
     tools::on_startup();
     tools::set_strict_default_file_permissions(true);
 
@@ -108,7 +99,6 @@ namespace wallet_args
 
     command_line::add_arg(desc_params, arg_log_level);
     command_line::add_arg(desc_params, arg_max_concurrency);
-    command_line::add_arg(desc_params, arg_config_file);
 
     po::options_description desc_all;
     desc_all.add(desc_general).add(desc_params);
@@ -134,22 +124,6 @@ namespace wallet_args
         Print(print) << "Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")";
         should_terminate = true;
         return true;
-      }
-
-      if(command_line::has_arg(vm, arg_config_file))
-      {
-        std::string config = command_line::get_arg(vm, arg_config_file);
-        bf::path config_path(config);
-        std::error_code ec;
-        if (bf::exists(config_path, ec))
-        {
-          po::store(po::parse_config_file<char>(config_path.c_str(), desc_params), vm);
-        }
-        else
-        {
-          LOG_ERROR(wallet_args::tr("Can't find config file ") << config);
-          return false;
-        }
       }
 
       po::notify(vm);
