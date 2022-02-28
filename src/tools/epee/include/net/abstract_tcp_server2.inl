@@ -188,12 +188,7 @@ namespace net_utils
                                    std::bind(&connection<t_protocol_handler>::handle_read, self,
                                              std::placeholders::_1,
                                              std::placeholders::_2)));
-    //set ToS flag
-    int tos = get_tos_flag();
-    boost::asio::detail::socket_option::integer< IPPROTO_IP, IP_TOS >
-    optionTos( tos );
-      socket().set_option( optionTos );
-    //_dbg1("Set ToS flag to " << tos);
+
     boost::asio::ip::tcp::no_delay noDelayOption(false);
     socket().set_option(noDelayOption);
 

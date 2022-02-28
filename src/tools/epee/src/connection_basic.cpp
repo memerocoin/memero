@@ -141,14 +141,6 @@ connection_basic::~connection_basic() noexcept(false) {
 	_note("Destructing connection #"<<mI->m_peer_number << " to " << remote_addr_str);
 }
 
-void connection_basic::set_tos_flag(int tos) {
-	connection_basic_pimpl::m_default_tos = tos;
-}
-
-int connection_basic::get_tos_flag() {
-	return connection_basic_pimpl::m_default_tos;
-}
-
 void connection_basic::do_send_handler_write(const void* ptr , size_t cb ) {
         // No sleeping here; sleeping is done once and for all in connection<t_protocol_handler>::handle_write
 	LOG_TRACE("handler_write (direct) - before ASIO write, for packet="<<cb<<" B (after sleep)");

@@ -84,7 +84,6 @@ namespace nodetool
     command_line::add_arg(desc, arg_p2p_hide_my_port);
     command_line::add_arg(desc, arg_out_peers);
     command_line::add_arg(desc, arg_in_peers);
-    command_line::add_arg(desc, arg_tos_flag);
   }
   //-----------------------------------------------------------------------------------
 
@@ -400,10 +399,6 @@ namespace nodetool
 
     if ( !set_max_in_peers(public_zone, command_line::get_arg(vm, arg_in_peers) ) )
       return false;
-
-    if ( !set_tos_flag(vm, command_line::get_arg(vm, arg_tos_flag) ) )
-      return false;
-
 
     auto proxies = get_proxies(vm);
     if (!proxies)
@@ -2150,17 +2145,6 @@ namespace nodetool
     if (public_zone == m_network_zones.end())
       return 0;
     return public_zone->second.m_config.m_net_config.max_in_connection_count;
-  }
-
-
-  bool node_server::set_tos_flag(const boost::program_options::variables_map& vm, int flag)
-  {
-    if(flag==-1){
-      return true;
-    }
-    epee::net_utils::connection<epee::levin::async_protocol_handler<p2p_connection_context> >::set_tos_flag(flag);
-    _dbg1("Set ToS flag  " << flag);
-    return true;
   }
 
 

@@ -382,7 +382,6 @@ namespace nodetool
 
     bool set_max_out_peers(network_zone& zone, int64_t max);
     bool set_max_in_peers(network_zone& zone, int64_t max);
-    bool set_tos_flag(const boost::program_options::variables_map& vm, int limit);
 
     bool has_too_many_connections(const epee::net_utils::network_address &address);
     size_t get_incoming_connections_count();
@@ -489,6 +488,5 @@ namespace nodetool
     extern const command_line::arg_descriptor<bool>        arg_offline;
     extern const command_line::arg_descriptor<int64_t>     arg_out_peers;
     extern const command_line::arg_descriptor<int64_t>     arg_in_peers;
-    extern const command_line::arg_descriptor<int> arg_tos_flag;
 }
 
