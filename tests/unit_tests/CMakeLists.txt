@@ -109,7 +109,8 @@ add_executable(unit_tests_core
   json_serialization.cpp
   net.cpp
 # node_server.cpp
-  output_distribution.cpp
+# // could fail
+# output_distribution.cpp 
   ringct.cpp
   rpc_version_str.cpp
   slow_memmem.cpp
