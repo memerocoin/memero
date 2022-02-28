@@ -8,7 +8,7 @@ test-1:
 --rpc-bind-port 44000 \
 --log-level 1 \
 --add-exclusive-node 127.0.0.1:40001 \
---fixed-difficulty 1000 \
+--fix-difficulty 1000 \
 # --add-exclusive-node 127.0.0.1:40002 \
 
 test-2:
@@ -21,7 +21,7 @@ test-2:
 --rpc-bind-port 44001 \
 --log-level 1 \
 --add-exclusive-node 127.0.0.1:40000 \
---fixed-difficulty 1000 \
+--fix-difficulty 1000 \
 
 test-1-mining:
 	../../build/bin/lolnerod-rpc \
@@ -32,7 +32,7 @@ test-1-mining:
 --p2p-bind-port 40000 \
 --rpc-bind-port 44000 \
 --add-exclusive-node 127.0.0.1:40001 \
---fixed-difficulty 1000 \
+--fix-difficulty 1000 \
 --start-mining hpAhTqFSj91LL7FHxT6yUScBDBfA5bfiMAmC6A3KHBZc1jGv5t5LJMELYoFNjeNPoMJNeSnBiK9WmKNqxXsj9rWn1iNFeiTna
 
 test-2-mining:
@@ -44,7 +44,7 @@ test-2-mining:
 --p2p-bind-port 40001 \
 --rpc-bind-port 44001 \
 --add-exclusive-node 127.0.0.1:40000 \
---fixed-difficulty 1000 \
+--fix-difficulty 1000 \
 --start-mining hp9PEj54frgDUiAkSTsnmJXxoN2gengwfdg2RGThzUEo2ycy1bVvVMXf1nY2KMiGwzVkSGBR8KRd8LbSRYb6eny62DwZFVeyP
 
 make-test-wallet:

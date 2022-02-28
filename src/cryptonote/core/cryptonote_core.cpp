@@ -61,8 +61,8 @@ namespace cryptonote
   , false
   };
   const command_line::arg_descriptor<diff_t> arg_fixed_difficulty  = {
-    "fixed-difficulty"
-  , "Fixed difficulty used for testing"
+    "fix-difficulty"
+  , "Fix difficulty for testing"
   , 0
   };
   const command_line::arg_descriptor<std::string> arg_data_dir = {
