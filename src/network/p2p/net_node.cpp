@@ -128,7 +128,7 @@ namespace nodetool
     const command_line::arg_descriptor<std::vector<std::string> > arg_p2p_add_exclusive_node   = {"add-exclusive-node", "Specify list of peers to connect to only."
                                                                                                   " If this option is given the options add-priority-node and seed-node are ignored"};
     const command_line::arg_descriptor<std::vector<std::string> > arg_p2p_seed_node   = {"seed-node", "Connect to a node to retrieve peer addresses, and disconnect"};
-    const command_line::arg_descriptor<std::vector<std::string> > arg_proxy = {"proxy", "Send local txes through proxy: <network-type>,<socks-ip:port>[,max_connections]"};
+    const command_line::arg_descriptor<std::vector<std::string> > arg_proxy = {"proxy", "<network-type>,<socks-ip:port>[,max_connections]"};
     const command_line::arg_descriptor<std::vector<std::string>>
     arg_anonymous_inbound =
       {
