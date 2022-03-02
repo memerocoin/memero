@@ -51,8 +51,8 @@ namespace cryptonote {
     crypto::ec_point_unsafe m_view_public_key_unsafe;
 
     BEGIN_KV_SERIALIZE_MAP()
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key_unsafe)
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key_unsafe)
+    KV_SERIALIZE_VAL_POD_AS_BLOB(m_spend_public_key_unsafe)
+    KV_SERIALIZE_VAL_POD_AS_BLOB(m_view_public_key_unsafe)
     END_KV_SERIALIZE_MAP()
   };
 
@@ -64,8 +64,8 @@ namespace cryptonote {
     bool operator==(const spend_view_public_keys& rhs) const = default;
 
     BEGIN_KV_SERIALIZE_MAP()
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
+    KV_SERIALIZE_VAL_POD_AS_BLOB(m_spend_public_key)
+    KV_SERIALIZE_VAL_POD_AS_BLOB(m_view_public_key)
     END_KV_SERIALIZE_MAP()
   };
 

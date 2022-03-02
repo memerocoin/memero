@@ -44,10 +44,9 @@ namespace cryptonote
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(m_account_address)
-      KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_secret_key)
-      KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_secret_key)
-      const crypto::chacha_iv default_iv{{0, 0, 0, 0, 0, 0, 0, 0}};
-      KV_SERIALIZE_VAL_POD_AS_BLOB_OPT(m_encryption_iv, default_iv)
+      KV_SERIALIZE_VAL_POD_AS_BLOB(m_spend_secret_key)
+      KV_SERIALIZE_VAL_POD_AS_BLOB(m_view_secret_key)
+      KV_SERIALIZE_VAL_POD_AS_BLOB(m_encryption_iv)
     END_KV_SERIALIZE_MAP()
 
     account_keys& operator=(account_keys const&) = default;
