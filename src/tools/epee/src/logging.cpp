@@ -194,7 +194,7 @@ void log_level_map(const epee::LogLevel level, const std::string cat, const std:
   std::string log_header;
   switch (level) {
   case epee::LogLevel::Global:
-    log_header = "G";
+    log_header = "I";
     break;
   case epee::LogLevel::Fatal:
     log_header = "F";
