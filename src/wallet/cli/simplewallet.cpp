@@ -417,8 +417,7 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
 }
 
 simple_wallet::simple_wallet()
-  : m_refresh_progress_reporter(*this)
-  , m_in_manual_refresh(false)
+  : m_in_manual_refresh(false)
   , m_current_subaddress_account(0)
   , m_in_command(false)
 {
@@ -1115,7 +1114,6 @@ bool simple_wallet::stop_mining(const std::vector<std::string>& args)
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_new_block(uint64_t height, const cryptonote::block& block)
 {
-  m_refresh_progress_reporter.update(height, false);
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index, bool is_change, uint64_t unlock_height)
@@ -1128,7 +1126,6 @@ void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid,
 
   if (unlock_height && !cryptonote::is_coinbase(tx))
     message_writer() << ("NOTE: This transaction is locked, see details with: show_transfer ") + epee::string_tools::pod_to_hex(txid);
-  m_refresh_progress_reporter.update(height, true);
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_unconfirmed_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index)
@@ -1143,7 +1140,6 @@ void simple_wallet::on_money_spent(uint64_t height, const crypto::hash &txid, co
     ("txid ") << txid << ", " <<
     ("spent ") << print_money(amount) << ", " <<
     ("idx ") << subaddr_index;
-  m_refresh_progress_reporter.update(height, true);
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_skip_transaction(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx)

@@ -190,60 +190,6 @@ namespace cryptonote
     virtual void on_money_spent(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& in_tx, uint64_t amount, const cryptonote::transaction& spend_tx, const cryptonote::subaddress_index& subaddr_index);
     virtual void on_skip_transaction(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx);
     virtual std::optional<epee::wipeable_string> on_get_password(const char *reason);
-    //----------------------------------------------------------
-
-    friend class refresh_progress_reporter_t;
-
-    class refresh_progress_reporter_t
-    {
-    public:
-      refresh_progress_reporter_t(cryptonote::simple_wallet& simple_wallet)
-        : m_simple_wallet(simple_wallet)
-        , m_blockchain_height(0)
-        , m_blockchain_height_update_time()
-        , m_print_time()
-      {
-      }
-
-      void update(uint64_t height, bool force = false)
-      {
-        auto current_time = std::chrono::system_clock::now();
-        const auto node_update_threshold = std::chrono::seconds(DIFFICULTY_TARGET_IN_SECONDS / 2); // use min of V1/V2
-        if (node_update_threshold < current_time - m_blockchain_height_update_time || m_blockchain_height <= height)
-        {
-          update_blockchain_height();
-          m_blockchain_height = (std::max)(m_blockchain_height, height);
-        }
-
-        if (std::chrono::milliseconds(20) < current_time - m_print_time || force)
-        {
-          std::cout << "Height " << height << " / " << m_blockchain_height << '\r' << std::flush;
-          m_print_time = current_time;
-        }
-      }
-
-    private:
-      void update_blockchain_height()
-      {
-        std::string err;
-        uint64_t blockchain_height = m_simple_wallet.get_daemon_blockchain_height(err);
-        if (err.empty())
-        {
-          m_blockchain_height = blockchain_height;
-          m_blockchain_height_update_time = std::chrono::system_clock::now();
-        }
-        else
-        {
-          LOG_ERROR("Failed to get current blockchain height: " << err);
-        }
-      }
-
-    private:
-      cryptonote::simple_wallet& m_simple_wallet;
-      uint64_t m_blockchain_height;
-      std::chrono::system_clock::time_point m_blockchain_height_update_time;
-      std::chrono::system_clock::time_point m_print_time;
-    };
 
   private:
     std::string m_wallet_file;
@@ -261,7 +207,6 @@ namespace cryptonote
     epee::console_handlers_binder m_cmd_binder;
 
     std::unique_ptr<tools::wallet2> m_wallet;
-    refresh_progress_reporter_t m_refresh_progress_reporter;
 
     std::atomic<bool> m_in_manual_refresh;
     uint32_t m_current_subaddress_account;
