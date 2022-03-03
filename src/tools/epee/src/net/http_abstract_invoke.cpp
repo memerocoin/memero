@@ -69,8 +69,8 @@ namespace epee
         req.set(http::field::content_type, *content_type);
       }
 
-      LOG_VERBOSE("Beast REQ:");
-      LOG_VERBOSE(req);
+      LOG_DEBUG("Beast REQ:");
+      LOG_DEBUG(req);
 
 
       // Send the HTTP request to the remote host
@@ -86,8 +86,8 @@ namespace epee
       http::read(stream, buffer, res);
 
       // Write the message to standard out
-      LOG_VERBOSE("Beast RESPONSE");
-      LOG_VERBOSE(res);
+      LOG_DEBUG("Beast RESPONSE");
+      LOG_DEBUG(res);
 
       // Gracefully close the socket
       beast::error_code ec;
@@ -97,7 +97,7 @@ namespace epee
       // so don't
       //
       if(ec && ec != beast::errc::not_connected) {
-        LOG_PRINT_L1("Failed to invoke http request to  " << uri << ", not connected");
+        LOG_ERROR("Failed to invoke http request to  " << uri << ", not connected");
         return {};
       }
 
