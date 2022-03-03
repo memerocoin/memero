@@ -37,15 +37,7 @@
 #pragma once
 
 #include "wallet/api/wallet2.h"
-
 #include "tools/epee/include/console_handler.h"
-#include "tools/epee/include/math_helper.h"
-
-#include "math/crypto/controller/random.hpp"
-
-
-
-
 
 /*!
  * \namespace cryptonote
