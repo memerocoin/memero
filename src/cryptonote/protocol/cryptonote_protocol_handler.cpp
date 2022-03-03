@@ -1148,7 +1148,7 @@ namespace cryptonote
     }
 
     {
-      LOG_YELLOW(epee::LogLevel::Debug, context << " Got NEW BLOCKS inside of " << __FUNCTION__ << ": size: " << arg.blocks.size()
+      LOG_COLOR(epee::yellow, epee::LogLevel::Debug, context << " Got NEW BLOCKS inside of " << __FUNCTION__ << ": size: " << arg.blocks.size()
                   << ", blocks: " << start_height << " - " << (start_height + arg.blocks.size() - 1));
 
       // add that new span to the block queue

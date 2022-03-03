@@ -1596,9 +1596,11 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     if(main_chain_cumulative_difficulty < bei.cumulative_difficulty) //check if difficulty bigger then in main chain
     {
       //do reorganize!
-      LOG_GREEN
+      LOG_CATEGORY_COLOR
         (
          epee::LogLevel::Info
+         , epee:: GLOBAL_CATEGORY
+         , epee::green
          , std::endl
          << config::lol::hash_sep << "REORGANIZE" << std::endl
          << std::endl
@@ -1626,9 +1628,11 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     }
     else
     {
-      LOG_BLUE
+      LOG_CATEGORY_COLOR
         (
          epee::LogLevel::Info
+         , epee::GLOBAL_CATEGORY
+         , epee::blue
          , std::endl
          << config::lol::dash_sep << "BLOCK ADDED AS ALTERNATIVE" << std::endl
          << std::endl

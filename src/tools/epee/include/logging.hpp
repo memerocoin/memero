@@ -171,7 +171,7 @@ namespace epee
        , x );                                   \
   } while (0)
 
-#define LOG_COLOR(level, color, x) do {         \
+#define LOG_COLOR(color, level, x) do {         \
     LOG_CATEGORY_COLOR                          \
       (                                         \
        level                                    \
@@ -193,24 +193,6 @@ namespace epee
 #define LOG_VERBOSE(x) LOG_DEFAULT(epee::LogLevel::Verbose, x)
 #define LOG_DEBUG(x) LOG_DEFAULT(epee::LogLevel::Debug, x)
 #define LOG_TRACE(x) LOG_DEFAULT(epee::LogLevel::Trace, x)
-
-#define LOG_RED(level, x)                       \
-  LOG_COLOR(level, epee::console_colors::red,x)
-
-#define LOG_GREEN(level, x)                       \
-  LOG_COLOR(level, epee::console_colors::green,x)
-
-#define LOG_YELLOW(level, x)                        \
-  LOG_COLOR(level, epee::console_colors::yellow,x)
-
-#define LOG_BLUE(level, x)                        \
-  LOG_COLOR(level, epee::console_colors::blue,x)
-
-#define LOG_MAGENTA(level, x)                       \
-  LOG_COLOR(level, epee::console_colors::magenta,x)
-
-#define LOG_CYAN(level, x)                        \
-  LOG_COLOR(level, epee::console_colors::cyan,x)
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)

@@ -1092,9 +1092,11 @@ namespace cryptonote
     {
       if (m_offline) {
         constexpr std::string_view main_message = "The daemon is running offline.";
-        LOG_YELLOW
+        LOG_CATEGORY_COLOR
           (
            epee::LogLevel::Info
+           , epee::GLOBAL_CATEGORY
+           , epee::yellow
            , std::endl
            << "**********************************************************************" << std::endl
            << main_message << std::endl
