@@ -864,7 +864,6 @@ namespace net_utils
     uint32_t local_thr_index = index;
     std::string thread_name = std::string("[") + m_thread_name_prefix;
     thread_name += std::to_string(local_thr_index) + "]";
-    LOG_SET_THREAD_NAME(thread_name);
     //   _fact("Thread name: " << m_thread_name_prefix);
     while(!m_stop_signal_sent)
     {
@@ -910,7 +909,6 @@ namespace net_utils
     TRY_ENTRY();
     m_threads_count = threads_count;
     m_main_thread_id = std::this_thread::get_id();
-    LOG_SET_THREAD_NAME("[SRV_MAIN]");
     while(!m_stop_signal_sent)
     {
 

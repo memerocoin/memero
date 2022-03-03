@@ -209,5 +209,3 @@ namespace epee
 #define _mark(x) LOG_DEBUG(x)
 #define _warn(x) LOG_WARNING(x)
 #define _erro(x) LOG_ERROR(x)
-
-#define LOG_SET_THREAD_NAME(x)
