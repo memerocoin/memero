@@ -62,9 +62,10 @@ namespace cryptonote
     {
       tx_extra_field field;
       bool r = ::do_serialize(ar, field);
-      LOG_WITH_LEVEL_3_AND_RETURN_UNLESS
+      LOG_AND_RETURN_UNLESS
         (
-         r
+         epee::LogLevel::Debug
+         , r
          , {}
          , "failed to deserialize extra field. extra = "
          << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
@@ -75,9 +76,10 @@ namespace cryptonote
       eof = (EOF == iss.peek());
       iss.clear(state);
     }
-    LOG_WITH_LEVEL_3_AND_RETURN_UNLESS
+    LOG_AND_RETURN_UNLESS
       (
-       ::serialization::check_stream_state(ar)
+       epee::LogLevel::Debug
+       , ::serialization::check_stream_state(ar)
        , {}
        , "failed to deserialize extra field. extra = "
        << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
@@ -198,9 +200,10 @@ namespace cryptonote
     {
       tx_extra_field field;
       bool r = ::do_serialize(ar, field);
-      LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+      LOG_AND_RETURN_UNLESS
         (
-         r
+         epee::LogLevel::Verbose
+         , r
          , {}
          , "failed to deserialize extra field. extra = "
          << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
@@ -212,9 +215,10 @@ namespace cryptonote
       eof = (EOF == iss.peek());
       iss.clear(state);
     }
-    LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+    LOG_AND_RETURN_UNLESS
       (
-       ::serialization::check_stream_state(ar)
+       epee::LogLevel::Verbose
+       , ::serialization::check_stream_state(ar)
        , {}
        , "failed to deserialize extra field. extra = "
        << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
@@ -263,8 +267,13 @@ namespace cryptonote
     binary_archive<true> ar(oss);
     bool r = ::do_serialize(ar, field);
 
-    LOG_WITH_LEVEL_1_AND_RETURN_UNLESS
-      (r, tx_extra_in, "failed to serialize tx extra tx output pub keys");
+    LOG_AND_RETURN_UNLESS
+      (
+       epee::LogLevel::Info
+       , r
+       , tx_extra_in
+       , "failed to serialize tx extra tx output pub keys"
+       );
 
     // append
     std::string tx_extra_str = oss.str();

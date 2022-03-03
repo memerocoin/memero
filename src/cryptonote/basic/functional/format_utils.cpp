@@ -373,9 +373,10 @@ namespace cryptonote
     {
       if (tx.version == 1)
       {
-        LOG_WITH_LEVEL_0_AND_RETURN_UNLESS
+        LOG_AND_RETURN_UNLESS
           (
-           0 < out.amount
+           epee::LogLevel::Warning
+           , 0 < out.amount
            , false
            , "zero amount output in transaction id=" << get_transaction_hash(tx)
            );

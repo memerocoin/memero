@@ -374,7 +374,7 @@ namespace cryptonote
 
   bool miner::worker_thread()
   {
-    LOG_GLOBAL_INFO("Miner thread was started");
+    LOG_GLOBAL("Miner thread was started");
     uint64_t nonce = m_starter_nonce;
     block b = m_template;
     uint32_t local_template_ver = 0;
@@ -435,10 +435,10 @@ namespace cryptonote
           {
             block mined_block = b;
             mined_block.nonce = nonce;
-            //we lucky!
-            LOG_GLOBAL_INFO_GREEN
+            LOG_GREEN
               (
-               "Found block "
+               epee::LogLevel::Global
+               , "Found block "
                << get_block_hash(mined_block)
                << " for difficulty: "
                << local_diff
@@ -458,7 +458,7 @@ namespace cryptonote
         m_hashes ++;
       }
 
-    LOG_GLOBAL_INFO("Miner thread stopped");
+    LOG_GLOBAL("Miner thread stopped");
     return true;
   }
 
@@ -475,7 +475,7 @@ namespace cryptonote
     }
     const auto [program, queue] = *maybeProgram;
 
-    LOG_GLOBAL_INFO("OpenCL Miner was started");
+    LOG_GLOBAL("OpenCL Miner was started");
     uint64_t nonce = m_starter_nonce;
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
@@ -549,7 +549,7 @@ namespace cryptonote
 
         mining_template.nonce = nonce;
 
-        // LOG_GLOBAL_INFO("Mining opencl sha3 on nonce: " << nonce);
+        // LOG_GLOBAL("Mining opencl sha3 on nonce: " << nonce);
 
         const auto hashes = opencl_sha3
           (
@@ -593,10 +593,10 @@ namespace cryptonote
           {
             block mined_block = b;
             mined_block.nonce = r.nonce;
-            //we lucky!
-            LOG_GLOBAL_INFO_GREEN
+            LOG_GREEN
               (
-               "Found block "
+               epee::LogLevel::Global
+               , "Found block "
                << get_block_hash(mined_block)
                << " for difficulty: "
                << local_diff
@@ -617,7 +617,7 @@ namespace cryptonote
         m_hashes += worker_size * gpu_loop_size;
 
       }
-    LOG_GLOBAL_INFO("OpenCL Miner thread stopped");
+    LOG_GLOBAL("OpenCL Miner thread stopped");
 
     return true;
   }

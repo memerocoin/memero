@@ -41,9 +41,9 @@
 #include "tools/common/threadpool.h"
 #include "tools/common/util.h"
 #include "tools/epee/include/time_helper.h"
+#include "tools/epee/include/logging.hpp"
 
 #include "math/blockchain/functional/coinbase_tx.hpp"
-
 #include "math/consensus/consensus.hpp"
 
 #include <boost/range/adaptor/reversed.hpp>
@@ -56,7 +56,7 @@
 
 using namespace cryptonote;
 
-#define LOG_ERROR_VER(x) LOG_CATEGORY_ERROR("verify", x)
+#define LOG_ERROR_VER(x) LOG_CATEGORY(epee::LogLevel::Error, "verify", x)
 
 std::recursive_mutex m_blockchain_lock; // TODO: add here reader/writer lock
 
@@ -826,9 +826,9 @@ start:
   ss << "Diff for " << top_hash << ": " << diff << std::endl;
   if (print && m_nettype == MAINNET)
   {
-    LOG_GLOBAL_INFO("START DUMP");
-    LOG_GLOBAL_INFO(ss.str());
-    LOG_GLOBAL_INFO("END DUMP");
+    LOG_GLOBAL("START DUMP");
+    LOG_GLOBAL(ss.str());
+    LOG_GLOBAL("END DUMP");
   }
   return diff;
 }
@@ -978,7 +978,14 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
     m_db->remove_alt_block(cryptonote::get_block_hash(bei.bl));
   }
 
-  LOG_GLOBAL_INFO_GREEN("REORGANIZE SUCCESS! on height: " << split_height << ", new blockchain size: " << m_db->height());
+  LOG_GREEN
+    (
+     epee::LogLevel::Global
+     , "REORGANIZE SUCCESS! on height: "
+     << split_height
+     << ", new blockchain size: "
+     << m_db->height()
+     );
   return true;
 }
 //------------------------------------------------------------------
@@ -1587,9 +1594,10 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     if(main_chain_cumulative_difficulty < bei.cumulative_difficulty) //check if difficulty bigger then in main chain
     {
       //do reorganize!
-      LOG_GLOBAL_INFO_GREEN
+      LOG_GREEN
         (
-         std::endl
+         epee::LogLevel::Info
+         , std::endl
          << config::lol::hash_sep << "REORGANIZE" << std::endl
          << std::endl
          << "OLD" << std::endl
@@ -1616,9 +1624,10 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     }
     else
     {
-      LOG_GLOBAL_INFO_BLUE
+      LOG_BLUE
         (
-         std::endl
+         epee::LogLevel::Info
+         , std::endl
          << config::lol::dash_sep << "BLOCK ADDED AS ALTERNATIVE" << std::endl
          << std::endl
          << "CURRENT" << std::endl
@@ -1913,7 +1922,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   // how can we expect to sync from the client that the block list came from?
   if(qblock_ids.empty())
   {
-    LOG_CATEGORY_ERROR("net.p2p", "Client sent wrong NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << qblock_ids.size() << ", dropping connection");
+    LOG_CATEGORY(epee::LogLevel::Error, "net.p2p", "Client sent wrong NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << qblock_ids.size() << ", dropping connection");
     return false;
   }
 
@@ -1923,7 +1932,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   auto gen_hash = m_db->get_block_hash_from_height(0);
   if(qblock_ids.back() != gen_hash)
   {
-    LOG_CATEGORY_ERROR("net.p2p", "Client sent wrong NOTIFY_REQUEST_CHAIN: genesis block mismatch: " << std::endl << "id: " << qblock_ids.back() << ", " << std::endl << "expected: " << gen_hash << "," << std::endl << " dropping connection");
+    LOG_CATEGORY(epee::LogLevel::Error, "net.p2p", "Client sent wrong NOTIFY_REQUEST_CHAIN: genesis block mismatch: " << std::endl << "id: " << qblock_ids.back() << ", " << std::endl << "expected: " << gen_hash << "," << std::endl << " dropping connection");
     return false;
   }
 

@@ -86,12 +86,12 @@ static void log()
   LOG_DEBUG("debug");
   LOG_TRACE("trace");
 
-  LOG_CATEGORY_INFO("a.b.c.d", "a.b.c.d");
-  LOG_CATEGORY_INFO("a.b.c.e", "a.b.c.e");
-  LOG_CATEGORY_INFO("global", "global");
-  LOG_CATEGORY_INFO("x.y.z", "x.y.z");
-  LOG_CATEGORY_INFO("y.y.z", "y.y.z");
-  LOG_CATEGORY_INFO("x.y.x", "x.y.x");
+  LOG_INFO("a.b.c.d", "a.b.c.d");
+  LOG_INFO("a.b.c.e", "a.b.c.e");
+  LOG_INFO("global", "global");
+  LOG_INFO("x.y.z", "x.y.z");
+  LOG_INFO("y.y.z", "y.y.z");
+  LOG_INFO("x.y.x", "x.y.x");
 }
 
 TEST(logging, no_logs)

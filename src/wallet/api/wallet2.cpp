@@ -878,11 +878,15 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       total_received_2 += i.second;
     if (total_received_1 != total_received_2)
     {
-      const el::Level level = el::Level::Warning;
-      LOG_CATEGORY_RED(level, "global", "**********************************************************************");
-      LOG_CATEGORY_RED(level, "global", "Consistency failure in amounts received");
-      LOG_CATEGORY_RED(level, "global", "Check transaction " << txid);
-      LOG_CATEGORY_RED(level, "global", "**********************************************************************");
+      const epee::LogLevel level = epee::LogLevel::Global;
+      LOG_RED
+        (
+         level
+         , "**********************************************************************"
+         << "Consistency failure in amounts received"
+         << "Check transaction " << txid
+         << "**********************************************************************"
+         );
       exit(1);
       return;
     }

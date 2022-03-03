@@ -143,7 +143,7 @@ namespace nodetool
       if (now >= it->second)
       {
         m_blocked_hosts.erase(it);
-        LOG_CATEGORY_CYAN(el::Level::Info, "global", "Host " << address.host_str() << " unblocked.");
+        LOG_CYAN(epee::LogLevel::Global, "Host " << address.host_str() << " unblocked.");
         it = m_blocked_hosts.end();
       }
       else
@@ -164,7 +164,7 @@ namespace nodetool
         if (now >= it->second)
         {
           it = m_blocked_subnets.erase(it);
-          LOG_CATEGORY_CYAN(el::Level::Info, "global", "Subnet " << it->first.host_str() << " unblocked.");
+          LOG_CYAN(epee::LogLevel::Global, "Subnet " << it->first.host_str() << " unblocked.");
           continue;
         }
         if (it->first.matches(ipv4_address))
@@ -225,7 +225,7 @@ namespace nodetool
       conns.clear();
     }
 
-    LOG_CATEGORY_CYAN(el::Level::Info, "global", "Host " << host_str << " blocked.");
+    LOG_CYAN(epee::LogLevel::Global, "Host " << host_str << " blocked.");
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -237,7 +237,7 @@ namespace nodetool
     if (i == m_blocked_hosts.end())
       return false;
     m_blocked_hosts.erase(i);
-    LOG_CATEGORY_CYAN(el::Level::Info, "global", "Host " << address.host_str() << " unblocked.");
+    LOG_CYAN(epee::LogLevel::Global, "Host " << address.host_str() << " unblocked.");
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ namespace nodetool
       conns.clear();
     }
 
-    LOG_CATEGORY_CYAN(el::Level::Info, "global", "Subnet " << subnet.host_str() << " blocked.");
+    LOG_CYAN(epee::LogLevel::Global, "Subnet " << subnet.host_str() << " blocked.");
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -289,7 +289,7 @@ namespace nodetool
     if (i == m_blocked_subnets.end())
       return false;
     m_blocked_subnets.erase(i);
-    LOG_CATEGORY_CYAN(el::Level::Info, "global", "Subnet " << subnet.host_str() << " unblocked.");
+    LOG_CYAN(epee::LogLevel::Global, "Subnet " << subnet.host_str() << " unblocked.");
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -586,12 +586,12 @@ namespace nodetool
         std::string ipv6_addr = "";
         std::string ipv6_port = "";
         zone.second.m_net_server.set_connection_filter(this);
-        LOG_GLOBAL_INFO("Binding P2P (IPv4) on " << zone.second.m_bind_ip << ":" << zone.second.m_port);
+        LOG_GLOBAL("Binding P2P (IPv4) on " << zone.second.m_bind_ip << ":" << zone.second.m_port);
         if (!zone.second.m_bind_ipv6_address.empty() && m_use_ipv6)
         {
           ipv6_addr = zone.second.m_bind_ipv6_address;
           ipv6_port = zone.second.m_port_ipv6;
-          LOG_GLOBAL_INFO("Binding P2P (IPv6) on " << zone.second.m_bind_ipv6_address << ":" << zone.second.m_port_ipv6);
+          LOG_GLOBAL("Binding P2P (IPv6) on " << zone.second.m_bind_ipv6_address << ":" << zone.second.m_port_ipv6);
         }
         res = zone.second.m_net_server.init_server(zone.second.m_port, zone.second.m_bind_ip, ipv6_port, ipv6_addr, m_use_ipv6, m_require_ipv4);
         LOG_ERROR_AND_RETURN_UNLESS(res, false, "Failed to bind P2P server");
@@ -600,11 +600,11 @@ namespace nodetool
 
     if (public_zone.m_allow_inbound) {
     m_listening_port = public_zone.m_net_server.get_binded_port();
-    LOG_GREEN(el::Level::Info, "Net service bound (IPv4) to " << public_zone.m_bind_ip << ":" << m_listening_port);
+    LOG_GREEN(epee::LogLevel::Info, "Net service bound (IPv4) to " << public_zone.m_bind_ip << ":" << m_listening_port);
     if (m_use_ipv6)
     {
       m_listening_port_ipv6 = public_zone.m_net_server.get_binded_port_ipv6();
-      LOG_GREEN(el::Level::Info, "Net service bound (IPv6) to " << public_zone.m_bind_ipv6_address << ":" << m_listening_port_ipv6);
+      LOG_GREEN(epee::LogLevel::Info, "Net service bound (IPv6) to " << public_zone.m_bind_ipv6_address << ":" << m_listening_port_ipv6);
     }
     }
 
@@ -1599,13 +1599,13 @@ namespace nodetool
     {
       if (m_hide_my_port || public_zone->second.m_config.m_net_config.max_in_connection_count == 0)
       {
-        // LOG_GLOBAL_INFO("Incoming connections disabled, enable them for full connectivity");
+        // LOG_GLOBAL("Incoming connections disabled, enable them for full connectivity");
       }
       else
       {
         {
-          const el::Level level = el::Level::Warning;
-          LOG_CATEGORY_RED(level, "Debug", "No incoming connections - check firewalls/routers allow port " << get_this_peer_port());
+          const epee::LogLevel level = epee::LogLevel::Warning;
+          LOG_RED(level, "No incoming connections - check firewalls/routers allow port " << get_this_peer_port());
         }
       }
     }

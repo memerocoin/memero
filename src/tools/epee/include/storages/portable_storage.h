@@ -37,10 +37,19 @@
 
 #include <span>
 
+#define RETURN_UNLESS(expr, fail_ret_val)       \
+  do {                                          \
+    if(!expr) {                                 \
+      return fail_ret_val;                      \
+    };                                          \
+  } while(0)
+
+
 namespace epee
 {
   namespace serialization
   {
+
     /************************************************************************/
     /*                                                                      */
     /************************************************************************/

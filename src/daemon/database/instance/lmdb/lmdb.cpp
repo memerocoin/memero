@@ -460,7 +460,7 @@ void lmdb_resized(MDB_env *env)
 {
   mdb_txn_safe::prevent_new_txns();
 
-  LOG_GLOBAL_INFO("LMDB map resize detected.");
+  LOG_GLOBAL("LMDB map resize detected.");
 
   MDB_envinfo mei;
 
@@ -476,7 +476,7 @@ void lmdb_resized(MDB_env *env)
   mdb_env_info(env, &mei);
   uint64_t new_mapsize = mei.me_mapsize;
 
-  LOG_GLOBAL_INFO("LMDB Mapsize increased." << "  Old: " << old / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
+  LOG_GLOBAL("LMDB Mapsize increased." << "  Old: " << old / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
 
   mdb_txn_safe::allow_new_txns();
 }
@@ -570,7 +570,7 @@ void BlockchainLMDB::do_resize(uint64_t increase_size)
   if (result)
     throw0(DB_ERROR(lmdb_error("Failed to set new mapsize: ", result).c_str()));
 
-  LOG_GLOBAL_INFO("LMDB Mapsize increased." << "  Old: " << mei.me_mapsize / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
+  LOG_GLOBAL("LMDB Mapsize increased." << "  Old: " << mei.me_mapsize / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
 
   mdb_txn_safe::allow_new_txns();
 }
@@ -650,7 +650,7 @@ void BlockchainLMDB::check_and_resize_for_batch(uint64_t batch_num_blocks, uint6
   // size-based check
   if (need_resize(threshold_size))
   {
-    LOG_GLOBAL_INFO("[batch] DB resize needed");
+    LOG_GLOBAL("[batch] DB resize needed");
     do_resize(increase_size);
   }
 }
@@ -975,8 +975,9 @@ void BlockchainLMDB::remove_transaction_data(const crypto::hash& tx_hash, const 
   remove_tx_outputs(tip->data.tx_id, tx);
 
   result = mdb_cursor_get(m_cur_tx_outputs, &val_tx_id, NULL, MDB_SET);
-  if (result == MDB_NOTFOUND)
+  if (result == MDB_NOTFOUND) {
     LOG_PRINT_L1("tx has no outputs to remove: " << tx_hash);
+  }
   else if (result)
     throw1(DB_ERROR(lmdb_error("Failed to locate tx outputs for removal: ", result).c_str()));
   if (!result)

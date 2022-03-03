@@ -44,11 +44,9 @@
 
 
 
+#define LOG_P2P_MESSAGE(x) \
+  LOG_CATEGORY(epee::LogLevel::Verbose, "net.p2p.msg", context << x)
 
-
-
-
-#define LOG_P2P_MESSAGE(x) LOG_CATEGORY_VERBOSE("net.p2p.msg", context << x)
 #define LOG_P2P_MESSAGE_IF(init, test, x) \
   do { \
       init; \
@@ -322,7 +320,7 @@ namespace cryptonote
     uint64_t abs_diff = std::abs(diff);
     uint64_t max_block_height = std::max(hshd.current_height,m_core.get_current_blockchain_height());
     uint64_t diff_v2 = std::min(abs_diff, max_block_height);
-    LOG_CATEGORY(is_inital ? el::Level::Info : el::Level::Debug, "global", el::Color::Yellow, context <<  "Sync data returned a new top block candidate: " << m_core.get_current_blockchain_height() << " -> " << hshd.current_height
+    LOG_CATEGORY_COLOR(is_inital ? epee::LogLevel::Info : epee::LogLevel::Debug, "global", epee::console_colors::console_color_yellow, context <<  "Sync data returned a new top block candidate: " << m_core.get_current_blockchain_height() << " -> " << hshd.current_height
       << " [Your node is " << abs_diff << " blocks (" << tools::get_human_readable_timespan(diff_v2 * DIFFICULTY_TARGET_IN_SECONDS) << ") "
       << (0 <= diff ? std::string("behind") : std::string("ahead"))
       << "] " << std::endl << "SYNCHRONIZATION started");
@@ -1150,7 +1148,7 @@ namespace cryptonote
     }
 
     {
-      LOG_YELLOW(el::Level::Debug, context << " Got NEW BLOCKS inside of " << __FUNCTION__ << ": size: " << arg.blocks.size()
+      LOG_YELLOW(epee::LogLevel::Debug, context << " Got NEW BLOCKS inside of " << __FUNCTION__ << ": size: " << arg.blocks.size()
                   << ", blocks: " << start_height << " - " << (start_height + arg.blocks.size() - 1));
 
       // add that new span to the block queue
@@ -1426,10 +1424,18 @@ namespace cryptonote
               + std::to_string(static_cast<uint32_t>(sync_rate))
               + " blocks/sec]";
 
-            // if (ELPP->vRegistry()->allowed(el::Level::Debug, "sync-info"))
+            // if (ELPP->vRegistry()->allowed(epee::LogLevel::Debug, "sync-info"))
             //   timing_message += std::string(": ") + m_block_queue.get_overview(current_blockchain_height);
-            LOG_GLOBAL_INFO_YELLOW("Synced " << current_blockchain_height << "/" << target_blockchain_height
-                << progress_message << timing_message);
+            LOG_YELLOW
+              (
+               epee::LogLevel::Global
+               , "Synced "
+               << current_blockchain_height
+               << "/"
+               << target_blockchain_height
+               << progress_message
+               << timing_message
+               );
           }
         }
       }
@@ -1897,7 +1903,7 @@ skip:
       {
         if (m_core.get_current_blockchain_height() >= m_core.get_target_blockchain_height())
         {
-          LOG_GLOBAL_INFO_GREEN("SYNCHRONIZED OK");
+          LOG_GREEN(epee::LogLevel::Global, "SYNCHRONIZED OK");
           on_connection_synchronized();
         }
       }
@@ -1915,7 +1921,11 @@ skip:
     bool val_expected = false;
     if(m_synchronized.compare_exchange_strong(val_expected, true))
     {
-      LOG_GLOBAL_INFO_YELLOW(std::endl << "**********************************************************************" << std::endl
+      LOG_YELLOW
+        (
+         epee::LogLevel::Global
+         ,
+         std::endl << "**********************************************************************" << std::endl
         << "You are now synchronized with the network. You may now start lolnero." << std::endl
         << std::endl
         << "Use the \"help\" command to see the list of available commands." << std::endl
@@ -2323,7 +2333,7 @@ skip:
           m_core.set_target_blockchain_height(target);
           if (target == 0 && context.m_state > cryptonote_connection_context::state_before_handshake && !m_stopping)
             {
-              LOG_CATEGORY_WARNING("global", "lolnerod is now disconnected from the network");
+              LOG_GLOBAL("lolnerod is now disconnected from the network");
               m_ask_for_txpool_complement = true;
             }
         }

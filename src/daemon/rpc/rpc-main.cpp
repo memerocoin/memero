@@ -142,7 +142,7 @@ int main(int argc, char const * argv[])
   }
 
   // logging is now set up
-  LOG_GLOBAL_INFO(daemon_common::get_version_string());
+  LOG_GLOBAL(daemon_common::get_version_string());
 
   try {
     return daemonize::t_daemon{vm}.run();

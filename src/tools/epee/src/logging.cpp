@@ -1,28 +1,27 @@
-// Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-// * Redistributions in binary form must reproduce the above copyright
-// notice, this list of conditions and the following disclaimer in the
-// documentation and/or other materials provided with the distribution.
-// * Neither the name of the Andrey N. Sabelnikov nor the
-// names of its contributors may be used to endorse or promote products
-// derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER  BE LIABLE FOR ANY
-// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+/*
+
+Copyright 2021 fuwa
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+Parts of this file are originally 
+Copyright (c) 2014-2020, The Monero Project
+
+see: etc/other-licenses/monero/LICENSE
+
+*/
 
 
 #include "tools/epee/include/logging.hpp"
@@ -173,7 +172,7 @@ std::mutex g_log_mutex;
 
 std::atomic<size_t> common_length = 1;
 
-void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
+void log_level_map(const epee::LogLevel level, const std::string cat, const std::string_view x) {
   const std::filesystem::path p = cat;
   const std::string base_name = std::string(p.stem());
 
@@ -194,31 +193,31 @@ void log_level_map(const el::Level level, const std::string cat, const std::stri
 
   std::string log_header;
   switch (level) {
-  case el::Level::Global:
+  case epee::LogLevel::Global:
     log_header = "G";
     break;
-  case el::Level::Fatal:
+  case epee::LogLevel::Fatal:
     log_header = "F";
     break;
-  case el::Level::Error:
+  case epee::LogLevel::Error:
     log_header = "E";
     break;
-  case el::Level::Warning:
+  case epee::LogLevel::Warning:
     log_header = "W";
     break;
-  case el::Level::Info:
+  case epee::LogLevel::Info:
     log_header = "I";
     break;
-  case el::Level::Verbose:
+  case epee::LogLevel::Verbose:
     log_header = "V";
     break;
-  case el::Level::Debug:
+  case epee::LogLevel::Debug:
     log_header = "D";
     break;
-  case el::Level::Trace:
+  case epee::LogLevel::Trace:
     log_header = "T";
     break;
-  case el::Level::Unknown:
+  case epee::LogLevel::Unknown:
     log_header = "U";
     break;
   default:
@@ -238,8 +237,8 @@ void log_level_map(const el::Level level, const std::string cat, const std::stri
   }
 }
 
-void log_level(const el::Level level, const std::string cat, const std::string_view x) {
-  if (level == el::Level::Fatal) {
+void log_level(const epee::LogLevel level, const std::string cat, const std::string_view x) {
+  if (level == epee::LogLevel::Fatal) {
     log_level_map(level, cat, x);
     return;
   }
@@ -250,8 +249,8 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     break;
   case 3:
     switch(level) {
-    case el::Level::Unknown:
-    case el::Level::Trace:
+    case epee::LogLevel::Unknown:
+    case epee::LogLevel::Trace:
       break;
     default:
       log_level_map(level, cat, x);
@@ -260,9 +259,9 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     break;
   case 2:
     switch(level) {
-    case el::Level::Unknown:
-    case el::Level::Trace:
-    case el::Level::Debug:
+    case epee::LogLevel::Unknown:
+    case epee::LogLevel::Trace:
+    case epee::LogLevel::Debug:
       break;
     default:
       log_level_map(level, cat, x);
@@ -271,10 +270,10 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     break;
   case 1:
     switch(level) {
-    case el::Level::Unknown:
-    case el::Level::Trace:
-    case el::Level::Debug:
-    case el::Level::Verbose:
+    case epee::LogLevel::Unknown:
+    case epee::LogLevel::Trace:
+    case epee::LogLevel::Debug:
+    case epee::LogLevel::Verbose:
       break;
     default:
       log_level_map(level, cat, x);
@@ -283,10 +282,10 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     break;
   case 0:
     switch(level) {
-    case el::Level::Unknown:
-    case el::Level::Trace:
-    case el::Level::Debug:
-    case el::Level::Verbose:
+    case epee::LogLevel::Unknown:
+    case epee::LogLevel::Trace:
+    case epee::LogLevel::Debug:
+    case epee::LogLevel::Verbose:
       break;
     default:
       if (default_cat.find(cat) == default_cat.end()) return;

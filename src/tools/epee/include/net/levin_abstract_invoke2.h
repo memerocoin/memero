@@ -41,7 +41,7 @@ namespace
   template<typename context_t>
   void on_levin_traffic(const context_t &context, bool initiator, bool sent, bool error, size_t bytes, const char *category)
   {
-    LOG_CATEGORY_VERBOSE("net.p2p.traffic", context << bytes << " bytes " << (sent ? "sent" : "received") << (error ? "/corrupt" : "")
+    LOG_CATEGORY(epee::LogLevel::Verbose, "net.p2p.traffic", context << bytes << " bytes " << (sent ? "sent" : "received") << (error ? "/corrupt" : "")
         << " for category " << category << " initiated by " << (initiator ? "us" : "peer"));
   }
   template<typename context_t>

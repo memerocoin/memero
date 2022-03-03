@@ -1,28 +1,27 @@
-// Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-// * Redistributions in binary form must reproduce the above copyright
-// notice, this list of conditions and the following disclaimer in the
-// documentation and/or other materials provided with the distribution.
-// * Neither the name of the Andrey N. Sabelnikov nor the
-// names of its contributors may be used to endorse or promote products
-// derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER  BE LIABLE FOR ANY
-// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+/*
+
+Copyright 2021 fuwa
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+Parts of this file are originally 
+Copyright (c) 2014-2020, The Monero Project
+
+see: etc/other-licenses/monero/LICENSE
+
+*/
 
 
 #pragma once
@@ -42,212 +41,179 @@
 #endif
 
 
-namespace el {
-
-enum class Level : unsigned int {
-  Global,
-  Fatal,
-  Error,
-  Warning,
-  Info,
-  Verbose,
-  Debug,
-  Trace,
-  Unknown,
-};
-} // namespace el
 
 
 namespace epee
 {
 
-void mlog_set_log_level(int level);
-void mlog_set_log(const std::string x);
-void log_level(const el::Level level, const std::string cat, const std::string_view x);
+  enum class LogLevel : unsigned int {
+    Global,
+    Fatal,
+    Error,
+    Warning,
+    Info,
+    Verbose,
+    Debug,
+    Trace,
+    Unknown,
+  };
 
-enum console_colors
-{
-  console_color_default,
-  console_color_white,
-  console_color_red,
-  console_color_green,
-  console_color_blue,
-  console_color_cyan,
-  console_color_magenta,
-  console_color_yellow
-};
+  void mlog_set_log_level(int level);
+  void mlog_set_log(const std::string x);
+  void log_level
+  (
+   const epee::LogLevel level
+   , const std::string cat
+   , const std::string_view x
+   );
 
-bool is_stdout_a_tty();
-void set_console_color(int color, bool bright);
-void reset_console_color();
+  enum console_colors
+    {
+      console_color_default,
+      console_color_white,
+      console_color_red,
+      console_color_green,
+      console_color_blue,
+      console_color_cyan,
+      console_color_magenta,
+      console_color_yellow
+    };
+
+  bool is_stdout_a_tty();
+  void set_console_color(int color, bool bright);
+  void reset_console_color();
 
 #define TRY_ENTRY()   try {
-#define CATCH_ENTRY(location, return_val) }                             \
-  catch(const std::exception& ex)                                       \
-    {                                                                   \
-      (void)(ex);                                                       \
-      LOG_ERROR("Exception at [" << location << "], what=" << ex.what()); \
-      return return_val;                                                \
-    }                                                                   \
-  catch(...)                                                            \
-    {                                                                   \
-      LOG_ERROR("Exception at [" << location << "], generic exception \"...\""); \
-      return return_val;                                                \
+#define CATCH_ENTRY(location, return_val) }                         \
+  catch(const std::exception& ex)                                   \
+    {                                                               \
+      (void)(ex);                                                   \
+      LOG_ERROR                                                     \
+        ("Exception at [" << location << "], what=" << ex.what());  \
+      return return_val;                                            \
+    }                                                               \
+  catch(...)                                                        \
+    {                                                               \
+      LOG_ERROR                                                     \
+        (                                                           \
+         "Exception at ["                                           \
+         << location <<                                             \
+         "], generic exception \"...\"");                           \
+      return return_val;                                            \
     }
 
-#define CATCH_ENTRY_L0(lacation, return_val) CATCH_ENTRY(lacation, return_val)
+#define CATCH_ENTRY_L0(lacation, return_val)    \
+  CATCH_ENTRY(lacation, return_val)
 
-#define LOG_ERROR_AND_THROW(message)            \
+
+#define LOG_AND_THROW(level, x)                 \
   do {                                          \
-    LOG_ERROR(message);                         \
+    LOG_CATEGORY                                \
+      (                                         \
+       level                                    \
+       , DEFAULT_LOG_CATEGORY                   \
+       , x ) ;                                  \
+                                                \
     std::stringstream ss;                       \
-    ss << message;                              \
+    ss << x;                                    \
     throw std::runtime_error(ss.str());         \
-  } while(0)
+  } while (0)
 
-#define LOG_ERROR_AND_THROW_IF(expr, message)   \
+#define LOG_ERROR_AND_THROW(x)                  \
+  LOG_AND_THROW(epee::LogLevel::Error, x)
+
+#define LOG_ERROR_AND_THROW_IF(expr, x)         \
   do {                                          \
     if(expr)                                    \
-      LOG_ERROR_AND_THROW(message);             \
+      LOG_ERROR_AND_THROW(x);                   \
   } while(0)
 
-#define LOG_ERROR_AND_THROW_UNLESS(expr, message) \
-  LOG_ERROR_AND_THROW_IF(!(expr), message)
+#define LOG_ERROR_AND_THROW_UNLESS(expr, x)     \
+  LOG_ERROR_AND_THROW_IF(!(expr), x)
 
-#define RETURN_IF(expr, fail_ret_val)           \
-  do {                                          \
-    if(expr) {                                  \
-      return fail_ret_val;                      \
-    };                                          \
+  
+
+#define LOG_AND_RETURN_IF(level, expr, fail_ret_val, x) \
+  do {                                                  \
+    if(expr) {                                          \
+      LOG_CATEGORY                                      \
+        (                                               \
+         level                                          \
+         , DEFAULT_LOG_CATEGORY                         \
+         , x );                                         \
+      return fail_ret_val;                              \
+    };                                                  \
   } while(0)
 
-#define RETURN_UNLESS(expr, fail_ret_val)       \
-  RETURN_IF(!(expr), fail_ret_val)
+#define LOG_AND_RETURN_UNLESS(level, expr, fail_ret_val, x) \
+  LOG_AND_RETURN_IF(level, !(expr), fail_ret_val, x)
 
-#define LOG_ERROR_AND_RETURN_IF(expr, fail_ret_val, message)  \
-  do {                                                        \
-    if(expr) {                                                \
-      LOG_ERROR(message);                                     \
-      return fail_ret_val;                                    \
-    };                                                        \
-  } while(0)
+#define LOG_ERROR_AND_RETURN_IF(expr, fail_ret_val, x)            \
+  LOG_AND_RETURN_IF(epee::LogLevel::Error, expr, fail_ret_val, x)
 
-#define LOG_ERROR_AND_RETURN_UNLESS(expr, fail_ret_val, message)  \
-  LOG_ERROR_AND_RETURN_IF(!(expr), fail_ret_val, message)
+#define LOG_ERROR_AND_RETURN_UNLESS(expr, fail_ret_val, x)            \
+  LOG_AND_RETURN_UNLESS(epee::LogLevel::Error, expr, fail_ret_val, x)
 
-#define LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, l, message)  \
-  do {                                                                \
-    if(expr) {                                                        \
-      LOG_PRINT_L##l(message);                                        \
-      return fail_ret_val;                                            \
-    };                                                                \
-  } while(0)
-
-#define LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, l, message) \
-  LOG_WITH_LEVEL_AND_RETURN_IF(!(expr), fail_ret_val, l, message)
-
-#define LOG_WITH_LEVEL_0_AND_RETURN_IF(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 0, message)
-
-#define LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_0_AND_RETURN_IF(!(expr), fail_ret_val, message)
-
-#define LOG_WITH_LEVEL_1_AND_RETURN_IF(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 1, message)
-
-#define LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_1_AND_RETURN_IF(!(expr), fail_ret_val, message)
-
-#define LOG_WITH_LEVEL_2_AND_RETURN_IF(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 2, message)
-
-#define LOG_WITH_LEVEL_2_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_2_AND_RETURN_IF(!(expr), fail_ret_val, message)
-
-#define LOG_WITH_LEVEL_3_AND_RETURN_IF(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 3, message)
-
-#define LOG_WITH_LEVEL_3_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_3_AND_RETURN_IF(!(expr), fail_ret_val, message)
-
-
-#define LOG_ERROR_IF(expr, message)             \
-  do {                                          \
-    if(expr) {                                  \
-      LOG_ERROR(message);                       \
-      return;                                   \
-    };                                          \
-  } while(0)
-
-#define LOG_ERROR_UNLESS(expr, message)         \
-  LOG_ERROR_IF(!(expr), message)
-
-#define LOG_WARNING_AND_THROW_IF(expr, message) \
-  do {                                          \
-    if(expr) {                                  \
-      LOG_WARNING(message);                     \
-      throw std::runtime_error(message);        \
-    };                                          \
-  } while(0)
-
-#define LOG_WARNING_AND_THROW_UNLESS(expr, message) \
-  LOG_WARNING_AND_THROW_IF(!(expr), message)
-
-#define LOG_WARNING_IF(expr, message)           \
-  do {                                          \
-    if(expr) {                                  \
-      LOG_WARNING(message);                     \
-    };                                          \
-  } while(0)
 
 } // epee
 
-#define LOG_CATEGORY(level, cat, color, x) do {                   \
+#define LOG_CATEGORY_COLOR(level, cat, color, x) do {             \
+    epee::set_console_color(color, false);                        \
     std::ostringstream stream;                                    \
     stream << x;                                                  \
     epee::log_level(level, cat, std::string_view(stream.str()));  \
+    epee::reset_console_color();                                  \
   } while (0)
 
-#define LOG_CATEGORY_FATAL(cat,x) LOG_CATEGORY(el::Level::Fatal,cat, el::Color::Default, x)
-#define LOG_CATEGORY_ERROR(cat,x) LOG_CATEGORY(el::Level::Error,cat, el::Color::Default, x)
-#define LOG_CATEGORY_WARNING(cat,x) LOG_CATEGORY(el::Level::Warning,cat, el::Color::Default, x)
-#define LOG_CATEGORY_INFO(cat,x) LOG_CATEGORY(el::Level::Info,cat, el::Color::Default, x)
-#define LOG_CATEGORY_VERBOSE(cat,x) LOG_CATEGORY(el::Level::Verbose,cat, el::Color::Default, x)
-#define LOG_CATEGORY_DEBUG(cat,x) LOG_CATEGORY(el::Level::Debug,cat, el::Color::Default, x)
-#define LOG_CATEGORY_TRACE(cat,x) LOG_CATEGORY(el::Level::Trace,cat, el::Color::Default, x)
+#define LOG_CATEGORY(level, cat, x) do {              \
+    LOG_CATEGORY_COLOR                                \
+      (                                               \
+       level                                          \
+       , cat                                          \
+       , epee::console_colors::console_color_default  \
+       , x );                                         \
+  } while (0)
 
-#define LOG_CATEGORY_COLOR(level,cat,color,x) LOG_CATEGORY(level,cat,color,x)
-#define LOG_CATEGORY_RED(level,cat,x) LOG_CATEGORY_COLOR(level,cat,el::Color::Red,x)
-#define LOG_CATEGORY_GREEN(level,cat,x) LOG_CATEGORY_COLOR(level,cat,el::Color::Green,x)
-#define LOG_CATEGORY_YELLOW(level,cat,x) LOG_CATEGORY_COLOR(level,cat,el::Color::Yellow,x)
-#define LOG_CATEGORY_BLUE(level,cat,x) LOG_CATEGORY_COLOR(level,cat,el::Color::Blue,x)
-#define LOG_CATEGORY_MAGENTA(level,cat,x) LOG_CATEGORY_COLOR(level,cat,el::Color::Magenta,x)
-#define LOG_CATEGORY_CYAN(level,cat,x) LOG_CATEGORY_COLOR(level,cat,el::Color::Cyan,x)
+#define LOG_COLOR(level, color, x) do {         \
+    LOG_CATEGORY_COLOR                          \
+      (                                         \
+       level                                    \
+       , DEFAULT_LOG_CATEGORY                   \
+       , color                                  \
+       , x );                                   \
+  } while (0)
 
-#define LOG_RED(level,x) LOG_CATEGORY_RED(level,DEFAULT_LOG_CATEGORY,x)
-#define LOG_GREEN(level,x) LOG_CATEGORY_GREEN(level,DEFAULT_LOG_CATEGORY,x)
-#define LOG_YELLOW(level,x) LOG_CATEGORY_YELLOW(level,DEFAULT_LOG_CATEGORY,x)
-#define LOG_BLUE(level,x) LOG_CATEGORY_BLUE(level,DEFAULT_LOG_CATEGORY,x)
-#define LOG_MAGENTA(level,x) LOG_CATEGORY_MAGENTA(level,DEFAULT_LOG_CATEGORY,x)
-#define LOG_CYAN(level,x) LOG_CATEGORY_CYAN(level,DEFAULT_LOG_CATEGORY,x)
+#define LOG_DEFAULT(level, x)                   \
+  LOG_CATEGORY(level, DEFAULT_LOG_CATEGORY, x)
 
-#define LOG_FATAL(x) LOG_CATEGORY_FATAL(DEFAULT_LOG_CATEGORY,x)
-#define LOG_ERROR(x) LOG_CATEGORY_ERROR(DEFAULT_LOG_CATEGORY,x)
-#define LOG_WARNING(x) LOG_CATEGORY_WARNING(DEFAULT_LOG_CATEGORY,x)
-#define LOG_INFO(x) LOG_CATEGORY_INFO(DEFAULT_LOG_CATEGORY,x)
-#define LOG_VERBOSE(x) LOG_CATEGORY_VERBOSE(DEFAULT_LOG_CATEGORY,x)
-#define LOG_DEBUG(x) LOG_CATEGORY_DEBUG(DEFAULT_LOG_CATEGORY,x)
-#define LOG_TRACE(x) LOG_CATEGORY_TRACE(DEFAULT_LOG_CATEGORY,x)
+#define LOG_GLOBAL(x)                           \
+  LOG_DEFAULT(epee::LogLevel::Global, x)
 
-#define LOG_GLOBAL_INFO(x) LOG_CATEGORY_INFO("global",x)
-#define LOG_GLOBAL_INFO_RED(x) LOG_CATEGORY_RED(el::Level::Info, "global",x)
-#define LOG_GLOBAL_INFO_GREEN(x) LOG_CATEGORY_GREEN(el::Level::Info, "global",x)
-#define LOG_GLOBAL_INFO_YELLOW(x) LOG_CATEGORY_YELLOW(el::Level::Info, "global",x)
-#define LOG_GLOBAL_INFO_BLUE(x) LOG_CATEGORY_BLUE(el::Level::Info, "global",x)
-#define LOG_GLOBAL_INFO_MAGENTA(x) LOG_CATEGORY_MAGENTA(el::Level::Info, "global",x)
-#define LOG_GLOBAL_INFO_CYAN(x) LOG_CATEGORY_CYAN(el::Level::Info, "global",x)
+#define LOG_FATAL(x) LOG_DEFAULT(epee::LogLevel::Fatal, x)
+#define LOG_ERROR(x) LOG_DEFAULT(epee::LogLevel::Error, x)
+#define LOG_WARNING(x) LOG_DEFAULT(epee::LogLevel::Warning, x)
+#define LOG_INFO(x) LOG_DEFAULT(epee::LogLevel::Info, x)
+#define LOG_VERBOSE(x) LOG_DEFAULT(epee::LogLevel::Verbose, x)
+#define LOG_DEBUG(x) LOG_DEFAULT(epee::LogLevel::Debug, x)
+#define LOG_TRACE(x) LOG_DEFAULT(epee::LogLevel::Trace, x)
 
-#define LOG_GLOBAL_VERBOSE(x) LOG_CATEGORY_VERBOSE("global",x)
+#define LOG_RED(level, x)                                     \
+  LOG_COLOR(level, epee::console_colors::console_color_red,x)
+
+#define LOG_GREEN(level, x)                                     \
+  LOG_COLOR(level, epee::console_colors::console_color_green,x)
+
+#define LOG_YELLOW(level, x)                                      \
+  LOG_COLOR(level, epee::console_colors::console_color_yellow,x)
+
+#define LOG_BLUE(level, x)                                      \
+  LOG_COLOR(level, epee::console_colors::console_color_blue,x)
+
+#define LOG_MAGENTA(level, x)                                     \
+  LOG_COLOR(level, epee::console_colors::console_color_magenta,x)
+
+#define LOG_CYAN(level, x)                                      \
+  LOG_COLOR(level, epee::console_colors::console_color_cyan,x)
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)

@@ -158,7 +158,7 @@ namespace daemonize {
   {
     try
       {
-        LOG_GLOBAL_INFO
+        LOG_GLOBAL
           ("Starting " << rpc_description << " ...");
         LOG_ERROR_AND_THROW_UNLESS
           (
@@ -178,15 +178,15 @@ namespace daemonize {
         });
 
         // blocks until p2p goes down
-        LOG_GLOBAL_INFO("Starting " << p2p_description << " ...");
+        LOG_GLOBAL("Starting " << p2p_description << " ...");
         p2p.run();
-        LOG_GLOBAL_INFO(p2p_description << " stopped");
+        LOG_GLOBAL(p2p_description << " stopped");
 
         // exiting
         LOG_INFO("Stopping " << rpc_description << " ...");
         rpc.send_stop_signal();
         rpc.wait_server_stop();
-        LOG_GLOBAL_INFO(rpc_description << " stopped");
+        LOG_GLOBAL(rpc_description << " stopped");
 
         protocol.stop();
         core.stop();

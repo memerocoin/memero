@@ -42,9 +42,7 @@
 
 
 
-
-
-#define LOG_ERROR_VER(x) LOG_CATEGORY_ERROR("verify", x)
+#define LOG_ERROR_VER(x) LOG_CATEGORY(epee::LogLevel::Error, "verify", x)
 
 #define BAD_SEMANTICS_TXES_MAX_SIZE 100
 
@@ -234,7 +232,7 @@ namespace cryptonote
     }
 
     folder /= db->get_db_name();
-    LOG_GLOBAL_INFO("Loading blockchain from folder " << folder.string() << " ...");
+    LOG_GLOBAL("Loading blockchain from folder " << folder.string() << " ...");
 
     const std::string filename = folder.string();
     // default to fast:async:1 if overridden
@@ -1094,9 +1092,10 @@ namespace cryptonote
     {
       if (m_offline) {
         constexpr std::string_view main_message = "The daemon is running offline.";
-        LOG_GLOBAL_INFO_YELLOW
+        LOG_YELLOW
           (
-           std::endl
+           epee::LogLevel::Info
+           , std::endl
            << "**********************************************************************" << std::endl
            << main_message << std::endl
            << "**********************************************************************" << std::endl
@@ -1118,8 +1117,8 @@ namespace cryptonote
     uint64_t free_space = get_free_space();
     if (free_space < 1ull * 1024 * 1024 * 1024) // 1 GB
     {
-      const el::Level level = el::Level::Warning;
-      LOG_CATEGORY_RED(level, "global", "Free space is below 1 GB on " << m_config_folder);
+      const epee::LogLevel level = epee::LogLevel::Global;
+      LOG_RED(level, "Free space is below 1 GB on " << m_config_folder);
     }
     return true;
   }

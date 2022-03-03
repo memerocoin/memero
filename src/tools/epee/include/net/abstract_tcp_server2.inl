@@ -124,8 +124,8 @@ namespace net_utils
 
     boost::system::error_code ec;
     auto remote_ep = socket().remote_endpoint(ec);
-    LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(!ec, false, "Failed to get remote endpoint: " << ec.message() << ':' << ec.value());
-    LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(remote_ep.address().is_v4() || remote_ep.address().is_v6(), false, "only IPv4 and IPv6 supported here");
+    LOG_AND_RETURN_UNLESS(LogLevel::Warning, !ec, false, "Failed to get remote endpoint: " << ec.message() << ':' << ec.value());
+    LOG_AND_RETURN_UNLESS(LogLevel::Warning, remote_ep.address().is_v4() || remote_ep.address().is_v6(), false, "only IPv4 and IPv6 supported here");
 
     if (remote_ep.address().is_v4())
     {
@@ -161,7 +161,7 @@ namespace net_utils
 
     boost::system::error_code ec;
     auto local_ep = socket().local_endpoint(ec);
-    LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(!ec, false, "Failed to get local endpoint: " << ec.message() << ':' << ec.value());
+    LOG_AND_RETURN_UNLESS(LogLevel::Warning, !ec, false, "Failed to get local endpoint: " << ec.message() << ':' << ec.value());
 
     _dbg3("[sock " << socket_.native_handle() << "] new connection from " << print_connection_context_short(context) <<
       " to " << local_ep.address().to_string() << ':' << local_ep.port() <<
