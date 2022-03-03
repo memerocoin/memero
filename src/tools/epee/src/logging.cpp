@@ -30,7 +30,6 @@ see: etc/other-licenses/monero/LICENSE
 
 #include <unistd.h>
 #include <iomanip>
-#include <set>
 #include <atomic>
 #include <filesystem>
 
@@ -154,9 +153,6 @@ namespace epee
     std::cout << "\033[0m";
     std::cout.flush();
   }
-
-  const std::set<std::string> default_cat =
-    {std::string(epee::GLOBAL_CATEGORY), "logging", "default"};
 
   std::mutex g_log_mutex;
 
@@ -298,7 +294,7 @@ namespace epee
       case epee::LogLevel::Verbose:
         break;
       default:
-        if (default_cat.find(std::string(cat)) == default_cat.end()) {
+        if (cat != GLOBAL_CATEGORY) {
           return;
         }
         log_level_map(level, cat, x);
