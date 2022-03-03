@@ -82,53 +82,40 @@ namespace epee
     if (!is_stdout_a_tty())
       return;
 
+    if (color == color_default) {
+      return;
+    }
+
     std::string color_str;
 
     switch(color)
       {
-      case color_default:
-        {
-          color_str = "37";
-        }
-        break;
-      case epee::console_colors::white:
-        {
-          color_str = "37";
-        }
-        break;
       case epee::console_colors::red:
-        {
-          color_str = "31";
-        }
+        color_str = "31";
         break;
+
       case epee::console_colors::green:
-        {
-          color_str = "32";
-        }
-        break;
-
-      case epee::console_colors::blue:
-        {
-          color_str = "34";
-        }
-        break;
-
-      case epee::console_colors::cyan:
-        {
-          color_str = "36";
-        }
-        break;
-
-      case epee::console_colors::magenta:
-        {
-          color_str = "35";
-        }
+        color_str = "32";
         break;
 
       case epee::console_colors::yellow:
-        {
-          color_str = "33";
-        }
+        color_str = "33";
+        break;
+
+      case epee::console_colors::blue:
+        color_str = "34";
+        break;
+
+      case epee::console_colors::magenta:
+        color_str = "35";
+        break;
+
+      case epee::console_colors::cyan:
+        color_str = "36";
+        break;
+
+      case epee::console_colors::white:
+        color_str = "37";
         break;
       }
 
