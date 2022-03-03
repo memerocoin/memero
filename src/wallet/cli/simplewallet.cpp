@@ -62,10 +62,9 @@
 
 
 
+namespace cryptonote
+{
 
-#define PRINT_USAGE(usage_help) fail_msg_writer() << boost::format(tr("usage: %s")) % usage_help;
-
-using namespace cryptonote;
 using namespace wallet::usage;
 using namespace wallet::cli::controller;
 using namespace wallet::common::controller;
@@ -73,6 +72,10 @@ using namespace wallet::arg;
 
 namespace po = boost::program_options;
 typedef cryptonote::simple_wallet sw;
+
+void PRINT_USAGE(const std::string usage_help) {
+  fail_msg_writer() << boost::format("usage: %s") % usage_help;
+}
 
 enum TransferType {
   Transfer,
@@ -2563,9 +2566,14 @@ void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_
     ptx_vector.pop_back();
   }
 }
+
+} // cryptonote
+
 //----------------------------------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
+  using namespace cryptonote;
+
   TRY_ENTRY();
 
   po::options_description desc_params(wallet_args::tr("Wallet options"));
