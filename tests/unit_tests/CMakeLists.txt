@@ -165,7 +165,7 @@ gtest_discover_tests(
 
 
 add_executable(unit_tests_wallet
-  output_selection.cpp
+  # output_selection.cpp
   subaddress.cpp
 )
 
