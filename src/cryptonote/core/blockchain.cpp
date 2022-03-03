@@ -344,7 +344,7 @@ bool Blockchain::store_blockchain()
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   // lock because the rpc_thread command handler also calls this
-  std::unique_lock<std::mutex> lock(m_db->m_synchronization_lock);
+  const std::unique_lock<std::mutex> lock(m_db->m_synchronization_lock);
 
   // TODO: make sure sync(if this throws that it is not simply ignored higher
   // up the call stack

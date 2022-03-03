@@ -417,7 +417,7 @@ namespace nodetool
 
     if (command_line::has_arg(vm, arg_p2p_seed_node))
     {
-      std::unique_lock<std::shared_mutex> lock(public_zone.m_seed_nodes_lock);
+      const std::unique_lock<std::shared_mutex> lock(public_zone.m_seed_nodes_lock);
 
       if (!parse_peers_and_add_to_container(vm, arg_p2p_seed_node, public_zone.m_seed_nodes))
         return false;

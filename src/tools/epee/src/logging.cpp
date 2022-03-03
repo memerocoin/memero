@@ -208,7 +208,7 @@ namespace epee
     const auto now = std::chrono::system_clock::now();
     const auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-    std::lock_guard<std::mutex> guard(g_log_mutex);
+    const std::unique_lock<std::mutex> guard(g_log_mutex);
     constexpr bool log_time = false;
     if (log_time) {
       std::cout

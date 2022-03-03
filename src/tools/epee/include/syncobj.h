@@ -41,7 +41,7 @@ namespace epee
 
     void raise()
     {
-      std::unique_lock<std::mutex> lock(m_mx);
+      const std::unique_lock<std::mutex> lock(m_mx);
       m_rised = true;
       m_cond_var.notify_one();
     }
@@ -92,7 +92,7 @@ namespace epee
 
 
 #define LOCK_MUTEX(x) \
-  std::unique_lock<std::mutex> critical_region_mutex(x)
+  const std::unique_lock<std::mutex> critical_region_mutex(x)
 
 #define  LOCK_RECURSIVE_MUTEX(x) \
   std::lock_guard<std::recursive_mutex> critical_region_recursive_mutex(x)

@@ -113,7 +113,7 @@ threadpool::waiter::~waiter()
 {
   try
   {
-    std::unique_lock<std::mutex> lock(mt);
+    const std::unique_lock<std::mutex> lock(mt);
     if (num)
       LOG_ERROR("wait should have been called before waiter dtor - waiting now");
   }

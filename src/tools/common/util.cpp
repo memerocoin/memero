@@ -54,7 +54,7 @@ namespace tools
 
   void signal_handler(int signal)
   {
-    std::unique_lock<std::mutex> lock(m_signal_handler_mutex);
+    const std::unique_lock<std::mutex> lock(m_signal_handler_mutex);
     my_signal_handler(signal);
   }
 

@@ -510,7 +510,7 @@ inline void BlockchainLMDB::check_open() const
 void BlockchainLMDB::do_resize(uint64_t increase_size)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
-  std::unique_lock<std::mutex> lock(m_synchronization_lock);
+  const std::unique_lock<std::mutex> lock(m_synchronization_lock);
   const uint64_t add_size = 1LL << 30;
 
   // check disk capacity

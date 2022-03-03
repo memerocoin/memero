@@ -73,7 +73,7 @@ namespace epee
 
   void async_stdin_reader::cancel()
   {
-    std::unique_lock<std::mutex> lock(m_response_mutex);
+    const std::unique_lock<std::mutex> lock(m_response_mutex);
     m_read_status = state_cancelled;
     m_has_read_request = false;
     m_response_cv.notify_one();
@@ -81,7 +81,7 @@ namespace epee
 
   bool async_stdin_reader::start_read()
   {
-    std::unique_lock<std::mutex> lock(m_request_mutex);
+    const std::unique_lock<std::mutex> lock(m_request_mutex);
     if (!m_run || m_has_read_request)
       return false;
 
@@ -162,7 +162,7 @@ namespace epee
       }
       else
       {
-        std::unique_lock<std::mutex> lock(m_response_mutex);
+        const std::unique_lock<std::mutex> lock(m_response_mutex);
         if (m_run)
         {
           m_line = std::move(line);

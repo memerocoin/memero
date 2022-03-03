@@ -97,7 +97,7 @@ namespace cryptonote
    , uint64_t block_reward
    )
   {
-    std::unique_lock<std::mutex> lock(m_template_lock);
+    const std::unique_lock<std::mutex> lock(m_template_lock);
     m_template = bl;
     m_diff = di;
     m_block_reward = block_reward;
@@ -170,7 +170,7 @@ namespace cryptonote
            + 1
            );
         {
-          std::unique_lock<std::mutex> lock(m_last_hash_rates_lock);
+          const std::unique_lock<std::mutex> lock(m_last_hash_rates_lock);
           m_last_hash_rates.push_back(m_current_hash_rate);
           if(m_last_hash_rates.size() > 19)
             m_last_hash_rates.pop_front();
@@ -277,7 +277,7 @@ namespace cryptonote
       std::max(1u, static_cast<uint32_t>(threads_count));
 
     m_starter_nonce = crypto::rand<uint64_t>();
-    std::unique_lock<std::mutex> lock(m_thread_lock);
+    const std::unique_lock<std::mutex> lock(m_thread_lock);
     if(is_mining())
       {
         LOG_ERROR("Starting miner but it's already started");
@@ -389,7 +389,7 @@ namespace cryptonote
 
         if(local_template_ver != m_template_no)
         {
-          std::unique_lock<std::mutex> lock(m_template_lock);
+          const std::unique_lock<std::mutex> lock(m_template_lock);
           local_template_ver = m_template_no;
           b = m_template;
           nonce = m_starter_nonce;
@@ -504,7 +504,7 @@ namespace cryptonote
 
         if(local_template_ver != m_template_no)
           {
-            std::unique_lock<std::mutex> lock(m_template_lock);
+            const std::unique_lock<std::mutex> lock(m_template_lock);
             b = m_template;
             local_diff = m_diff;
             max_int = max_int_for_diff(local_diff);
