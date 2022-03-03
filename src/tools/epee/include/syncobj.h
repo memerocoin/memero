@@ -95,7 +95,7 @@ namespace epee
   const std::unique_lock<std::mutex> critical_region_mutex(x)
 
 #define  LOCK_RECURSIVE_MUTEX(x) \
-  std::lock_guard<std::recursive_mutex> critical_region_recursive_mutex(x)
+  const std::lock_guard<std::recursive_mutex> critical_region_recursive_mutex(x)
 
 #define  LOCK_LOCKABLE_OBJECT(x) \
   epee::critical_region_t<decltype(x)> critical_region_object(x)

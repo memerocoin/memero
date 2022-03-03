@@ -44,7 +44,7 @@ namespace rct
   void init_generators()
   {
     if (!init_done) {
-      std::lock_guard<std::mutex> lock(init_mutex);
+      const std::lock_guard<std::mutex> lock(init_mutex);
 
       const auto Gs = get_bp_generator_G_V(G_V.size());
       std::copy
