@@ -287,6 +287,9 @@ void log_level(const epee::LogLevel level, const std::string cat, const std::str
     case epee::LogLevel::Debug:
     case epee::LogLevel::Verbose:
       break;
+    case epee::LogLevel::Global:
+      log_level_map(level, cat, x);
+      break;
     default:
       if (default_cat.find(cat) == default_cat.end()) return;
       log_level_map(level, cat, x);
