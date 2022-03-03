@@ -82,29 +82,6 @@ namespace epee
 
 } // epee
 
-#define TRY_ENTRY()   try {
-#define CATCH_ENTRY(location, return_val) }                         \
-  catch(const std::exception& ex)                                   \
-    {                                                               \
-      (void)(ex);                                                   \
-      LOG_ERROR                                                     \
-        ("Exception at [" << location << "], what=" << ex.what());  \
-      return return_val;                                            \
-    }                                                               \
-  catch(...)                                                        \
-    {                                                               \
-      LOG_ERROR                                                     \
-        (                                                           \
-         "Exception at ["                                           \
-         << location <<                                             \
-         "], generic exception \"...\"");                           \
-      return return_val;                                            \
-    }
-
-#define CATCH_ENTRY_L0(lacation, return_val)    \
-  CATCH_ENTRY(lacation, return_val)
-
-
 #define LOG_AND_THROW(level, x)                 \
   do {                                          \
     LOG_CATEGORY                                \
@@ -209,3 +186,27 @@ namespace epee
 #define _mark(x) LOG_DEBUG(x)
 #define _warn(x) LOG_WARNING(x)
 #define _erro(x) LOG_ERROR(x)
+
+
+#define TRY_ENTRY()   try {
+#define CATCH_ENTRY(location, return_val) }                         \
+  catch(const std::exception& ex)                                   \
+    {                                                               \
+      (void)(ex);                                                   \
+      LOG_ERROR                                                     \
+        ("Exception at [" << location << "], what=" << ex.what());  \
+      return return_val;                                            \
+    }                                                               \
+  catch(...)                                                        \
+    {                                                               \
+      LOG_ERROR                                                     \
+        (                                                           \
+         "Exception at ["                                           \
+         << location <<                                             \
+         "], generic exception \"...\"");                           \
+      return return_val;                                            \
+    }
+
+#define CATCH_ENTRY_L0(lacation, return_val)    \
+  CATCH_ENTRY(lacation, return_val)
+
