@@ -1577,43 +1577,6 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::prompt_if_old(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector)
-{
-  // count the number of old outputs
-  std::string err;
-  uint64_t bc_height = get_daemon_blockchain_height(err);
-  if (!err.empty())
-    return true;
-
-  int max_n_old = 0;
-  for (const auto &ptx: ptx_vector)
-  {
-    int n_old = 0;
-    for (const auto i: ptx.selected_transfers)
-    {
-      const wallet::logic::type::transfer::transfer_details &td = m_wallet->get_transfer_details(i);
-      uint64_t age = bc_height - td.m_block_height;
-      if (age > constant::OLD_AGE_WALLET_IN_BLOCKS)
-        ++n_old;
-    }
-    max_n_old = std::max(max_n_old, n_old);
-  }
-  if (max_n_old > 1)
-  {
-    std::stringstream prompt;
-    prompt << ("Transaction spends more than one very old output. Privacy would be better if they were sent separately.");
-    prompt << std::endl << ("Spend them now anyway?");
-    std::string accepted = input_line(prompt.str(), true);
-    if (std::cin.eof())
-      return false;
-    if (!command_line::is_yes(accepted))
-    {
-      return false;
-    }
-  }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
 bool simple_wallet::on_command(bool (simple_wallet::*cmd)(const std::vector<std::string>&), const std::vector<std::string> &args)
 {
   m_last_activity_time = time(NULL);
@@ -1777,12 +1740,6 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     {
       fail_msg_writer() << ("No outputs found, or daemon is not ready");
       return true;
-    }
-
-    if (!prompt_if_old(ptx_vector))
-    {
-      fail_msg_writer() << ("transaction cancelled.");
-      return false;
     }
 
     // if more than one tx necessary, prompt user to confirm

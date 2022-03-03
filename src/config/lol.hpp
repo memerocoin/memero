@@ -89,7 +89,6 @@ namespace constant
   constexpr uint64_t RPC_IP_FAILS_BEFORE_BLOCK = 3;
   constexpr size_t COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT = 1000;
 
-  constexpr uint64_t OLD_AGE_WALLET_IN_BLOCKS = 30 * 86400 / DIFFICULTY_TARGET_IN_SECONDS; // 30 days
   constexpr uint32_t DEFAULT_RPC_AUTO_REFRESH_PERIOD_IN_SECONDS = 20;
 
   constexpr uint64_t LEVIN_SIGNATURE = 0x0101010101012101LL; //Bender's nightmare
