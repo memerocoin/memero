@@ -83,78 +83,68 @@ namespace epee
     if (!is_stdout_a_tty())
       return;
 
+    std::string color_str;
+
     switch(color)
       {
       case color_default:
         {
-          if(bright)
-            std::cout << "\033[1;37m";
-          else
-            std::cout << "\033[0m";
+          color_str = "37";
         }
         break;
       case epee::console_colors::white:
         {
-          if(bright)
-            std::cout << "\033[1;37m";
-          else
-            std::cout << "\033[0;37m";
+          color_str = "37";
         }
         break;
       case epee::console_colors::red:
         {
-          if(bright)
-            std::cout << "\033[1;31m";
-          else
-            std::cout << "\033[0;31m";
+          color_str = "31";
         }
         break;
       case epee::console_colors::green:
         {
-          if(bright)
-            std::cout << "\033[1;32m";
-          else
-            std::cout << "\033[0;32m";
+          color_str = "32";
         }
         break;
 
       case epee::console_colors::blue:
         {
-          if(bright)
-            std::cout << "\033[1;34m";
-          else
-            std::cout << "\033[0;34m";
+          color_str = "34";
         }
         break;
 
       case epee::console_colors::cyan:
         {
-          if(bright)
-            std::cout << "\033[1;36m";
-          else
-            std::cout << "\033[0;36m";
+          color_str = "36";
         }
         break;
 
       case epee::console_colors::magenta:
         {
-          if(bright)
-            std::cout << "\033[1;35m";
-          else
-            std::cout << "\033[0;35m";
+          color_str = "35";
         }
         break;
 
       case epee::console_colors::yellow:
         {
-          if(bright)
-            std::cout << "\033[1;33m";
-          else
-            std::cout << "\033[0;33m";
+          color_str = "33";
         }
         break;
-
       }
+
+    const std::string bright_str =
+      bright
+      ? "1"
+      : "0"
+      ;
+
+    std::cout
+      << "\033["
+      << bright_str
+      << ";"
+      << color_str
+      << "m";
   }
 
   void reset_console_color() {
