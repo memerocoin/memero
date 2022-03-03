@@ -194,7 +194,7 @@ namespace epee
     std::string prompt = m_prompt();
     if (!prompt.empty())
     {
-      epee::set_console_color(epee::console_color_yellow, true);
+      epee::set_console_color(epee::console_colors::yellow, true);
       std::cout << prompt;
       if (' ' != prompt.back())
         std::cout << ' ';

@@ -87,7 +87,7 @@ void set_console_color(int color, bool bright)
 
   switch(color)
   {
-  case console_color_default:
+  case color_default:
     {
       if(bright)
         std::cout << "\033[1;37m";
@@ -95,7 +95,7 @@ void set_console_color(int color, bool bright)
         std::cout << "\033[0m";
     }
     break;
-  case console_color_white:
+  case epee::console_colors::white:
     {
       if(bright)
         std::cout << "\033[1;37m";
@@ -103,7 +103,7 @@ void set_console_color(int color, bool bright)
         std::cout << "\033[0;37m";
     }
     break;
-  case console_color_red:
+  case epee::console_colors::red:
     {
       if(bright)
         std::cout << "\033[1;31m";
@@ -111,7 +111,7 @@ void set_console_color(int color, bool bright)
         std::cout << "\033[0;31m";
     }
     break;
-  case console_color_green:
+  case epee::console_colors::green:
     {
       if(bright)
         std::cout << "\033[1;32m";
@@ -120,7 +120,7 @@ void set_console_color(int color, bool bright)
     }
     break;
 
-  case console_color_blue:
+  case epee::console_colors::blue:
     {
       if(bright)
         std::cout << "\033[1;34m";
@@ -129,7 +129,7 @@ void set_console_color(int color, bool bright)
     }
     break;
 
-  case console_color_cyan:
+  case epee::console_colors::cyan:
     {
       if(bright)
         std::cout << "\033[1;36m";
@@ -138,7 +138,7 @@ void set_console_color(int color, bool bright)
     }
     break;
 
-  case console_color_magenta:
+  case epee::console_colors::magenta:
     {
       if(bright)
         std::cout << "\033[1;35m";
@@ -147,7 +147,7 @@ void set_console_color(int color, bool bright)
     }
     break;
 
-  case console_color_yellow:
+  case epee::console_colors::yellow:
     {
       if(bright)
         std::cout << "\033[1;33m";

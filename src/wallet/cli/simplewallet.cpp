@@ -916,7 +916,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet
   try
   {
     recovery_val = m_wallet->generate(m_wallet_file, std::move(rc.second).password(), recovery_key);
-    message_writer(epee::console_color_white, true) << ("Generated new wallet: ")
+    message_writer(epee::console_colors::white, true) << ("Generated new wallet: ")
       << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
   }
   catch (const std::exception& e)
@@ -1005,7 +1005,7 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
     m_wallet->load(m_wallet_file, password);
     std::string prefix;
     prefix = ("Opened wallet");
-    message_writer(epee::console_color_white, true) <<
+    message_writer(epee::console_colors::white, true) <<
       prefix << ": " << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
   }
   catch (const std::exception& e)
@@ -1121,7 +1121,7 @@ void simple_wallet::on_new_block(uint64_t height, const cryptonote::block& block
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index, bool is_change, uint64_t unlock_height)
 {
-  message_writer(epee::console_color_green, false) << "\r" <<
+  message_writer(epee::console_colors::green, false) << "\r" <<
     ("Height ") << height << ", " <<
     ("txid ") << txid << ", " <<
     print_money(amount) << ", " <<
@@ -1138,7 +1138,7 @@ void simple_wallet::on_unconfirmed_money_received(uint64_t height, const crypto:
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_money_spent(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& in_tx, uint64_t amount, const cryptonote::transaction& spend_tx, const cryptonote::subaddress_index& subaddr_index)
 {
-  message_writer(epee::console_color_magenta, false) << "\r" <<
+  message_writer(epee::console_colors::magenta, false) << "\r" <<
     ("Height ") << height << ", " <<
     ("txid ") << txid << ", " <<
     ("spent ") << print_money(amount) << ", " <<
@@ -1171,7 +1171,7 @@ void simple_wallet::on_refresh_finished(uint64_t start_height, uint64_t fetched_
   const uint64_t dh = m_wallet->get_daemon_blockchain_height(err);
   if (err.empty() && rfbh > dh)
   {
-    message_writer(epee::console_color_yellow, false) << ("The wallet's refresh-from-block-height setting is higher than the daemon's height: this may mean your wallet will skip over transactions");
+    message_writer(epee::console_colors::yellow, false) << ("The wallet's refresh-from-block-height setting is higher than the daemon's height: this may mean your wallet will skip over transactions");
   }
 }
 //----------------------------------------------------------------------------------------------------
@@ -1373,7 +1373,7 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
       std::string extra_string;
       if (verbose)
         extra_string += (boost::format("%68s%68s") % td.get_public_key() % (td.m_output_key_image_known ? epee::string_tools::pod_to_hex(td.m_output_key_image) : td.m_output_key_image_partial ? (epee::string_tools::pod_to_hex(td.m_output_key_image) + "/p") : std::string(64, '?'))).str();
-      message_writer(td.m_spent ? epee::console_color_magenta : epee::console_color_green, false) <<
+      message_writer(td.m_spent ? epee::console_colors::magenta : epee::console_colors::green, false) <<
         boost::format("%21s%8s%12s%8s%16u%68s%16u%s") %
         print_money(td.amount()) %
         (td.m_spent ? ("T") : ("F")) %
@@ -2061,7 +2061,7 @@ bool simple_wallet::show(const std::vector<std::string> &args_)
 
   for (const auto& transfer : all_transfers)
   {
-    const auto color = transfer.type == "failed" ? epee::console_color_red : transfer.confirmed ? ((transfer.direction == "in" || transfer.direction == "block") ? epee::console_color_green : epee::console_color_magenta) : epee::console_color_default;
+    const auto color = transfer.type == "failed" ? epee::console_colors::red : transfer.confirmed ? ((transfer.direction == "in" || transfer.direction == "block") ? epee::console_colors::green : epee::console_colors::magenta) : epee::console_colors::color_default;
 
     std::string destinations = "-";
     if (!transfer.outputs.empty())
@@ -2599,7 +2599,7 @@ int main(int argc, char* argv[])
      desc_params,
      positional_options,
      [](const std::string &s, bool emphasis){
-       tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s;
+       tools::scoped_message_writer(emphasis ? epee::console_colors::white : epee::console_colors::color_default, true) << s;
      }
      );
 

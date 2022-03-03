@@ -978,9 +978,11 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
     m_db->remove_alt_block(cryptonote::get_block_hash(bei.bl));
   }
 
-  LOG_GREEN
+  LOG_CATEGORY_COLOR
     (
-     epee::LogLevel::Global
+     epee::LogLevel::Info
+     , "global"
+     , epee::green
      , "REORGANIZE SUCCESS! on height: "
      << split_height
      << ", new blockchain size: "

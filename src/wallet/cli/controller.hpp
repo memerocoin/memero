@@ -41,7 +41,7 @@ namespace controller {
   std::optional<tools::password_container> default_password_prompter(bool verify);
   std::string interpret_rpc_response(bool ok, const std::string& status);
   tools::scoped_message_writer success_msg_writer(bool color = false);
-  tools::scoped_message_writer message_writer(epee::console_colors color = epee::console_color_default, bool bright = false);
+  tools::scoped_message_writer message_writer(epee::console_colors color = epee::console_colors::color_default, bool bright = false);
   tools::scoped_message_writer fail_msg_writer();
   void parse_bool_and_use(const std::string s, const std::function<void(const bool)> func);
 

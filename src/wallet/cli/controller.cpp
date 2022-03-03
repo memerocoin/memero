@@ -106,7 +106,7 @@ namespace controller {
 
   tools::scoped_message_writer success_msg_writer(bool color)
   {
-    return tools::scoped_message_writer(color ? epee::console_color_green : epee::console_color_default, false, std::string(), epee::LogLevel::Info);
+    return tools::scoped_message_writer(color ? epee::console_colors::green : epee::console_colors::color_default, false, std::string(), epee::LogLevel::Info);
   }
 
   tools::scoped_message_writer message_writer(epee::console_colors color, bool bright)
@@ -116,7 +116,7 @@ namespace controller {
 
   tools::scoped_message_writer fail_msg_writer()
   {
-    return tools::scoped_message_writer(epee::console_color_red, true, ("Error: "), epee::LogLevel::Error);
+    return tools::scoped_message_writer(epee::console_colors::red, true, ("Error: "), epee::LogLevel::Error);
   }
 
   void parse_bool_and_use(const std::string s, const std::function<void(const bool)> func)

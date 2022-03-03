@@ -69,14 +69,14 @@ namespace epee
 
   enum console_colors
     {
-      console_color_default,
-      console_color_white,
-      console_color_red,
-      console_color_green,
-      console_color_blue,
-      console_color_cyan,
-      console_color_magenta,
-      console_color_yellow
+      color_default,
+      white,
+      red,
+      green,
+      blue,
+      cyan,
+      magenta,
+      yellow
     };
 
   bool is_stdout_a_tty();
@@ -170,7 +170,7 @@ namespace epee
       (                                               \
        level                                          \
        , cat                                          \
-       , epee::console_colors::console_color_default  \
+       , epee::console_colors::color_default  \
        , x );                                         \
   } while (0)
 
@@ -198,22 +198,22 @@ namespace epee
 #define LOG_TRACE(x) LOG_DEFAULT(epee::LogLevel::Trace, x)
 
 #define LOG_RED(level, x)                                     \
-  LOG_COLOR(level, epee::console_colors::console_color_red,x)
+  LOG_COLOR(level, epee::console_colors::red,x)
 
 #define LOG_GREEN(level, x)                                     \
-  LOG_COLOR(level, epee::console_colors::console_color_green,x)
+  LOG_COLOR(level, epee::console_colors::green,x)
 
 #define LOG_YELLOW(level, x)                                      \
-  LOG_COLOR(level, epee::console_colors::console_color_yellow,x)
+  LOG_COLOR(level, epee::console_colors::yellow,x)
 
 #define LOG_BLUE(level, x)                                      \
-  LOG_COLOR(level, epee::console_colors::console_color_blue,x)
+  LOG_COLOR(level, epee::console_colors::blue,x)
 
 #define LOG_MAGENTA(level, x)                                     \
-  LOG_COLOR(level, epee::console_colors::console_color_magenta,x)
+  LOG_COLOR(level, epee::console_colors::magenta,x)
 
 #define LOG_CYAN(level, x)                                      \
-  LOG_COLOR(level, epee::console_colors::console_color_cyan,x)
+  LOG_COLOR(level, epee::console_colors::cyan,x)
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)
