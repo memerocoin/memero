@@ -108,8 +108,6 @@ namespace cryptonote
     bool set_refresh_from_block_height(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_subaddress_lookahead(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_ignore_fractional_outputs(const std::vector<std::string> &args = std::vector<std::string>());
-    bool set_ignore_outputs_above(const std::vector<std::string> &args = std::vector<std::string>());
-    bool set_ignore_outputs_below(const std::vector<std::string> &args = std::vector<std::string>());
     bool help(const std::vector<std::string> &args = std::vector<std::string>());
     bool start_mining(const std::vector<std::string> &args);
     bool stop_mining(const std::vector<std::string> &args);
@@ -123,8 +121,6 @@ namespace cryptonote
     void print_accounts();
     bool print_address(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_variable(const std::vector<std::string> &args);
-    bool set_log(const std::vector<std::string> &args);
-    bool verify_tx_key(const std::vector<std::string> &args);
     bool show(const std::vector<std::string> &args);
     bool rescan_blockchain(const std::vector<std::string> &args);
     bool refresh_main(uint64_t start_height, ResetType reset, bool is_init = false);
@@ -252,10 +248,8 @@ namespace cryptonote
   private:
     std::string m_wallet_file;
     std::string m_generate_new;
-    std::string m_generate_from_device;
     std::string m_generate_from_spend_key;
     std::string m_mnemonic_language;
-    std::string m_import_path;
     std::string m_subaddress_lookahead;
 
     epee::wipeable_string m_electrum_seed;  // electrum-style seed parameter
@@ -272,11 +266,6 @@ namespace cryptonote
     std::atomic<bool> m_in_manual_refresh;
     uint32_t m_current_subaddress_account;
 
-    std::atomic<time_t> m_last_activity_time;
     std::atomic<bool> m_in_command;
-
-    template<uint64_t mini, uint64_t maxi> struct get_random_interval { public: uint64_t operator()() const { return crypto::rand_range(mini, maxi); } };
-
-    std::unordered_map<std::string, uint32_t> m_claimed_cph;
   };
 }

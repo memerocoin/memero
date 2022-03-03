@@ -420,7 +420,6 @@ simple_wallet::simple_wallet()
   : m_refresh_progress_reporter(*this)
   , m_in_manual_refresh(false)
   , m_current_subaddress_account(0)
-  , m_last_activity_time(time(NULL))
   , m_in_command(false)
 {
   m_cmd_binder.set_handler("start-mining",
@@ -789,7 +788,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
 
   m_wallet->callback(this);
 
-  m_last_activity_time = time(NULL);
   return true;
 }
 //----------------------------------------------------------------------------------------------------
@@ -1255,7 +1253,6 @@ bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bo
   }
 
   // prevent it from triggering the idle screen due to waiting for a foreground refresh
-  m_last_activity_time = time(NULL);
 
   return true;
 }
@@ -1579,11 +1576,9 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::on_command(bool (simple_wallet::*cmd)(const std::vector<std::string>&), const std::vector<std::string> &args)
 {
-  m_last_activity_time = time(NULL);
 
   m_in_command = true;
   epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){
-    m_last_activity_time = time(NULL);
     m_in_command = false;
   });
 
