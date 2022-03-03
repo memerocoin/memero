@@ -167,7 +167,9 @@ void reset_console_color() {
   std::cout.flush();
 }
 
-const std::set<std::string> default_cat = {"global", "logging", "default"};
+const std::set<std::string> default_cat =
+  {epee::GLOBAL_CATEGORY, "logging", "default"};
+
 std::mutex g_log_mutex;
 
 std::atomic<size_t> common_length = 1;

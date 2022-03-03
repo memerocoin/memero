@@ -146,7 +146,7 @@ namespace nodetool
         LOG_CATEGORY_COLOR
           (
            epee::LogLevel::Info
-           , "global"
+           , epee::GLOBAL_CATEGORY
            , epee::cyan
            , "Host " << address.host_str() << " unblocked."
            );
@@ -173,7 +173,7 @@ namespace nodetool
           LOG_CATEGORY_COLOR
             (
              epee::LogLevel::Info
-             , "global"
+             , epee::GLOBAL_CATEGORY
              , epee::cyan
              , "Subnet " << it->first.host_str() << " unblocked."
              );
@@ -240,7 +240,7 @@ namespace nodetool
     LOG_CATEGORY_COLOR
       (
        epee::LogLevel::Info
-       , "global"
+       , epee::GLOBAL_CATEGORY
        , epee::cyan
        , "Host " << host_str << " blocked."
        );
@@ -258,7 +258,7 @@ namespace nodetool
     LOG_CATEGORY_COLOR
       (
        epee::LogLevel::Info
-       , "global"
+       , epee::GLOBAL_CATEGORY
        , epee::cyan
        , "Host " << address.host_str() << " unblocked."
        );
@@ -304,7 +304,7 @@ namespace nodetool
     LOG_CATEGORY_COLOR
       (
        epee::LogLevel::Info
-       , "global"
+       , epee::GLOBAL_CATEGORY
        , epee::cyan
        , "Subnet " << subnet.host_str() << " blocked."
        );
@@ -322,7 +322,7 @@ namespace nodetool
     LOG_CATEGORY_COLOR
       (
        epee::LogLevel::Info
-       , "global"
+       , epee::GLOBAL_CATEGORY
        , epee::cyan
        , "Subnet " << subnet.host_str() << " unblocked.");
     return true;

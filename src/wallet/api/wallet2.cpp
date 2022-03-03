@@ -882,7 +882,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       LOG_CATEGORY_COLOR
         (
          level
-         , "global"
+         , epee::GLOBAL_CATEGORY
          , epee::red
          , "**********************************************************************"
          << "Consistency failure in amounts received"

@@ -1121,7 +1121,7 @@ namespace cryptonote
       LOG_CATEGORY_COLOR
         (
          level
-         , "global"
+         , epee::GLOBAL_CATEGORY
          , epee::red
          , "Free space is below 1 GB on " << m_config_folder
          );

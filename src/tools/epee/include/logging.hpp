@@ -40,11 +40,9 @@ see: etc/other-licenses/monero/LICENSE
 #define DEFAULT_LOG_CATEGORY __FILE__
 #endif
 
-
-
-
 namespace epee
 {
+  const std::string GLOBAL_CATEGORY = "global";
 
   enum class LogLevel : unsigned int {
     Global,
@@ -165,13 +163,13 @@ namespace epee
     epee::reset_console_color();                                  \
   } while (0)
 
-#define LOG_CATEGORY(level, cat, x) do {              \
-    LOG_CATEGORY_COLOR                                \
-      (                                               \
-       level                                          \
-       , cat                                          \
-       , epee::console_colors::color_default  \
-       , x );                                         \
+#define LOG_CATEGORY(level, cat, x) do {        \
+    LOG_CATEGORY_COLOR                          \
+      (                                         \
+       level                                    \
+       , cat                                    \
+       , epee::console_colors::color_default    \
+       , x );                                   \
   } while (0)
 
 #define LOG_COLOR(level, color, x) do {         \
@@ -186,8 +184,8 @@ namespace epee
 #define LOG_DEFAULT(level, x)                   \
   LOG_CATEGORY(level, DEFAULT_LOG_CATEGORY, x)
 
-#define LOG_GLOBAL(x)                           \
-  LOG_CATEGORY(epee::LogLevel::Info, "global", x)
+#define LOG_GLOBAL(x)                                           \
+  LOG_CATEGORY(epee::LogLevel::Info, epee::GLOBAL_CATEGORY, x)
 
 #define LOG_FATAL(x) LOG_DEFAULT(epee::LogLevel::Fatal, x)
 #define LOG_ERROR(x) LOG_DEFAULT(epee::LogLevel::Error, x)
@@ -197,22 +195,22 @@ namespace epee
 #define LOG_DEBUG(x) LOG_DEFAULT(epee::LogLevel::Debug, x)
 #define LOG_TRACE(x) LOG_DEFAULT(epee::LogLevel::Trace, x)
 
-#define LOG_RED(level, x)                                     \
+#define LOG_RED(level, x)                       \
   LOG_COLOR(level, epee::console_colors::red,x)
 
-#define LOG_GREEN(level, x)                                     \
+#define LOG_GREEN(level, x)                       \
   LOG_COLOR(level, epee::console_colors::green,x)
 
-#define LOG_YELLOW(level, x)                                      \
+#define LOG_YELLOW(level, x)                        \
   LOG_COLOR(level, epee::console_colors::yellow,x)
 
-#define LOG_BLUE(level, x)                                      \
+#define LOG_BLUE(level, x)                        \
   LOG_COLOR(level, epee::console_colors::blue,x)
 
-#define LOG_MAGENTA(level, x)                                     \
+#define LOG_MAGENTA(level, x)                       \
   LOG_COLOR(level, epee::console_colors::magenta,x)
 
-#define LOG_CYAN(level, x)                                      \
+#define LOG_CYAN(level, x)                        \
   LOG_COLOR(level, epee::console_colors::cyan,x)
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)

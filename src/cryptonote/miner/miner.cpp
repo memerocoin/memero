@@ -438,7 +438,7 @@ namespace cryptonote
             LOG_CATEGORY_COLOR
               (
                epee::LogLevel::Info
-               , "global"
+               , epee::GLOBAL_CATEGORY
                , epee::green
                , "Found block "
                << get_block_hash(mined_block)
@@ -598,7 +598,7 @@ namespace cryptonote
             LOG_CATEGORY_COLOR
               (
                epee::LogLevel::Info
-               , "global"
+               , epee::GLOBAL_CATEGORY
                , epee::green
                , "Found block "
                << get_block_hash(mined_block)

@@ -981,7 +981,7 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
   LOG_CATEGORY_COLOR
     (
      epee::LogLevel::Info
-     , "global"
+     , epee::GLOBAL_CATEGORY
      , epee::green
      , "REORGANIZE SUCCESS! on height: "
      << split_height
