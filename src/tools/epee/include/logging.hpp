@@ -42,7 +42,7 @@ see: etc/other-licenses/monero/LICENSE
 
 namespace epee
 {
-  const std::string GLOBAL_CATEGORY = "global";
+  constexpr std::string_view GLOBAL_CATEGORY = "global";
 
   enum class LogLevel : unsigned int {
     Fatal,
@@ -57,10 +57,10 @@ namespace epee
 
   void mlog_set_log_level(int level);
   void mlog_set_log(const std::string x);
-  void log_level
+  void log_level_cat
   (
    const epee::LogLevel level
-   , const std::string cat
+   , const std::string_view cat
    , const std::string_view x
    );
 
@@ -79,6 +79,8 @@ namespace epee
   bool is_stdout_a_tty();
   void set_console_color(int color, bool bright);
   void reset_console_color();
+
+} // epee
 
 #define TRY_ENTRY()   try {
 #define CATCH_ENTRY(location, return_val) }                         \
@@ -152,14 +154,12 @@ namespace epee
   LOG_AND_RETURN_UNLESS(epee::LogLevel::Error, expr, fail_ret_val, x)
 
 
-} // epee
-
-#define LOG_CATEGORY_COLOR(level, cat, color, x) do {             \
-    epee::set_console_color(color, false);                        \
-    std::ostringstream stream;                                    \
-    stream << x;                                                  \
-    epee::log_level(level, cat, std::string_view(stream.str()));  \
-    epee::reset_console_color();                                  \
+#define LOG_CATEGORY_COLOR(level, cat, color, x) do {                 \
+    epee::set_console_color(color, false);                            \
+    std::ostringstream stream;                                        \
+    stream << x;                                                      \
+    epee::log_level_cat(level, cat, std::string_view(stream.str()));  \
+    epee::reset_console_color();                                      \
   } while (0)
 
 #define LOG_CATEGORY(level, cat, x) do {        \

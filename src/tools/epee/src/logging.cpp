@@ -64,15 +64,15 @@ namespace epee
       }
   }
 
+  std::atomic<bool> initialized(false);
+  std::atomic<bool> is_a_tty(false);
+
   bool is_stdout_a_tty()
   {
-    static std::atomic<bool> initialized(false);
-    static std::atomic<bool> is_a_tty(false);
-
-    if (!initialized.load(std::memory_order_acquire))
+    if (!initialized)
       {
         is_a_tty = (0 != isatty(fileno(stdout)));
-        initialized.store(true, std::memory_order_release);
+        initialized = true;
       }
 
     return is_a_tty;
@@ -166,7 +166,7 @@ namespace epee
   }
 
   const std::set<std::string> default_cat =
-    {epee::GLOBAL_CATEGORY, "logging", "default"};
+    {std::string(epee::GLOBAL_CATEGORY), "logging", "default"};
 
   std::mutex g_log_mutex;
 
@@ -175,10 +175,11 @@ namespace epee
   void log_level_map
   (
    const epee::LogLevel level
-   , const std::string cat
+   , const std::string_view cat_in
    , const std::string_view x
    )
   {
+    const std::string cat = std::string(cat_in);
     const std::filesystem::path p = cat;
     const std::string base_name = std::string(p.stem());
 
@@ -231,8 +232,8 @@ namespace epee
       break;
     }
 
-    auto now = std::chrono::system_clock::now();
-    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    const auto now = std::chrono::system_clock::now();
+    const auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
     std::lock_guard<std::mutex> guard(g_log_mutex);
     constexpr bool log_time = false;
@@ -250,10 +251,10 @@ namespace epee
     }
   }
 
-  void log_level
+  void log_level_cat
   (
    const epee::LogLevel level
-   , const std::string cat
+   , const std::string_view cat
    , const std::string_view x
    )
   {
@@ -307,7 +308,9 @@ namespace epee
       case epee::LogLevel::Verbose:
         break;
       default:
-        if (default_cat.find(cat) == default_cat.end()) return;
+        if (default_cat.find(std::string(cat)) == default_cat.end()) {
+          return;
+        }
         log_level_map(level, cat, x);
         break;
       }
