@@ -435,9 +435,11 @@ namespace cryptonote
           {
             block mined_block = b;
             mined_block.nonce = nonce;
-            LOG_GREEN
+            LOG_CATEGORY_COLOR
               (
-               epee::LogLevel::Global
+               epee::LogLevel::Info
+               , "global"
+               , epee::green
                , "Found block "
                << get_block_hash(mined_block)
                << " for difficulty: "
@@ -593,9 +595,11 @@ namespace cryptonote
           {
             block mined_block = b;
             mined_block.nonce = r.nonce;
-            LOG_GREEN
+            LOG_CATEGORY_COLOR
               (
-               epee::LogLevel::Global
+               epee::LogLevel::Info
+               , "global"
+               , epee::green
                , "Found block "
                << get_block_hash(mined_block)
                << " for difficulty: "

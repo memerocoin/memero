@@ -143,7 +143,13 @@ namespace nodetool
       if (now >= it->second)
       {
         m_blocked_hosts.erase(it);
-        LOG_CYAN(epee::LogLevel::Global, "Host " << address.host_str() << " unblocked.");
+        LOG_CATEGORY_COLOR
+          (
+           epee::LogLevel::Info
+           , "global"
+           , epee::cyan
+           , "Host " << address.host_str() << " unblocked."
+           );
         it = m_blocked_hosts.end();
       }
       else
@@ -164,7 +170,13 @@ namespace nodetool
         if (now >= it->second)
         {
           it = m_blocked_subnets.erase(it);
-          LOG_CYAN(epee::LogLevel::Global, "Subnet " << it->first.host_str() << " unblocked.");
+          LOG_CATEGORY_COLOR
+            (
+             epee::LogLevel::Info
+             , "global"
+             , epee::cyan
+             , "Subnet " << it->first.host_str() << " unblocked."
+             );
           continue;
         }
         if (it->first.matches(ipv4_address))
@@ -225,7 +237,13 @@ namespace nodetool
       conns.clear();
     }
 
-    LOG_CYAN(epee::LogLevel::Global, "Host " << host_str << " blocked.");
+    LOG_CATEGORY_COLOR
+      (
+       epee::LogLevel::Info
+       , "global"
+       , epee::cyan
+       , "Host " << host_str << " blocked."
+       );
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -237,7 +255,13 @@ namespace nodetool
     if (i == m_blocked_hosts.end())
       return false;
     m_blocked_hosts.erase(i);
-    LOG_CYAN(epee::LogLevel::Global, "Host " << address.host_str() << " unblocked.");
+    LOG_CATEGORY_COLOR
+      (
+       epee::LogLevel::Info
+       , "global"
+       , epee::cyan
+       , "Host " << address.host_str() << " unblocked."
+       );
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -277,7 +301,13 @@ namespace nodetool
       conns.clear();
     }
 
-    LOG_CYAN(epee::LogLevel::Global, "Subnet " << subnet.host_str() << " blocked.");
+    LOG_CATEGORY_COLOR
+      (
+       epee::LogLevel::Info
+       , "global"
+       , epee::cyan
+       , "Subnet " << subnet.host_str() << " blocked."
+       );
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -289,7 +319,12 @@ namespace nodetool
     if (i == m_blocked_subnets.end())
       return false;
     m_blocked_subnets.erase(i);
-    LOG_CYAN(epee::LogLevel::Global, "Subnet " << subnet.host_str() << " unblocked.");
+    LOG_CATEGORY_COLOR
+      (
+       epee::LogLevel::Info
+       , "global"
+       , epee::cyan
+       , "Subnet " << subnet.host_str() << " unblocked.");
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -1605,7 +1640,12 @@ namespace nodetool
       {
         {
           const epee::LogLevel level = epee::LogLevel::Warning;
-          LOG_RED(level, "No incoming connections - check firewalls/routers allow port " << get_this_peer_port());
+          LOG_CATEGORY_COLOR
+            (
+             level
+             , "Debug"
+             , epee::red
+             , "No incoming connections - check firewalls/routers allow port " << get_this_peer_port());
         }
       }
     }

@@ -878,10 +878,12 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       total_received_2 += i.second;
     if (total_received_1 != total_received_2)
     {
-      const epee::LogLevel level = epee::LogLevel::Global;
-      LOG_RED
+      const epee::LogLevel level = epee::LogLevel::Warning;
+      LOG_CATEGORY_COLOR
         (
          level
+         , "global"
+         , epee::red
          , "**********************************************************************"
          << "Consistency failure in amounts received"
          << "Check transaction " << txid

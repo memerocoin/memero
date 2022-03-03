@@ -1426,9 +1426,11 @@ namespace cryptonote
 
             // if (ELPP->vRegistry()->allowed(epee::LogLevel::Debug, "sync-info"))
             //   timing_message += std::string(": ") + m_block_queue.get_overview(current_blockchain_height);
-            LOG_YELLOW
+            LOG_CATEGORY_COLOR
               (
-               epee::LogLevel::Global
+               epee::LogLevel::Info
+               , "global"
+               , epee::yellow
                , "Synced "
                << current_blockchain_height
                << "/"
@@ -1903,7 +1905,13 @@ skip:
       {
         if (m_core.get_current_blockchain_height() >= m_core.get_target_blockchain_height())
         {
-          LOG_GREEN(epee::LogLevel::Global, "SYNCHRONIZED OK");
+          LOG_CATEGORY_COLOR
+            (
+             epee::LogLevel::Info
+             , "global"
+             , epee::green
+             , "SYNCHRONIZED OK"
+             );
           on_connection_synchronized();
         }
       }
@@ -1921,11 +1929,12 @@ skip:
     bool val_expected = false;
     if(m_synchronized.compare_exchange_strong(val_expected, true))
     {
-      LOG_YELLOW
+      LOG_CATEGORY_COLOR
         (
-         epee::LogLevel::Global
-         ,
-         std::endl << "**********************************************************************" << std::endl
+         epee::LogLevel::Info
+         , "global"
+         , epee::yellow
+         , std::endl << "**********************************************************************" << std::endl
         << "You are now synchronized with the network. You may now start lolnero." << std::endl
         << std::endl
         << "Use the \"help\" command to see the list of available commands." << std::endl

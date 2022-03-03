@@ -187,7 +187,7 @@ namespace epee
   LOG_CATEGORY(level, DEFAULT_LOG_CATEGORY, x)
 
 #define LOG_GLOBAL(x)                           \
-  LOG_DEFAULT(epee::LogLevel::Global, x)
+  LOG_CATEGORY(epee::LogLevel::Info, "global", x)
 
 #define LOG_FATAL(x) LOG_DEFAULT(epee::LogLevel::Fatal, x)
 #define LOG_ERROR(x) LOG_DEFAULT(epee::LogLevel::Error, x)

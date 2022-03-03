@@ -1117,8 +1117,14 @@ namespace cryptonote
     uint64_t free_space = get_free_space();
     if (free_space < 1ull * 1024 * 1024 * 1024) // 1 GB
     {
-      const epee::LogLevel level = epee::LogLevel::Global;
-      LOG_RED(level, "Free space is below 1 GB on " << m_config_folder);
+      const epee::LogLevel level = epee::LogLevel::Warning;
+      LOG_CATEGORY_COLOR
+        (
+         level
+         , "global"
+         , epee::red
+         , "Free space is below 1 GB on " << m_config_folder
+         );
     }
     return true;
   }
