@@ -208,7 +208,6 @@ namespace cryptonote
 
     std::unique_ptr<tools::wallet2> m_wallet;
 
-    std::atomic<bool> m_in_manual_refresh;
     uint32_t m_current_subaddress_account;
 
     std::atomic<bool> m_in_command;

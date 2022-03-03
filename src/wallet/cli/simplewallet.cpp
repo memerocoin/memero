@@ -417,8 +417,8 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
 }
 
 simple_wallet::simple_wallet()
-  : m_in_manual_refresh(false)
-  , m_current_subaddress_account(0)
+  : 
+  m_current_subaddress_account(0)
   , m_in_command(false)
 {
   m_cmd_binder.set_handler("start-mining",
@@ -1148,14 +1148,6 @@ void simple_wallet::on_skip_transaction(uint64_t height, const crypto::hash &txi
 //----------------------------------------------------------------------------------------------------
 std::optional<epee::wipeable_string> simple_wallet::on_get_password(const char *reason)
 {
-  // can't ask for password from a background thread
-  if (!m_in_manual_refresh)
-  {
-    message_writer(epee::console_color_red, false) << boost::format(tr("Password needed (%s) - use the refresh command")) % reason;
-    m_cmd_binder.print_prompt();
-    return std::nullopt;
-  }
-
   std::string msg = ("Enter password");
   if (reason && *reason)
     msg += std::string(" (") + reason + ")";
@@ -1198,8 +1190,6 @@ bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bo
   std::ostringstream ss;
   try
   {
-    m_in_manual_refresh = true;
-    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){m_in_manual_refresh = false;});
     m_wallet->refresh(start_height, fetched_blocks, received_money);
 
     ok = true;
@@ -1972,9 +1962,6 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
   if (pool) {
     try
     {
-      m_in_manual_refresh = true;
-      epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){m_in_manual_refresh = false;});
-
       std::vector<std::tuple<cryptonote::transaction, crypto::hash, bool>> process_txs;
       m_wallet->update_pool_state(process_txs);
       if (!process_txs.empty())
@@ -2130,8 +2117,6 @@ bool simple_wallet::rescan_blockchain(const std::vector<std::string> &args_)
     }
   }
 
-  m_in_manual_refresh = true;
-  epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){m_in_manual_refresh = false;});
   return refresh_main(0, reset_type, true);
 }
 //----------------------------------------------------------------------------------------------------
@@ -2547,14 +2532,8 @@ bool simple_wallet::process_command(const std::vector<std::string> &args)
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::interrupt()
 {
-  if (m_in_manual_refresh)
-  {
-    m_wallet->stop();
-  }
-  else
-  {
-    stop();
-  }
+  m_wallet->stop();
+  stop();
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, bool do_not_relay)
