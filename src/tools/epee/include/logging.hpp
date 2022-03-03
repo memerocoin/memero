@@ -45,7 +45,6 @@ namespace epee
   const std::string GLOBAL_CATEGORY = "global";
 
   enum class LogLevel : unsigned int {
-    Global,
     Fatal,
     Error,
     Warning,
