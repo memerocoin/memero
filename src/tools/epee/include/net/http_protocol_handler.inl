@@ -438,7 +438,14 @@ namespace net_utils
 		m_config.m_lock.unlock();
 		if(!file_io_utils::load_file_to_string(destination_file_path.c_str(), response.m_body))
 		{
-			LOG_WARNING("URI \""<< query_info.m_full_request_str.substr(0, query_info.m_full_request_str.size()-2) << "\" [" << destination_file_path << "] Not Found (404 )");
+			LOG_WARNING_MUTE
+        (
+         "URI \""
+         + query_info.m_full_request_str.substr(0, query_info.m_full_request_str.size()-2)
+         + "\" ["
+         + destination_file_path
+         + "] Not Found (404 )"
+         );
 			response.m_body = get_not_found_response_body(query_info.m_URI);
 			response.m_response_code = 404;
 			response.m_response_comment = "Not found";

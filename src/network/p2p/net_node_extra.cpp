@@ -754,7 +754,11 @@ namespace nodetool
 
     if (!tools::create_directories_if_necessary(m_config_folder))
     {
-      LOG_WARNING("Failed to create data directory \"" << m_config_folder);
+      LOG_WARNING
+        (
+         "Failed to create data directory \""
+         + m_config_folder
+         );
       return false;
     }
 
@@ -766,7 +770,7 @@ namespace nodetool
       m_config_folder + "/" + std::string(::config::lol::P2P_NET_DATA_FILENAME);
     if (!m_peerlist_storage.store(state_file_path, active))
     {
-      LOG_WARNING("Failed to save config to file " << state_file_path);
+      LOG_WARNING("Failed to save config to file " + state_file_path);
       return false;
     }
     CATCH_ENTRY_L0("node_server::store", false);
@@ -1457,8 +1461,9 @@ namespace nodetool
           }
           else
           {
-            if (!is_connected_to_at_least_one_seed_node)
+            if (!is_connected_to_at_least_one_seed_node) {
               LOG_WARNING("Failed to connect to any of seed peers, continuing without seeds");
+            }
             break;
           }
         }
@@ -1783,7 +1788,13 @@ namespace nodetool
   {
     if (peerlist.size() > P2P_MAX_PEERS_IN_HANDSHAKE)
     {
-      LOG_WARNING(context << "peer sent " << peerlist.size() << " peers, considered spamming");
+      LOG_WARNING
+        (
+         context.to_str()
+         + "peer sent "
+         + std::to_string(peerlist.size())
+         + " peers, considered spamming"
+         );
       return false;
     }
     std::vector<peerlist_entry> peerlist_ = peerlist;
@@ -1795,7 +1806,11 @@ namespace nodetool
     {
       if(peer.adr.get_zone() != zone)
       {
-        LOG_WARNING(context << " sent peerlist from another zone, dropping");
+        LOG_WARNING
+          (
+           context.to_str()
+           + " sent peerlist from another zone, dropping"
+           );
         return false;
       }
     }
@@ -1844,7 +1859,12 @@ namespace nodetool
       {
         if (zone == m_network_zones.end())
         {
-           LOG_WARNING("Unable to relay all messages, " << epee::net_utils::zone_to_string(c_id.first) << " not available");
+           LOG_WARNING
+             (
+              "Unable to relay all messages, "
+              + std::string(epee::net_utils::zone_to_string(c_id.first))
+              + " not available"
+              );
            return false;
         }
         if (c_id.first <= zone->first)

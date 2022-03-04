@@ -1714,7 +1714,11 @@ skip:
           }
           else
           {
-            LOG_WARNING(context << " we should download it as the downloading peer is unexpectedly not known to us");
+            LOG_WARNING
+              (
+               context.to_str()
+               + " we should download it as the downloading peer is unexpectedly not known to us"
+               );
             return true;
           }
         }
@@ -2370,7 +2374,7 @@ skip:
 
   void t_cryptonote_protocol_handler::drop_connections(const epee::net_utils::network_address address)
   {
-    LOG_WARNING("dropping connections to " << address.str());
+    LOG_WARNING("dropping connections to " + address.str());
 
     m_p2p->add_host_fail(address, 5);
 

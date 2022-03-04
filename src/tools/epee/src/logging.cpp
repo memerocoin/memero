@@ -362,3 +362,7 @@ void LOG_VERBOSE(const std::string_view x) {
 void LOG_FATAL(const std::string_view x) {
   LOG_DEFAULT(epee::LogLevel::Fatal, x);
 }
+
+void LOG_WARNING(const std::string_view x) {
+  LOG_DEFAULT(epee::LogLevel::Warning, x);
+}

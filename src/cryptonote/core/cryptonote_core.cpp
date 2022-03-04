@@ -214,7 +214,11 @@ namespace cryptonote
       const std::filesystem::path old_files = folder;
       if (std::filesystem::exists(old_files / "blockchain.bin"))
       {
-        LOG_WARNING("Found old-style blockchain.bin in " << old_files.string());
+        LOG_WARNING
+          (
+           "Found old-style blockchain.bin in "
+           + old_files.string()
+           );
         LOG_WARNING("Lolnero now uses a new format. You can either remove blockchain.bin to start syncing");
         LOG_WARNING("the blockchain anew, or use lolnero-blockchain-export and lolnero-blockchain-import to");
         LOG_WARNING("convert your existing blockchain.bin to the new format. See README.md for instructions.");
@@ -936,7 +940,12 @@ namespace cryptonote
     }
 
     if (((size_t)-1) <= 0xffffffff && block_blob.size() >= 0x3fffffff)
-      LOG_WARNING("This block's size is " << block_blob.size() << ", closing on the 32 bit limit");
+      LOG_WARNING
+        (
+         "This block's size is "
+         + std::to_string(block_blob.size())
+         + ", closing on the 32 bit limit"
+         );
 
     if (!b)
     {

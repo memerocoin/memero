@@ -302,7 +302,13 @@ namespace nodetool
           case epee::net_utils::zone::i2p:
             return false;
           default:
-            LOG_WARNING("Filtered command (#" << command << ") to/from " << address.str());
+            LOG_WARNING
+              (
+               "Filtered command (#"
+               + std::to_string(command)
+               + ") to/from "
+               + address.str()
+               );
             return true;
         }
     }

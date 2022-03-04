@@ -423,9 +423,15 @@ public:
     // flipped to subtraction; prevent overflow since m_max_packet_size is variable and public
     if(cb > max_packet_size - m_cache_in_buffer.size() - m_fragment_buffer.size())
     {
-      LOG_WARNING(m_connection_context << "Maximum packet size exceed!, m_max_packet_size = " << max_packet_size
-                          << ", packet received " << m_cache_in_buffer.size() +  cb
-                          << ", connection will be closed.");
+      LOG_WARNING
+        (
+         m_connection_context.to_str()
+         + "Maximum packet size exceed!, m_max_packet_size = "
+         + std::to_string(max_packet_size)
+         + ", packet received "
+         + std::to_string(m_cache_in_buffer.size() + cb)
+         + ", connection will be closed."
+         );
       return false;
     }
 
@@ -569,7 +575,11 @@ public:
           {
             if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)m_cache_in_buffer.span(8).data()) != SWAP64LE(constant::LEVIN_SIGNATURE))
             {
-              LOG_WARNING(m_connection_context << "Signature mismatch, connection will be closed");
+              LOG_WARNING
+                (
+                 m_connection_context.to_str()
+                 + "Signature mismatch, connection will be closed"
+                 );
               return false;
             }
             is_continue = false;
@@ -720,7 +730,13 @@ public:
       }
       if(misc_utils::get_tick_count() - ticks_start > m_config.m_invoke_timeout)
       {
-        LOG_WARNING(m_connection_context << "invoke timeout (" << m_config.m_invoke_timeout << "), closing connection ");
+        LOG_WARNING
+          (
+           m_connection_context.to_str()
+           + "invoke timeout ("
+           + std::to_string(m_config.m_invoke_timeout)
+           + "), closing connection "
+           );
         close();
         return LEVIN_ERROR_CONNECTION_TIMEDOUT;
       }

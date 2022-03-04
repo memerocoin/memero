@@ -625,7 +625,7 @@ namespace net_utils
     const auto tms = ms.count();
     if (tms < 0)
     {
-      LOG_WARNING("Ignoring negative timeout " << tms);
+      LOG_WARNING("Ignoring negative timeout " + std::to_string(tms));
       return;
     }
     LOG_TRACE("Setting" + std::string(" ") + std::to_string(tms) + " expiry");
@@ -1197,7 +1197,7 @@ namespace net_utils
     }
     else
     {
-	LOG_WARNING(out << " was not added, socket/io_service mismatch");
+      LOG_WARNING(out.to_str() + " was not added, socket/io_service mismatch");
     }
     return false;
   }

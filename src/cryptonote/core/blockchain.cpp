@@ -1096,9 +1096,9 @@ std::optional<coinbase_tx> Blockchain::prevalidate_miner_transaction(const block
     LOG_WARNING
       (
        "The miner transaction in block has invalid height: "
-       << coinbase_tx.height
-       << ", expected: "
-       << height
+       + std::to_string(coinbase_tx.height)
+       + ", expected: "
+       + std::to_string(height)
        );
 
     return {};
@@ -1987,7 +1987,11 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
     }
     catch (const std::exception& e)
     {
-      LOG_WARNING("Non-critical error trying to find block by hash in BlockchainDB, hash: " << *bl_it);
+      LOG_WARNING
+        (
+         "Non-critical error trying to find block by hash in BlockchainDB, hash: "
+         + bl_it->to_str()
+         );
       return false;
     }
   }

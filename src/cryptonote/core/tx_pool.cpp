@@ -655,7 +655,8 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          LOG_WARNING("Failed to remove stuck transaction: " << txid);
+          LOG_WARNING
+            ("Failed to remove stuck transaction: " + txid.to_str());
           // ignore error
         }
       }
@@ -1481,7 +1482,8 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          LOG_WARNING("Failed to remove corrupt transaction: " << txid);
+          LOG_WARNING
+            ("Failed to remove corrupt transaction: " + txid.to_str());
           // ignore error
         }
       }

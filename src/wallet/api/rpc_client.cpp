@@ -483,12 +483,26 @@ bool RPC_Client::tx_add_fake_output
   // check the keys are valid
   if (!crypto::is_safe_point(output_public_key))
   {
-    LOG_WARNING("Key " << output_public_key << " at index " << global_index << " is not in the main subgroup");
+    LOG_WARNING
+      (
+       "Key "
+       + output_public_key.to_str()
+       + " at index "
+       + std::to_string(global_index)
+       + " is not in the main subgroup"
+       );
     return false;
   }
   if (!crypto::is_safe_point(mask))
   {
-    LOG_WARNING("Commitment " << mask << " at index " << global_index << " is not in the main subgroup");
+    LOG_WARNING
+      (
+       "Commitment "
+       + mask.to_str()
+       + " at index "
+       + std::to_string(global_index)
+       + " is not in the main subgroup"
+       );
     return false;
   }
   outs.back().push_back(item);
