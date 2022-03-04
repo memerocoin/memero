@@ -52,6 +52,12 @@ namespace epee
       return {out.begin(), out.end()};
     }
 
+    std::string encode_to_hex_formatted
+    (const std::span<const std::uint8_t> src)
+    {
+      return "<" + encode_to_hex(src) + ">";
+    }
+
     void encode_to_hex_stream
     (std::ostream& out, const std::span<const std::uint8_t> src)
     {
@@ -61,9 +67,7 @@ namespace epee
     void encode_to_hex_stream_formatted
     (std::ostream& out, const std::span<const std::uint8_t> src)
     {
-      out.put('<');
-      encode_to_hex_stream(out, src);
-      out.put('>');
+      out << encode_to_hex_formatted(src);
     }
 
     bool decode_from_hex_unchecked

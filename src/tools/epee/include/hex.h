@@ -38,6 +38,8 @@ namespace epee
 namespace hex
 {
   std::string encode_to_hex(const std::span<const std::uint8_t> src);
+  std::string encode_to_hex_formatted
+  (const std::span<const std::uint8_t> src);
 
   //! Append `src` as hex to `out`.
   void encode_to_hex_stream

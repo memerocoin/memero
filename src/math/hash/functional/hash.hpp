@@ -50,7 +50,12 @@ namespace crypto {
     inline epee::blob::data blob() const {
       return epee::blob::data(data.begin(), data.end());
     }
+
+    inline std::string to_str() const {
+      return epee::hex::encode_to_hex_formatted(data);
+    }
   };
+
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
     epee::hex::encode_to_hex_stream_formatted(o, v.data); return o;
   }
