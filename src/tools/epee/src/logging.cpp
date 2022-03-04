@@ -308,6 +308,16 @@ namespace epee
 
 } // epee
 
+void LOG_ERROR_AND_THROW
+(
+ const std::string_view x
+ )
+{
+  LOG_AND_THROW(epee::LogLevel::Error, x);
+}
+
+
+
 void LOG_ERROR_AND_THROW_IF
 (
  const bool expr

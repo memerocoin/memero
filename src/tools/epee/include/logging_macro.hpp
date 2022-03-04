@@ -39,10 +39,6 @@ see: etc/other-licenses/monero/LICENSE
     throw std::runtime_error(ss.str());         \
   } while (0)
 
-#define LOG_ERROR_AND_THROW(x)                  \
-  LOG_AND_THROW(epee::LogLevel::Error, x)
-
-
 #define LOG_AND_RETURN_IF(level, expr, fail_ret_val, x) \
   do {                                                  \
     if(expr) {                                          \

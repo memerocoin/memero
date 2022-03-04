@@ -160,7 +160,11 @@ namespace parse
         val.push_back(*it);
       }
     }
-    LOG_ERROR_AND_THROW("Failed to match string in json entry: " << std::string(star_end_string, buf_end));
+    LOG_ERROR_AND_THROW
+      (
+       "Failed to match string in json entry: "
+       + std::string(star_end_string, buf_end)
+       );
   }
 
   bool match_string(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val)
@@ -207,10 +211,18 @@ namespace parse
           return;
         }
         else
-          LOG_ERROR_AND_THROW("wrong number in json entry: " << std::string(star_end_string, buf_end));
+          LOG_ERROR_AND_THROW
+            (
+             "wrong number in json entry: "
+             + std::string(star_end_string, buf_end)
+             );
       }
     }
-    LOG_ERROR_AND_THROW("wrong number in json entry: " << std::string(star_end_string, buf_end));
+    LOG_ERROR_AND_THROW
+      (
+       "wrong number in json entry: "
+       + std::string(star_end_string, buf_end)
+       );
   }
 
   bool match_number(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
@@ -239,10 +251,18 @@ namespace parse
           star_end_string = --it;
           return;
         }else
-          LOG_ERROR_AND_THROW("failed to match word number in json entry: " << std::string(star_end_string, buf_end));
+          LOG_ERROR_AND_THROW
+            (
+             "failed to match word number in json entry: "
+             + std::string(star_end_string, buf_end)
+             );
       }
     }
-    LOG_ERROR_AND_THROW("failed to match word number in json entry: " << std::string(star_end_string, buf_end));
+    LOG_ERROR_AND_THROW
+      (
+       "failed to match word number in json entry: "
+       + std::string(star_end_string, buf_end)
+       );
   }
 
   bool match_word(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)

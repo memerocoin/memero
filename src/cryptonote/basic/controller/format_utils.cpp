@@ -103,7 +103,11 @@ namespace cryptonote
         default_decimal_point = decimal_point;
         break;
       default:
-        LOG_ERROR_AND_THROW("Invalid decimal point specification: " << decimal_point);
+        LOG_ERROR_AND_THROW
+          (
+           "Invalid decimal point specification: "
+           + std::to_string(decimal_point)
+           );
     }
   }
   //---------------------------------------------------------------
@@ -130,7 +134,12 @@ namespace cryptonote
       case 0:
         return "piconero";
       default:
-        LOG_ERROR_AND_THROW("Invalid decimal point specification: " << decimal_point);
+        LOG_ERROR_AND_THROW
+          (
+           "Invalid decimal point specification: "
+           + std::to_string(decimal_point)
+           );
+        return "";
     }
   }
   //---------------------------------------------------------------

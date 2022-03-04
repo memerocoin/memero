@@ -158,7 +158,10 @@ namespace epee
               {
                 stg.set_value(name, false, current_section);
                 state = match_state_wonder_after_value;
-              }else LOG_ERROR_AND_THROW("Unknown value keyword " << word);
+              }else {
+                LOG_ERROR_AND_THROW
+                  ("Unknown value keyword " + std::string(word));
+              }
             }else if(*it == '{')
             {
               //sub section here
@@ -263,7 +266,10 @@ namespace epee
                 state = match_state_array_after_value;
                 array_md = array_mode_booleans;
 
-              }else LOG_ERROR_AND_THROW("Unknown value keyword " << word);
+              }else {
+                LOG_ERROR_AND_THROW
+                  ("Unknown value keyword " + std::string(word));
+              }
             }else CHECK_ISSPACE();
             break;
           case match_state_array_after_value:
@@ -349,7 +355,10 @@ namespace epee
                   LOG_ERROR_AND_THROW_UNLESS(r, " failed to insert values section entry");
                   state = match_state_array_after_value;
                 }
-                else LOG_ERROR_AND_THROW("Unknown value keyword " << word);
+                else {
+                  LOG_ERROR_AND_THROW
+                    ("Unknown value keyword " + std::string(word));
+                }
               }else CHECK_ISSPACE();
               break;
             case array_mode_undifined:
