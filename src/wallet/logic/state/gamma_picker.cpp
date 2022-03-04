@@ -81,7 +81,13 @@ namespace state {
     const uint64_t n_rct = rct_offsets[index] - first_rct;
     if (n_rct == 0)
       return std::numeric_limits<uint64_t>::max(); // bad pick
-    LOG_TRACE("Picking 1/" << n_rct << " in block " << index);
+    LOG_TRACE
+      (
+       "Picking 1/"
+       + std::to_string(n_rct)
+       + " in block "
+       + std::to_string(index)
+       );
     return first_rct + crypto::rand_idx(n_rct);
   };
 

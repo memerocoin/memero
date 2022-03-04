@@ -3095,7 +3095,7 @@ bool Blockchain::cleanup_handle_incoming_blocks(bool force_sync)
 {
   bool success = false;
 
-  LOG_TRACE("Blockchain::" << __func__);
+  LOG_TRACE("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   try
@@ -3201,7 +3201,7 @@ bool Blockchain::has_block_weights(uint64_t height, uint64_t nblocks) const
 //    keys.
 bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_complete_entry> blocks_entry, std::vector<block> &blocks)
 {
-  LOG_TRACE("Blockchain::" << __func__);
+  LOG_TRACE("Blockchain::" + std::string(__func__));
   bool stop_batch;
   uint64_t bytes = 0;
   size_t total_txs = 0;

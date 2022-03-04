@@ -519,9 +519,21 @@ namespace net_utils
     static std::map<std::string, unsigned int> hosts;
     unsigned int &val = hosts[host];
     if (delta > 0)
-      LOG_TRACE("New connection from host " << host << ": " << val);
+      LOG_TRACE
+      (
+      "New connection from host "
+      + host
+      + ": "
+      + std::to_string(val)
+      );
     else if (delta < 0)
-      LOG_TRACE("Closed connection from host " << host << ": " << val);
+      LOG_TRACE
+      (
+      "Closed connection from host "
+      + host
+      + ": "
+      + std::to_string(val)
+      );
     LOG_ERROR_AND_THROW_UNLESS(delta >= 0 || val >= (unsigned)-delta, "Count would go negative");
     LOG_ERROR_AND_THROW_UNLESS(delta <= 0 || val <= std::numeric_limits<unsigned int>::max() - (unsigned)delta, "Count would wrap");
     val += delta;
@@ -537,7 +549,7 @@ namespace net_utils
       LOG_WARNING("Ignoring negative timeout " << tms);
       return;
     }
-    LOG_TRACE("Setting" << " " << tms << " expiry");
+    LOG_TRACE("Setting" + std::string(" ") + std::to_string(tms) + " expiry");
     auto self = safe_shared_from_this();
     if(!self)
     {
@@ -1161,7 +1173,16 @@ namespace net_utils
       {
         //timeout
         sock_.close();
-        _dbg3("Failed to connect to " << adr << ":" << port << ", because of timeout (" << conn_timeout << ")");
+        _dbg3
+        (
+        "Failed to connect to "
+        + adr
+        + ":"
+        + std::to_string(port)
+        + ", because of timeout ("
+        + std::to_string(conn_timeout)
+        + ")"
+        );
         return CONNECT_FAILURE;
       }
     }
@@ -1175,7 +1196,7 @@ namespace net_utils
       return CONNECT_FAILURE;
     }
 
-    _dbg3("Connected success to " << adr << ':' << port);
+    _dbg3("Connected success to " + adr + ':' + std::to_string(port));
 
     return CONNECT_SUCCESS;
 

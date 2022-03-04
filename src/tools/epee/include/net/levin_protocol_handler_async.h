@@ -322,7 +322,7 @@ public:
         ("Failed to wait for operation completion. m_wait_count = " << m_wait_count);
     }
 
-    LOG_TRACE(m_connection_context << "~async_protocol_handler()");
+    LOG_TRACE(m_connection_context.to_str() + "~async_protocol_handler()");
 
     }
     catch (...) { /* ignore */ }
@@ -330,10 +330,14 @@ public:
 
   bool start_outer_call()
   {
-    LOG_TRACE(m_connection_context << "[levin_protocol] -->> start_outer_call");
+    LOG_TRACE
+      (
+       m_connection_context.to_str()
+       + "[levin_protocol] -->> start_outer_call"
+       );
     if(!m_pservice_endpoint->add_ref())
     {
-      LOG_ERROR(m_connection_context << "[levin_protocol] -->> start_outer_call failed");
+      LOG_ERROR(m_connection_context.to_str() + "[levin_protocol] -->> start_outer_call failed");
       return false;
     }
     m_wait_count++;
@@ -341,7 +345,11 @@ public:
   }
   bool finish_outer_call()
   {
-    LOG_TRACE(m_connection_context << "[levin_protocol] <<-- finish_outer_call");
+    LOG_TRACE
+      (
+       m_connection_context.to_str()
+       + "[levin_protocol] <<-- finish_outer_call"
+       );
     m_wait_count--;
     m_pservice_endpoint->release();
     return true;

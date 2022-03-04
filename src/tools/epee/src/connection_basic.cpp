@@ -143,12 +143,24 @@ connection_basic::~connection_basic() noexcept(false) {
 
 void connection_basic::do_send_handler_write(const void* ptr , size_t cb ) {
         // No sleeping here; sleeping is done once and for all in connection<t_protocol_handler>::handle_write
-	LOG_TRACE("handler_write (direct) - before ASIO write, for packet="<<cb<<" B (after sleep)");
+	LOG_TRACE
+    (
+     "handler_write (direct) - before ASIO write, for packet="
+     + std::to_string(cb)
+     + " B (after sleep)"
+     );
 }
 
 void connection_basic::do_send_handler_write_from_queue( const boost::system::error_code& e, size_t cb, int q_len ) {
         // No sleeping here; sleeping is done once and for all in connection<t_protocol_handler>::handle_write
-	LOG_TRACE("handler_write (after write, from queue="<<q_len<<") - before ASIO write, for packet="<<cb<<" B (after sleep)");
+	LOG_TRACE
+    (
+     "handler_write (after write, from queue="
+     + std::to_string(q_len)
+     + ") - before ASIO write, for packet="
+     + std::to_string(cb)
+     + " B (after sleep)"
+     );
 }
 
 void connection_basic::logger_handle_net_read(size_t size) { // network data read

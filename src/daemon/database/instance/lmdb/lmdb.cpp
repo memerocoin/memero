@@ -626,7 +626,12 @@ bool BlockchainLMDB::need_resize(uint64_t threshold_size) const
 void BlockchainLMDB::check_and_resize_for_batch(uint64_t batch_num_blocks, uint64_t batch_bytes)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
-  LOG_TRACE("[" << __func__ << "] " << "checking DB size");
+  LOG_TRACE
+    (
+     "["
+     + std::string(__func__)
+     + "] checking DB size"
+     );
   const uint64_t min_increase_size = 512 * (1 << 20);
   uint64_t threshold_size = 0;
   uint64_t increase_size = 0;

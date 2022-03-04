@@ -92,10 +92,7 @@ namespace epee
 
 } // epee
 
-void LOG_ERROR_AND_THROW
-(
- const std::string_view x
- );
+void LOG_ERROR_AND_THROW(const std::string_view x);
 
 void LOG_ERROR_AND_THROW_IF
 (
@@ -110,3 +107,4 @@ void LOG_ERROR_AND_THROW_UNLESS
  );
 
 
+void LOG_TRACE(const std::string_view x);

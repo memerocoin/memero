@@ -85,7 +85,6 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_INFO(x) LOG_DEFAULT(epee::LogLevel::Info, x)
 #define LOG_VERBOSE(x) LOG_DEFAULT(epee::LogLevel::Verbose, x)
 #define LOG_DEBUG(x) LOG_DEFAULT(epee::LogLevel::Debug, x)
-#define LOG_TRACE(x) LOG_DEFAULT(epee::LogLevel::Trace, x)
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)
@@ -93,7 +92,8 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_PRINT_L3(x) LOG_DEBUG(x)
 #define LOG_PRINT_L4(x) LOG_TRACE(x)
 
-#define _dbg3(x) LOG_TRACE(x)
+#define _dbg3(x)
+// #define _dbg3(x) LOG_TRACE(x)
 #define _dbg2(x) LOG_DEBUG(x)
 #define _dbg1(x) LOG_DEBUG(x)
 #define _info(x) LOG_INFO(x)

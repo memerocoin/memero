@@ -1541,7 +1541,13 @@ skip:
       }
       return true;
     });
-    LOG_TRACE(n_syncing << " syncing, " << n_synced << " synced");
+    LOG_TRACE
+      (
+       std::to_string(n_syncing)
+       + " syncing, "
+       + std::to_string(n_synced)
+       + " synced"
+       );
 
     // if we're at max out peers, and not enough are syncing
     if (n_synced + n_syncing >= m_max_out_peers && n_syncing < P2P_DEFAULT_SYNC_SEARCH_CONNECTIONS_COUNT && last_synced_peer_id != boost::uuids::nil_uuid())

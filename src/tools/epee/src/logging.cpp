@@ -324,11 +324,7 @@ void LOG_AND_THROW
   throw std::runtime_error(std::string(x));
 }
 
-void LOG_ERROR_AND_THROW
-(
- const std::string_view x
- )
-{
+void LOG_ERROR_AND_THROW(const std::string_view x) {
   LOG_AND_THROW(epee::LogLevel::Error, x);
 }
 
@@ -349,4 +345,8 @@ void LOG_ERROR_AND_THROW_UNLESS
  , const std::string_view x
  ) {
   LOG_ERROR_AND_THROW_IF(!(expr), x);
+}
+
+void LOG_TRACE(const std::string_view x) {
+  LOG_DEFAULT(epee::LogLevel::Trace, x);
 }

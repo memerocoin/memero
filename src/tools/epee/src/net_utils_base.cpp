@@ -161,8 +161,15 @@ namespace epee { namespace net_utils
 
   std::ostream& operator<<(std::ostream& os, const connection_context_base& ct)
   {
-    os << "[" << epee::net_utils::print_connection_context_short(ct) << "] ";
+    os << ct.to_str();
     return os;
+  }
+
+  std::string connection_context_base::to_str() const
+  {
+    return "["
+      + epee::net_utils::print_connection_context_short(*this)
+      + "] ";
   }
 }}
 

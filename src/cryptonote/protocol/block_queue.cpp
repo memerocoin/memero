@@ -483,7 +483,17 @@ float block_queue::get_speed(const boost::uuids::uuid &connection_id) const
     return 1.0f; // everything dead ? Can't happen, but let's trap anyway
 
   const float speed = conn_rate / best_rate;
-  LOG_TRACE(" Relative speed for " << connection_id << ": " << speed << " (" << conn_rate << "/" << best_rate);
+  LOG_TRACE
+    (
+     " Relative speed for "
+     + boost::uuids::to_string(connection_id)
+     + ": "
+     + std::to_string(speed)
+     + " ("
+     + std::to_string(conn_rate)
+     + "/"
+     + std::to_string(best_rate)
+     );
   return speed;
 }
 
@@ -508,7 +518,14 @@ float block_queue::get_download_rate(const boost::uuids::uuid &connection_id) co
 
   if (conn_rate < 0)
     conn_rate = 0.0f;
-  LOG_TRACE("Download rate for " << connection_id << ": " << conn_rate << " b/s");
+  LOG_TRACE
+    (
+     "Download rate for "
+     + boost::uuids::to_string(connection_id)
+     + ": "
+     + std::to_string(conn_rate)
+     + " b/s"
+     );
   return conn_rate;
 }
 

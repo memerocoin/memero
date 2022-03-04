@@ -420,6 +420,9 @@ namespace net_utils
       return *this;
     }
 
+
+  std::string to_str() const;
+
   private:
     template<class t_protocol_handler>
     friend class connection;
@@ -462,7 +465,8 @@ namespace net_utils
 #define LOG_WARNING_CC(ct, message) LOG_WARNING(ct << message)
 #define LOG_INFO_CC(ct, message) LOG_INFO(ct << message)
 #define LOG_DEBUG_CC(ct, message) LOG_DEBUG(ct << message)
-#define LOG_TRACE_CC(ct, message) LOG_TRACE(ct << message)
+// #define LOG_TRACE_CC(ct, message) LOG_TRACE(ct + message)
+#define LOG_TRACE_CC(ct, message)
 
 #define LOG_PRINT_CC_L0(ct, message) LOG_PRINT_L0(ct << message)
 #define LOG_PRINT_CC_L1(ct, message) LOG_PRINT_L1(ct << message)
