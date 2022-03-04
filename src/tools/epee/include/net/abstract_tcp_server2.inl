@@ -926,7 +926,7 @@ namespace net_utils
     }
     catch (const std::exception &e)
     {
-      LOG_FATAL("Error starting server: " << e.what());
+      LOG_FATAL("Error starting server: " + std::string(e.what()));
       return false;
     }
     catch (...)

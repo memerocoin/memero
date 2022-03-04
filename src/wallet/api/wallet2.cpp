@@ -304,7 +304,7 @@ bool wallet2::set_daemon(std::string daemon_address)
   }
 
   else {
-    LOG_FATAL("failed to set daemon address: " << daemon_address);
+    LOG_FATAL("failed to set daemon address: " + daemon_address);
     return false;
   }
 }

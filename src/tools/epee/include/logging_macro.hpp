@@ -79,7 +79,6 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_GLOBAL(x)                                           \
   LOG_CATEGORY(epee::LogLevel::Info, epee::GLOBAL_CATEGORY, x)
 
-#define LOG_FATAL(x) LOG_DEFAULT(epee::LogLevel::Fatal, x)
 #define LOG_ERROR(x) LOG_DEFAULT(epee::LogLevel::Error, x)
 #define LOG_WARNING(x) LOG_DEFAULT(epee::LogLevel::Warning, x)
 #define LOG_INFO(x) LOG_DEFAULT(epee::LogLevel::Info, x)

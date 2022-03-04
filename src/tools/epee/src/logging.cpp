@@ -358,3 +358,7 @@ void LOG_DEBUG(const std::string_view x) {
 void LOG_VERBOSE(const std::string_view x) {
   LOG_DEFAULT(epee::LogLevel::Verbose, x);
 }
+
+void LOG_FATAL(const std::string_view x) {
+  LOG_DEFAULT(epee::LogLevel::Fatal, x);
+}

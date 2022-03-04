@@ -53,7 +53,12 @@ namespace crypto {
     ec_point p;
     int r = crypto_core_ed25519_add(p.data.data(), X.data.data(), Y.data.data());
     if (r != 0) {
-      LOG_FATAL("add keys not in main group: " << X << "\n" << Y);
+      LOG_FATAL
+        (
+         "add keys not in main group: "
+         + X.to_str()
+         + "\t"
+         + Y.to_str());
     }
 
     return p;
@@ -67,7 +72,14 @@ namespace crypto {
     ec_point p;
     int r = crypto_core_ed25519_sub(p.data.data(), X.data.data(), Y.data.data());
     if (r != 0) {
-      LOG_FATAL("sub keys not in main group: " << X << "\n" << Y);
+      LOG_FATAL
+        (
+         "sub keys not in main group: "
+         + X.to_str()
+         + "\t"
+         + Y.to_str()
+         );
+
     }
 
     return p;
@@ -88,9 +100,12 @@ namespace crypto {
     if (r != 0) {
       LOG_FATAL
         (
-         "mult point is not on curve: \npoint: " << X
+         "mult point is not on curve: \npoint: "
+         + X.to_str()
          // << "\nscalar" << a
-         << "\nresult: " << x);
+         + "\t result: "
+         + x.to_str()
+         );
     }
 
     return x;

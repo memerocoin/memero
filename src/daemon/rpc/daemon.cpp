@@ -196,7 +196,7 @@ namespace daemonize {
       }
     catch (std::exception const & ex)
       {
-        LOG_FATAL("Uncaught exception! " << ex.what());
+        LOG_FATAL("Uncaught exception! " + std::string(ex.what()));
         return false;
       }
     catch (...)
