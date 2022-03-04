@@ -659,12 +659,24 @@ namespace nodetool
         std::string ipv6_addr = "";
         std::string ipv6_port = "";
         zone.second.m_net_server.set_connection_filter(this);
-        LOG_GLOBAL("Binding P2P (IPv4) on " << zone.second.m_bind_ip << ":" << zone.second.m_port);
+        LOG_GLOBAL
+          (
+           "Binding P2P (IPv4) on "
+           + zone.second.m_bind_ip
+           + ":"
+           + zone.second.m_port
+           );
         if (!zone.second.m_bind_ipv6_address.empty() && m_use_ipv6)
         {
           ipv6_addr = zone.second.m_bind_ipv6_address;
           ipv6_port = zone.second.m_port_ipv6;
-          LOG_GLOBAL("Binding P2P (IPv6) on " << zone.second.m_bind_ipv6_address << ":" << zone.second.m_port_ipv6);
+          LOG_GLOBAL
+            (
+             "Binding P2P (IPv6) on "
+             + zone.second.m_bind_ipv6_address
+             + ":"
+             + zone.second.m_port_ipv6
+             );
         }
         res = zone.second.m_net_server.init_server(zone.second.m_port, zone.second.m_bind_ip, ipv6_port, ipv6_addr, m_use_ipv6, m_require_ipv4);
         LOG_ERROR_AND_RETURN_UNLESS(res, false, "Failed to bind P2P server");

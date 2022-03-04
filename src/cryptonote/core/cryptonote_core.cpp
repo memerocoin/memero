@@ -236,7 +236,12 @@ namespace cryptonote
     }
 
     folder /= db->get_db_name();
-    LOG_GLOBAL("Loading blockchain from folder " << folder.string() << " ...");
+    LOG_GLOBAL
+      (
+       "Loading blockchain from folder "
+       + folder.string()
+       + " ..."
+       );
 
     const std::string filename = folder.string();
     // default to fast:async:1 if overridden

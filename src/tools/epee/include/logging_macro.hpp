@@ -76,9 +76,6 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_DEFAULT(level, x)                   \
   LOG_CATEGORY(level, DEFAULT_LOG_CATEGORY, x)
 
-#define LOG_GLOBAL(x)                                           \
-  LOG_CATEGORY(epee::LogLevel::Info, epee::GLOBAL_CATEGORY, x)
-
 #define LOG_DEBUG_MUTE(x)
 #define LOG_VERBOSE_MUTE(x)
 #define LOG_WARNING_MUTE(x)

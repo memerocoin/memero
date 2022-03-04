@@ -374,3 +374,8 @@ void LOG_INFO(const std::string_view x) {
 void LOG_ERROR(const std::string_view x) {
   LOG_DEFAULT(epee::LogLevel::Error, x);
 }
+
+void LOG_GLOBAL(const std::string_view x) {
+  LOG_CATEGORY(epee::LogLevel::Info, epee::GLOBAL_CATEGORY, x);
+}
+

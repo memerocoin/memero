@@ -476,7 +476,17 @@ void lmdb_resized(MDB_env *env)
   mdb_env_info(env, &mei);
   uint64_t new_mapsize = mei.me_mapsize;
 
-  LOG_GLOBAL("LMDB Mapsize increased." << "  Old: " << old / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
+  LOG_GLOBAL
+    (
+     std::string()
+     + "LMDB Mapsize increased."
+     + "  Old: "
+     + std::to_string(old / (1024 * 1024))
+     + "MiB"
+     + ", New: "
+     + std::to_string(new_mapsize / (1024 * 1024))
+     + "MiB"
+     );
 
   mdb_txn_safe::allow_new_txns();
 }
@@ -576,7 +586,17 @@ void BlockchainLMDB::do_resize(uint64_t increase_size)
   if (result)
     throw0(DB_ERROR(lmdb_error("Failed to set new mapsize: ", result).c_str()));
 
-  LOG_GLOBAL("LMDB Mapsize increased." << "  Old: " << mei.me_mapsize / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
+  LOG_GLOBAL
+    (
+     std::string()
+     + "LMDB Mapsize increased."
+     + "  Old: "
+     + std::to_string(mei.me_mapsize / (1024 * 1024))
+     + "MiB"
+     + ", New: "
+     + std::to_string(new_mapsize / (1024 * 1024))
+     +  "MiB"
+     );
 
   mdb_txn_safe::allow_new_txns();
 }
