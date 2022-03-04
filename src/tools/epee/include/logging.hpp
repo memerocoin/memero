@@ -92,3 +92,16 @@ namespace epee
 
 } // epee
 
+void LOG_ERROR_AND_THROW_IF
+(
+ const bool expr
+ , const std::string_view x
+ );
+
+void LOG_ERROR_AND_THROW_UNLESS
+(
+ const bool expr
+ , const std::string_view x
+ );
+
+

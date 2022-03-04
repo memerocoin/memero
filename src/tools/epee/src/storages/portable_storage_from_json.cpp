@@ -41,7 +41,13 @@ namespace epee
     {
       void run_handler(hsection current_section, std::string::const_iterator& sec_buf_begin, std::string::const_iterator buf_end, portable_storage& stg, unsigned int recursion)
       {
-        LOG_ERROR_AND_THROW_UNLESS(recursion < EPEE_JSON_RECURSION_LIMIT_INTERNAL, "Wrong JSON data: recursion limitation (" << EPEE_JSON_RECURSION_LIMIT_INTERNAL << ") exceeded");
+        LOG_ERROR_AND_THROW_UNLESS
+          (
+           recursion < EPEE_JSON_RECURSION_LIMIT_INTERNAL
+           , std::string("Wrong JSON data: recursion limitation (")
+           + std::to_string(EPEE_JSON_RECURSION_LIMIT_INTERNAL)
+           + ") exceeded"
+           );
 
         std::string name;
         harray h_array = nullptr;
@@ -157,7 +163,12 @@ namespace epee
             {
               //sub section here
               hsection new_sec = stg.open_section(name, current_section, true);
-              LOG_ERROR_AND_THROW_UNLESS(new_sec, "Failed to insert new section in json: " << std::string(it, buf_end));
+              LOG_ERROR_AND_THROW_UNLESS
+                (
+                 new_sec
+                 , "Failed to insert new section in json: "
+                 + std::string(it, buf_end)
+                 );
               run_handler(new_sec, it, buf_end, stg, recursion + 1);
               state = match_state_wonder_after_value;
             }else if(*it == '[')

@@ -238,7 +238,11 @@ namespace rct {
       };
 
     const auto maybeMessage = get_ring_signature_message(dummy_rct_data_for_clsag_message_hash);
-    LOG_ERROR_AND_THROW_UNLESS(maybeMessage, "failed to generate rct message");
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       maybeMessage.has_value()
+       , "failed to generate rct message"
+       );
 
     const crypto::hash full_message = *maybeMessage;
     std::vector<clsag_unsafe> clsags;

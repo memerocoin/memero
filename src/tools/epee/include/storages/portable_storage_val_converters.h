@@ -42,20 +42,56 @@ namespace epee
     void convert_int_to_uint(const from_type& from, to_type& to)
     {
       LOG_ERROR_AND_THROW_UNLESS(from >=0, "unexpected int value with signed storage value less than 0, and unsigned receiver value");
-      LOG_ERROR_AND_THROW_UNLESS(from <= std::numeric_limits<to_type>::max(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
+      LOG_ERROR_AND_THROW_UNLESS
+        (
+         from <= std::numeric_limits<to_type>::max()
+         , "int value overhead: try to set value "
+         + std::to_string(from)
+         + " to type "
+         + std::string(typeid(to_type).name())
+         + " with max possible value = "
+         + std::to_string(std::numeric_limits<to_type>::max())
+         );
       to = static_cast<to_type>(from);
     }
     template<typename from_type, typename to_type>
     void convert_int_to_int(const from_type& from, to_type& to)
     {
-      LOG_ERROR_AND_THROW_UNLESS(from >= std::numeric_limits<to_type>::min(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with lowest possible value = " << std::numeric_limits<to_type>::min());
-      LOG_ERROR_AND_THROW_UNLESS(from <= std::numeric_limits<to_type>::max(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
+      LOG_ERROR_AND_THROW_UNLESS
+        (
+         from >= std::numeric_limits<to_type>::min()
+         , "int value overhead: try to set value "
+         + std::to_string(from)
+         + " to type "
+         + std::string(typeid(to_type).name())
+         + " with lowest possible value = "
+         + std::to_string(std::numeric_limits<to_type>::min())
+         );
+      LOG_ERROR_AND_THROW_UNLESS
+        (
+         from <= std::numeric_limits<to_type>::max()
+         , "int value overhead: try to set value "
+         + std::to_string(from)
+         + " to type "
+         + std::string(typeid(to_type).name())
+         + " with max possible value = "
+         + std::to_string(std::numeric_limits<to_type>::max())
+         );
       to = static_cast<to_type>(from);
     }
     template<typename from_type, typename to_type>
     void convert_uint_to_any_int(const from_type& from, to_type& to)
     {
-        LOG_ERROR_AND_THROW_UNLESS(from <= std::numeric_limits<to_type>::max(), "uint value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
+      LOG_ERROR_AND_THROW_UNLESS
+        (
+         from <= std::numeric_limits<to_type>::max()
+         , "uint value overhead: try to set value " 
+         + std::to_string(from)
+         + " to type "
+         + std::string(typeid(to_type).name())
+         + " with max possible value = "
+         + std::to_string(std::numeric_limits<to_type>::max())
+         );
       to = static_cast<to_type>(from);
     }
 

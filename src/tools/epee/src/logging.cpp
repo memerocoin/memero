@@ -307,3 +307,22 @@ namespace epee
   }
 
 } // epee
+
+void LOG_ERROR_AND_THROW_IF
+(
+ const bool expr
+ , const std::string_view x
+ )
+{
+  if(expr) {
+    LOG_ERROR_AND_THROW(x);
+  }
+}
+
+void LOG_ERROR_AND_THROW_UNLESS
+(
+ const bool expr
+ , const std::string_view x
+ ) {
+  LOG_ERROR_AND_THROW_IF(!(expr), x);
+}

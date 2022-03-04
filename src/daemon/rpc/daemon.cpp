@@ -44,10 +44,10 @@ namespace daemonize {
   constexpr std::string_view p2p_str = "P2P";
   constexpr std::string_view rpc_str = "RPC";
 
-  constexpr std::string_view rpc_description =
+  const std::string rpc_description =
     "Lolnero daemon RPC server";
 
-  constexpr std::string_view p2p_description =
+  const std::string p2p_description =
     "Lolnero daemon P2P server";
 
   void deinit_msg(const std::string_view x) {
@@ -112,7 +112,8 @@ namespace daemonize {
     LOG_ERROR_AND_THROW_UNLESS
       (
        r
-       , "Failed to initialize " << x
+       , "Failed to initialize "
+       + std::string(x)
        );
 
     init_done_msg(x);
@@ -164,7 +165,7 @@ namespace daemonize {
           (
            rpc.run(2, false)
            , "Failed to start "
-           << rpc_description
+           + rpc_description
            );
 
         LOG_INFO(rpc_description << " started");

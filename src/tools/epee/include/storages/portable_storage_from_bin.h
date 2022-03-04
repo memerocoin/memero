@@ -90,7 +90,13 @@ namespace epee
         recursuion_limitation_guard(size_t& counter):m_counter_ref(counter)
         {
           ++m_counter_ref;
-          LOG_ERROR_AND_THROW_UNLESS(m_counter_ref < EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL, "Wrong blob data in portable storage: recursion limitation (" << EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL << ") exceeded");
+          LOG_ERROR_AND_THROW_UNLESS
+            (
+             m_counter_ref < EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL
+             , std::string("Wrong blob data in portable storage: recursion limitation (")
+             + std::to_string(EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL)
+             + ") exceeded"
+             );
         }
         ~recursuion_limitation_guard() noexcept(false)
         {

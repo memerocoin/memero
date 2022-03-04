@@ -514,7 +514,8 @@ size_t wallet2::get_transfer_details(const crypto::key_image &ki) const
     if (td.m_output_key_image_known && td.m_output_key_image == ki)
       return idx;
   }
-  LOG_ERROR_AND_THROW_UNLESS(false, "Key image not found");
+  LOG_ERROR_AND_THROW("Key image not found");
+  return 0;
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
