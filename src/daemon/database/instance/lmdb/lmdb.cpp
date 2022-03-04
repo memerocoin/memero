@@ -1278,10 +1278,23 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
   if (std::filesystem::exists(old_files / std::string(config::lol::BLOCKCHAIN_DATABASE_FILENAME))
       || std::filesystem::exists(old_files / std::string(config::lol::BLOCKCHAIN_DATABASE_LOCK_FILENAME)))
   {
-    LOG_PRINT_L0("Found existing LMDB files in " << old_files.string());
-    LOG_PRINT_L0("Move " << config::lol::BLOCKCHAIN_DATABASE_FILENAME
-                 << " and/or " << config::lol::BLOCKCHAIN_DATABASE_LOCK_FILENAME
-                 << " to " << filename << ", or delete them, and then restart");
+    LOG_PRINT_L0
+      (
+       "Found existing LMDB files in "
+       + old_files.string()
+       );
+
+    LOG_PRINT_L0
+      (
+       "Move "
+       + std::string(config::lol::BLOCKCHAIN_DATABASE_FILENAME)
+       + " and/or "
+       + std::string(config::lol::BLOCKCHAIN_DATABASE_LOCK_FILENAME)
+       + " to "
+       + filename
+       + ", or delete them, and then restart"
+       );
+
     throw DB_ERROR("Database could not be opened");
   }
 

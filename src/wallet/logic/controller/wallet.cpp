@@ -146,10 +146,17 @@ namespace wallet {
          indexes += std::to_string(s_e.first) + " ";
        }
        );
-    LOG_PRINT_L0("amount=" << cryptonote::print_money(src.amount)
-                 << ", real_output=" <<src.real_output
-                 << ", real_output_in_tx_index=" << src.real_output_in_tx_index
-                 << ", indexes: " << indexes);
+    LOG_PRINT_L0
+      (
+       "amount="
+       + cryptonote::print_money(src.amount)
+       + ", real_output="
+       + std::to_string(src.real_output)
+       + ", real_output_in_tx_index="
+       + std::to_string(src.real_output_in_tx_index)
+       +  ", indexes: "
+       + indexes
+       );
   }
 
   /*!

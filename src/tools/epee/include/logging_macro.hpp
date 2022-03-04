@@ -86,8 +86,6 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_VERBOSE_MUTE(x)
 #define LOG_WARNING_MUTE(x)
 
-// #define LOG_PRINT_L0(x) LOG_WARNING(x)
-#define LOG_PRINT_L0(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)
 
 #define _info(x) LOG_INFO(x)

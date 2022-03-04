@@ -797,7 +797,13 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             THROW_WALLET_EXCEPTION_IF(td.get_public_key() != tx_scan_info[o].output_key_pair.pub, error::wallet_internal_error, "Inconsistent public keys");
 	    THROW_WALLET_EXCEPTION_IF(td.m_spent, error::wallet_internal_error, "Inconsistent spent status");
 
-	    LOG_PRINT_L0("Received money: " << print_money(td.amount()) << ", with tx: " << txid);
+	    LOG_PRINT_L0
+        (
+         "Received money: "
+         + print_money(td.amount())
+         + ", with tx: "
+         + txid.to_str()
+         );
 	    if (0 != m_callback)
 	      m_callback->on_money_received(height, txid, tx, td.m_amount, td.m_subaddr_index, spends_one_of_ours(tx), td.m_tx.unlock_height);
           }
@@ -1576,12 +1582,24 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
       }
       else
       {
-        LOG_PRINT_L0("Expected " << txids.size() << " tx(es), got " << res.txs.size());
+        LOG_PRINT_L0
+          (
+           "Expected "
+           + std::to_string(txids.size())
+           + " tx(es), got "
+           + std::to_string(res.txs.size())
+           );
       }
     }
     else
     {
-      LOG_PRINT_L0("Error calling gettransactions daemon RPC: r " << r << ", status " << (res.status));
+      LOG_PRINT_L0
+        (
+         "Error calling gettransactions daemon RPC: r "
+         + std::to_string(r)
+         + ", status "
+         + res.status
+         );
     }
   }
   LOG_TRACE("update_pool_state end");
@@ -1856,7 +1874,7 @@ bool wallet2::refresh(uint64_t & blocks_fetched, bool& received_money, bool& ok)
 //----------------------------------------------------------------------------------------------------
 void wallet2::detach_blockchain(uint64_t height)
 {
-  LOG_PRINT_L0("Detaching blockchain on height " << height);
+  LOG_PRINT_L0("Detaching blockchain on height " + std::to_string(height));
 
   // size  1 2 3 4 5 6 7 8 9
   // block 0 1 2 3 4 5 6 7 8
@@ -1922,7 +1940,15 @@ void wallet2::detach_blockchain(uint64_t height)
       ++it;
   }
 
-  LOG_PRINT_L0("Detached blockchain on height " << height << ", transfers detached " << transfers_detached << ", blocks detached " << blocks_detached);
+  LOG_PRINT_L0
+    (
+     "Detached blockchain on height "
+     + std::to_string(height)
+     + ", transfers detached "
+     + std::to_string(transfers_detached)
+     + ", blocks detached "
+     + std::to_string(blocks_detached)
+     );
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::deinit()
@@ -2515,7 +2541,11 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
     {
       THROW_WALLET_EXCEPTION_IF(true, error::file_read_error, m_keys_file);
     }
-    LOG_PRINT_L0("Loaded wallet keys file, with public address: " << m_account.get_public_address_str(m_nettype));
+    LOG_PRINT_L0
+      (
+       "Loaded wallet keys file, with public address: "
+       + m_account.get_public_address_str(m_nettype)
+       );
   }
   else if (!load_keys_buf(keys_buf, password))
   {
@@ -2526,7 +2556,12 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
   //try to load wallet file. but even if we failed, it is not big problem
   if (use_fs && (!std::filesystem::exists(m_wallet_file, e) || e))
   {
-    LOG_PRINT_L0("file not found: " << m_wallet_file << ", starting with empty blockchain");
+    LOG_PRINT_L0
+      (
+       "file not found: "
+       + m_wallet_file
+       + ", starting with empty blockchain"
+       );
     m_spend_view_public_keys = m_account.get_keys().m_account_address;
   }
   else if (use_fs || !cache_buf.empty())

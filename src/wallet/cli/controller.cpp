@@ -193,27 +193,30 @@ namespace controller {
     }
     catch (const tools::error::not_enough_unlocked_money& e)
     {
-      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, sent amount %s") %
+      const auto fmt = boost::format("not enough money to transfer, available only %s, sent amount %s") %
         cryptonote::print_money(e.available()) %
-        cryptonote::print_money(e.tx_amount()));
+        cryptonote::print_money(e.tx_amount());
+      LOG_PRINT_L0(fmt.str());
       fail_msg_writer() << ("Not enough money in unlocked balance");
       warn_of_possible_attack = false;
     }
     catch (const tools::error::not_enough_money& e)
     {
-      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, sent amount %s") %
+      const auto fmt = boost::format("not enough money to transfer, available only %s, sent amount %s") %
         cryptonote::print_money(e.available()) %
-        cryptonote::print_money(e.tx_amount()));
+        cryptonote::print_money(e.tx_amount());
+      LOG_PRINT_L0(fmt.str());
       fail_msg_writer() << ("Not enough money in unlocked balance");
       warn_of_possible_attack = false;
     }
     catch (const tools::error::tx_not_possible& e)
     {
-      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, transaction amount %s = %s + %s (fee)") %
+      const auto fmt = boost::format("not enough money to transfer, available only %s, transaction amount %s = %s + %s (fee)") %
         cryptonote::print_money(e.available()) %
         cryptonote::print_money(e.tx_amount() + e.fee())  %
         cryptonote::print_money(e.tx_amount()) %
-        cryptonote::print_money(e.fee()));
+        cryptonote::print_money(e.fee());
+      LOG_PRINT_L0(fmt.str());
       fail_msg_writer() << ("Failed to find a way to create transactions. This is usually due to dust which is so small it cannot pay for itself in fees, or trying to send more money than the unlocked balance, or not leaving enough for fees");
       warn_of_possible_attack = false;
     }

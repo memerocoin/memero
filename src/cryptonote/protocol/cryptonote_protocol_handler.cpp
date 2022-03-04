@@ -203,14 +203,16 @@ namespace cryptonote
 
       return true;
     });
-    ss << std::endl
+    ss
+      << std::endl
+      << std::endl
       << std::setw(125) << " "
       << std::setw(12) << down_sum
       << std::setw(14) << down_curr_sum
       << std::setw(10) << up_sum
       << std::setw(13) << up_curr_sum
       << std::endl;
-    LOG_PRINT_L0("Connections: " << std::endl << ss.str());
+    LOG_PRINT_L0("Connections: " + ss.str());
   }
   //------------------------------------------------------------------------------------------------------------------------
   // Returns a list of connection_info objects describing each open p2p connection

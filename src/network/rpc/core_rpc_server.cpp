@@ -609,7 +609,11 @@ namespace cryptonote
     std::string tx_blob;
     if(!epee::string_tools::parse_hexstr_to_binbuff(req.tx_as_hex, tx_blob))
     {
-      LOG_PRINT_L0("[on_send_raw_tx]: Failed to parse tx from hexbuff: " << req.tx_as_hex);
+      LOG_PRINT_L0
+        (
+         "[on_send_raw_tx]: Failed to parse tx from hexbuff: "
+         + req.tx_as_hex
+         );
       res.status = "Failed";
       return true;
     }
@@ -647,11 +651,21 @@ namespace cryptonote
       const std::string punctuation = reason.empty() ? "" : ": ";
       if (tvc.m_verifivation_failed)
       {
-        LOG_PRINT_L0("[on_send_raw_tx]: tx verification failed" << punctuation << reason);
+        LOG_PRINT_L0
+          (
+           "[on_send_raw_tx]: tx verification failed"
+           + punctuation
+           + reason
+           );
       }
       else
       {
-        LOG_PRINT_L0("[on_send_raw_tx]: Failed to process tx" << punctuation << reason);
+        LOG_PRINT_L0
+          (
+           "[on_send_raw_tx]: Failed to process tx"
+           + punctuation
+           + reason
+           );
       }
       return true;
     }

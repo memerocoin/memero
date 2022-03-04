@@ -144,7 +144,12 @@ namespace parse
           break;
         default:
           val.push_back(*it);
-          LOG_PRINT_L0("Unknown escape sequence :\"\\" << *it << "\"");
+          LOG_PRINT_L0
+            (
+             "Unknown escape sequence :\"\\"
+             + std::string(1, *it)
+             + "\""
+             );
         }
         escape_mode = false;
       }else if(*it == '"')

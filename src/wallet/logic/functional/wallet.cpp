@@ -449,7 +449,12 @@ std::vector<size_t> pick_preferred_rct_inputs
             picks.clear();
             picks.push_back(i);
             picks.push_back(j);
-            LOG_PRINT_L0("we could use " << i << " and " << j);
+            LOG_PRINT_L0
+              (
+               "we could use "
+               + std::to_string(i)
+               + " and "
+               + std::to_string(j));
             if (relatedness == 0.0f)
               return picks;
             current_output_relatdness = relatedness;
