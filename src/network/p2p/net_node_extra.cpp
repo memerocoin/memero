@@ -336,7 +336,13 @@ namespace nodetool
 
     LOCK_RECURSIVE_MUTEX(m_host_fails_score_lock);
     uint64_t fails = m_host_fails_score[address.host_str()] += score;
-    LOG_DEBUG("Host " << address.host_str() << " fail score=" << fails);
+    LOG_DEBUG
+      (
+       "Host "
+       + address.host_str()
+       + " fail score="
+       + std::to_string(fails)
+       );
     if(fails > P2P_IP_FAILS_BEFORE_BLOCK)
     {
       auto it = m_host_fails_score.find(address.host_str());
@@ -643,8 +649,13 @@ namespace nodetool
     }
     }
 
-    if(m_external_port)
-      LOG_DEBUG("External port defined as " << m_external_port);
+    if(m_external_port) {
+      LOG_DEBUG
+        (
+         "External port defined as "
+         + std::to_string(m_external_port)
+         );
+    }
 
     return res;
   }
@@ -1024,9 +1035,16 @@ namespace nodetool
     }
 
 
-    LOG_DEBUG("Connecting to " << na.str() << "(peer_type=" << peer_type << ", last_seen: "
-        << (last_seen_stamp ? epee::misc_utils::get_time_interval_string(time(NULL) - last_seen_stamp):"never")
-        << ")...");
+    LOG_DEBUG_MUTE
+      (
+       "Connecting to "
+       + na.str()
+       + "(peer_type="
+       + std::string(peer_type)
+       + ", last_seen: "
+       + (last_seen_stamp ? epee::misc_utils::get_time_interval_string(time(NULL) - last_seen_stamp):"never")
+       +  ")..."
+       );
 
     auto con = zone.m_connect(zone, na);
     if(!con)
@@ -1055,7 +1073,7 @@ namespace nodetool
     if(just_take_peerlist)
     {
       zone.m_net_server.get_config_object().close(con->m_connection_id);
-      LOG_DEBUG(na.str() << "CONNECTION HANDSHAKED OK AND CLOSED.");
+      LOG_DEBUG(na.str() + "CONNECTION HANDSHAKED OK AND CLOSED.");
       return true;
     }
 
@@ -1113,7 +1131,7 @@ namespace nodetool
 
     zone.m_net_server.get_config_object().close(con->m_connection_id);
 
-    LOG_DEBUG(na.str() << "CONNECTION HANDSHAKED OK AND CLOSED.");
+    LOG_DEBUG(na.str() + "CONNECTION HANDSHAKED OK AND CLOSED.");
 
     return true;
   }
@@ -1161,9 +1179,17 @@ namespace nodetool
         continue;
       }
 
-      LOG_DEBUG("Selected peer: " << peerid_to_string(pe.id) << " " << pe.adr.str()
-                               << "[peer_type=" << anchor
-                               << "] first_seen: " << epee::misc_utils::get_time_interval_string(time(NULL) - pe.first_seen));
+      LOG_DEBUG_MUTE
+        (
+         "Selected peer: "
+         + peerid_to_string(pe.id)
+         + " "
+         + pe.adr.str()
+         + "[peer_type="
+         + anchor
+         + "] first_seen: "
+         + epee::misc_utils::get_time_interval_string(time(NULL) - pe.first_seen)
+         );
 
       if(!try_to_connect_and_handshake_with_new_peer(pe.adr, false, 0, anchor, pe.first_seen)) {
         _note("Handshake failed");
@@ -1282,7 +1308,12 @@ namespace nodetool
         if (skipped == 0 || !filtered.empty())
           break;
         if (skipped)
-          LOG_DEBUG("Skipping " << skipped << " possible peers as they share a class B with existing peers");
+          LOG_DEBUG
+            (
+             "Skipping "
+             + std::to_string(skipped)
+             + " possible peers as they share a class B with existing peers"
+             );
       }
       if (filtered.empty())
       {
@@ -1324,9 +1355,22 @@ namespace nodetool
       if(is_addr_recently_failed(pe.adr))
         continue;
 
-      LOG_DEBUG("Selected peer: " << peerid_to_string(pe.id) << " " << pe.adr.str() << " "
-                    << "[peer_list=" << (use_white_list ? white : gray)
-                    << "] last_seen: " << (pe.last_seen ? epee::misc_utils::get_time_interval_string(time(NULL) - pe.last_seen) : "never"));
+      LOG_DEBUG_MUTE
+        (
+         "Selected peer: "
+         + peerid_to_string(pe.id)
+         + " "
+         + pe.adr.str()
+         + " "
+         + "[peer_list="
+         + (use_white_list ? white : gray)
+         + "] last_seen: "
+         + (
+            pe.last_seen
+            ? epee::misc_utils::get_time_interval_string(time(NULL) - pe.last_seen)
+            : "never"
+            )
+         );
 
       if(!try_to_connect_and_handshake_with_new_peer(pe.adr, false, pe.last_seen, use_white_list ? white : gray)) {
         _note("Handshake failed");
@@ -1350,10 +1394,14 @@ namespace nodetool
         for (const auto& full_addr : get_seed_nodes(zone))
         {
           // seeds should have hostname converted to IP already
-          LOG_DEBUG("Seed node: " << full_addr);
+          LOG_DEBUG("Seed node: " + full_addr);
           server.m_seed_nodes.push_back(TOOLS_EXPECT_UNWRAP(net::get_network_address(full_addr, default_port)));
         }
-        LOG_DEBUG("Number of seed nodes: " << server.m_seed_nodes.size());
+        LOG_DEBUG
+          (
+           "Number of seed nodes: "
+           + std::to_string(server.m_seed_nodes.size())
+           );
       }
 
       if (server.m_seed_nodes.empty() || m_offline || !m_exclusive_peers.empty())
@@ -1383,7 +1431,7 @@ namespace nodetool
             {
               for (const auto &peer: get_ip_seed_nodes())
               {
-                LOG_DEBUG("Fallback seed node: " << peer);
+                LOG_DEBUG_MUTE("Fallback seed node: " + std::to_string(peer));
                 append_net_address(server.m_seed_nodes, peer, cryptonote::get_config(m_nettype).P2P_DEFAULT_PORT);
               }
             }
@@ -1500,7 +1548,16 @@ namespace nodetool
       if(zone.m_net_server.is_stop_signal_sent())
         return false;
 
-      LOG_DEBUG("Making expected connection, type " << peer_type << ", " << conn_count << "/" << expected_connections << " connections");
+      LOG_DEBUG_MUTE
+        (
+         "Making expected connection, type "
+         + peer_type
+         + ", "
+         + std::to_string(conn_count)
+         + "/"
+         + std::to_string(expected_connections)
+         + " connections"
+         );
 
       if (peer_type == anchor && !make_new_connection_from_anchor_peerlist(apl)) {
         return false;
@@ -1697,7 +1754,7 @@ namespace nodetool
       }
       if (ignore)
       {
-        LOG_DEBUG("Ignoring " << be.adr.str());
+        LOG_DEBUG("Ignoring " + be.adr.str());
         std::swap(local_peerlist[i], local_peerlist[local_peerlist.size() - 1]);
         local_peerlist.resize(local_peerlist.size() - 1);
         --i;

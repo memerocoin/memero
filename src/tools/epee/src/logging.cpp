@@ -350,3 +350,7 @@ void LOG_ERROR_AND_THROW_UNLESS
 void LOG_TRACE(const std::string_view x) {
   LOG_DEFAULT(epee::LogLevel::Trace, x);
 }
+
+void LOG_DEBUG(const std::string_view x) {
+  LOG_DEFAULT(epee::LogLevel::Debug, x);
+}

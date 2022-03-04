@@ -70,7 +70,7 @@ namespace epee
       }
 
       LOG_DEBUG("Beast REQ:");
-      LOG_DEBUG(req);
+      // LOG_DEBUG(req);
 
 
       // Send the HTTP request to the remote host
@@ -87,7 +87,7 @@ namespace epee
 
       // Write the message to standard out
       LOG_DEBUG("Beast RESPONSE");
-      LOG_DEBUG(res);
+      // LOG_DEBUG(res);
 
       // Gracefully close the socket
       beast::error_code ec;

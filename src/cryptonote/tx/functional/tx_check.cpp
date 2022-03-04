@@ -78,7 +78,12 @@ bool rct_tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices
 {
   if (n_indices <= 10)
   {
-    LOG_DEBUG("n_indices is only " << n_indices << ", not checking");
+    LOG_DEBUG
+      (
+       "n_indices is only "
+       + std::to_string(n_indices)
+       + ", not checking"
+       );
     return true;
   }
 

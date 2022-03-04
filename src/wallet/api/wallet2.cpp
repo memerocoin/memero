@@ -1092,7 +1092,7 @@ void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, 
 
   req.block_ids = block_ids;
 
-  LOG_DEBUG("Pulling blocks: start_height " << start_height);
+  LOG_DEBUG("Pulling blocks: start_height " + std::to_string(start_height));
 
   req.prune = true;
   req.start_height = start_height;
@@ -1111,8 +1111,17 @@ void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, 
   o_indices = std::move(res.output_indices);
   current_height = res.current_height;
 
-  LOG_DEBUG("Pulled blocks: blocks_start_height " << blocks_start_height << ", count " << blocks.size()
-      << ", height " << blocks_start_height + blocks.size() << ", node height " << res.current_height);
+  LOG_DEBUG
+    (
+     "Pulled blocks: blocks_start_height "
+     + std::to_string(blocks_start_height)
+     + ", count "
+     + std::to_string(blocks.size())
+     + ", height "
+     + std::to_string(blocks_start_height + blocks.size())
+     + ", node height "
+     + std::to_string(res.current_height)
+     );
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::pull_hashes(uint64_t start_height, uint64_t &blocks_start_height, const std::list<crypto::hash> &short_chain_history, std::vector<crypto::hash> &hashes)
@@ -1189,7 +1198,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
     }
     else
     {
-      LOG_DEBUG("Block is already in blockchain: " << epee::string_tools::pod_to_hex(bl_id));
+      LOG_DEBUG("Block is already in blockchain: " + bl_id.to_str());
     }
     ++current_index;
   }
@@ -1297,7 +1306,12 @@ void wallet2::remove_obsolete_pool_txs(const std::vector<crypto::hash> &tx_hashe
     auto pit = uit++;
     if (!found)
     {
-      LOG_DEBUG("Removing " << txid << " from unconfirmed payments, not found in pool");
+      LOG_DEBUG
+        (
+         "Removing "
+         + txid.to_str()
+         + " from unconfirmed payments, not found in pool"
+         );
       m_unconfirmed_payments.erase(pit);
       if (0 != m_callback)
         m_callback->on_pool_tx_removed(txid);
@@ -1461,7 +1475,12 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
     cryptonote::COMMAND_RPC_GET_TRANSACTIONS::response res;
     for (const auto &p: txids)
       req.txs_hashes.push_back(epee::string_tools::pod_to_hex(p.first));
-    LOG_DEBUG("asking for " << txids.size() << " transactions");
+    LOG_DEBUG
+      (
+       "asking for "
+       + std::to_string(txids.size())
+       + " transactions"
+       );
     req.decode_as_json = false;
     req.prune = true;
 
@@ -1470,7 +1489,13 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
       r = m_rpc_client.invoke_http_json("/get_transactions", req, res);
     }
 
-    LOG_DEBUG("Got " << r << " and " << res.status);
+    LOG_DEBUG
+      (
+       "Got "
+       + std::to_string(r)
+       + " and "
+       + res.status
+       );
     if (r && res.status == CORE_RPC_STATUS_OK)
     {
       if (res.txs.size() == txids.size())
@@ -2552,7 +2577,13 @@ void wallet2::trim_hashchain()
   if (height > 0 && m_blockchain.size() > height)
   {
     --height;
-    LOG_DEBUG("trimming to " << height << ", offset " << m_blockchain.offset());
+    LOG_DEBUG
+      (
+       "trimming to "
+       + std::to_string(height)
+       + ", offset "
+       + std::to_string(m_blockchain.offset())
+       );
     m_blockchain.trim(height);
   }
 }

@@ -1173,7 +1173,13 @@ namespace cryptonote
           }
           if (!meta.double_spend_seen)
           {
-            LOG_DEBUG("Marking " << txid << " as double spending " << itk.output_key_image);
+            LOG_DEBUG
+              (
+               "Marking "
+               + txid.to_str()
+               + " as double spending "
+               + itk.output_key_image.to_str()
+               );
             meta.double_spend_seen = true;
             changed = true;
             try

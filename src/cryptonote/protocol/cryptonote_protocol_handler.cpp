@@ -583,7 +583,12 @@ namespace cryptonote
           // sent in our pool, so don't verify again..
           if(!m_core.pool_has_tx(tx_hash))
           {
-            LOG_DEBUG("Incoming tx " << tx_hash << " not in pool, adding");
+            LOG_DEBUG
+              (
+               "Incoming tx "
+               + tx_hash.to_str()
+               + " not in pool, adding"
+               );
             cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
             if(!m_core.handle_incoming_ringct(tx_blob, tvc, relay_method::block, true) || tvc.m_verifivation_failed)
             {
@@ -664,7 +669,7 @@ namespace cryptonote
           }
           else
           {
-            LOG_DEBUG("Tx " << tx_hash << " not found in pool");
+            LOG_DEBUG("Tx " + tx_hash.to_str() + " not found in pool");
             need_tx_indices.push_back(tx_idx);
           }
         }
@@ -675,9 +680,15 @@ namespace cryptonote
       if(!need_tx_indices.empty()) // drats, we don't have everything..
       {
         // request non-mempool txs
-        LOG_DEBUG("We are missing " << need_tx_indices.size() << " txes for this fluffy block");
-        for (auto txidx: need_tx_indices)
-          LOG_DEBUG("  tx " << new_block.tx_hashes[txidx]);
+        LOG_DEBUG
+          (
+           "We are missing "
+           + std::to_string(need_tx_indices.size())
+           + " txes for this fluffy block"
+           );
+        for (auto txidx: need_tx_indices) {
+          LOG_DEBUG("  tx " + new_block.tx_hashes[txidx].to_str());
+        }
         NOTIFY_REQUEST_FLUFFY_MISSING_TX::request missing_tx_req;
         missing_tx_req.block_hash = get_block_hash(new_block);
         missing_tx_req.current_blockchain_height = arg.current_blockchain_height;
@@ -794,7 +805,7 @@ namespace cryptonote
     {
       if(tx_idx < b.tx_hashes.size())
       {
-        LOG_DEBUG("  tx " << b.tx_hashes[tx_idx]);
+        LOG_DEBUG("  tx " + b.tx_hashes[tx_idx].to_str());
         if (seen[tx_idx])
         {
           LOG_ERROR_CCONTEXT
@@ -1009,7 +1020,13 @@ namespace cryptonote
     size += sizeof(arg.current_blockchain_height);
     ++m_sync_spans_downloaded;
     m_sync_download_objects_size += size;
-    LOG_DEBUG(context << " downloaded " << size << " bytes worth of blocks");
+    LOG_DEBUG
+      (
+       context.to_str()
+       + " downloaded "
+       + std::to_string(size)
+       + " bytes worth of blocks"
+       );
 
     /*using namespace std::chrono;
       auto point = steady_clock::now();
@@ -1154,7 +1171,7 @@ namespace cryptonote
       // add that new span to the block queue
       const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(now - request_time);
       const float rate = size * 1e6 / (dt.count() + 1);
-      LOG_DEBUG(context << " adding span: " << arg.blocks.size() << " at height " << start_height << ", " << dt.count()/1e6 << " seconds, " << (rate/1024) << " kB/s, size now " << (m_block_queue.get_data_size() + blocks_size) / 1048576.f << " MB");
+      LOG_DEBUG_MUTE(context << " adding span: " << arg.blocks.size() << " at height " << start_height << ", " << dt.count()/1e6 << " seconds, " << (rate/1024) << " kB/s, size now " << (m_block_queue.get_data_size() + blocks_size) / 1048576.f << " MB");
       m_block_queue.add_blocks(start_height, arg.blocks, context.m_connection_id, context.m_remote_address, rate, blocks_size);
 
       const crypto::hash last_block_hash = cryptonote::get_block_hash(b);
@@ -1179,7 +1196,7 @@ namespace cryptonote
         LOG_INFO(context << "Failed to lock m_sync_lock, going back to download");
         goto skip;
       }
-      LOG_DEBUG(context << " lock m_sync_lock, adding blocks to chain...");
+      LOG_DEBUG(context.to_str() + " lock m_sync_lock, adding blocks to chain...");
       LOG_PEER_STATE("adding blocks");
 
       {
@@ -1200,7 +1217,7 @@ namespace cryptonote
           epee::net_utils::network_address span_origin;
           if (!m_block_queue.get_next_span(start_height, blocks, span_connection_id, span_origin))
           {
-            LOG_DEBUG(context << " no next span found, going back to download");
+            LOG_DEBUG(context.to_str() + " no next span found, going back to download");
             break;
           }
 
@@ -1211,7 +1228,7 @@ namespace cryptonote
             continue;
           }
 
-          LOG_DEBUG(context << " next span in the queue has blocks " << start_height << "-" << (start_height + blocks.size() - 1)
+          LOG_DEBUG_MUTE(context << " next span in the queue has blocks " << start_height << "-" << (start_height + blocks.size() - 1)
               << ", we need " << previous_height);
 
           const auto r = maybe_block_and_hash_from_blob(blocks.back().block);
@@ -1225,7 +1242,7 @@ namespace cryptonote
 
           if (m_core.have_block(last_block_hash))
           {
-            const uint64_t subchain_height = start_height + blocks.size();
+            // const uint64_t subchain_height = start_height + blocks.size();
             LOG_DEBUG_CC(context, "These are old blocks, ignoring: blocks " << start_height << " - " << (subchain_height-1) << ", blockchain height " << m_core.get_current_blockchain_height());
             m_block_queue.remove_spans(span_connection_id, start_height);
             ++m_sync_old_spans_downloaded;
@@ -1615,7 +1632,7 @@ skip:
     {
       if (!m_block_queue.has_next_span(blockchain_height, filled, request_time, connection_id))
       {
-        LOG_DEBUG(context << " we should download it as no peer reserved it");
+        LOG_DEBUG(context.to_str() + " we should download it as no peer reserved it");
         return true;
       }
       if (!filled)
@@ -1625,7 +1642,12 @@ skip:
         const long dt = dt_.count();
         if (dt >= REQUEST_NEXT_SCHEDULED_SPAN_THRESHOLD)
         {
-          LOG_DEBUG(context << " we should download it as it's not been received yet after " << dt/1e6);
+          LOG_DEBUG
+            (
+             context.to_str()
+             + " we should download it as it's not been received yet after "
+             + std::to_string(dt/1e6)
+             );
           return true;
         }
 
@@ -1642,7 +1664,13 @@ skip:
             const bool stalled = last_activity > LAST_ACTIVITY_STALL_THRESHOLD;
             if (stalled)
             {
-              LOG_DEBUG(context << " we should download it as the downloading peer is stalling for " << nowt - ctx.m_last_recv << " seconds");
+              LOG_DEBUG
+                (
+                 context.to_str()
+                 + " we should download it as the downloading peer is stalling for "
+                 + std::to_string(nowt - ctx.m_last_recv)
+                 + " seconds"
+                 );
               download = true;
               return true;
             }
@@ -1662,8 +1690,19 @@ skip:
             }
             if (dl_speed * .8f > ctx.m_current_speed_down * multiplier)
             {
-              LOG_DEBUG(context << " we should download it as we are substantially faster (" << dl_speed << " vs "
-                  << ctx.m_current_speed_down << ", multiplier " << multiplier << " after " << dt/1e6 << " seconds)");
+              LOG_DEBUG
+                (
+                 context.to_str()
+                 + " we should download it as we are substantially faster ("
+                 + std::to_string(dl_speed)
+                 + " vs "
+                 + std::to_string(ctx.m_current_speed_down)
+                 + ", multiplier "
+                 + std::to_string(multiplier)
+                 + " after "
+                 + std::to_string(dt/1e6)
+                 + " seconds)"
+                 );
               download = true;
               return true;
             }
@@ -1700,7 +1739,15 @@ skip:
     }
     if (skip > 0)
     {
-      LOG_DEBUG(context << "skipping " << skip << "/" << context.m_needed_objects.size() << " blocks");
+      LOG_DEBUG
+        (
+         context.to_str()
+         + "skipping "
+         + std::to_string(skip)
+         + "/"
+         + std::to_string(context.m_needed_objects.size())
+         + " blocks"
+         );
       context.m_needed_objects = std::vector<std::pair<crypto::hash, uint64_t>>
         (std::next(context.m_needed_objects.begin(), skip), context.m_needed_objects.end());
     }
@@ -1721,7 +1768,7 @@ skip:
     // if we don't need to get next span, and the block queue is full enough, wait a bit
     bool start_from_current_chain = false;
 
-    LOG_DEBUG(context << " request_missing_objects: check " << check_having_blocks << ", force_next_span " << force_next_span
+    LOG_DEBUG_MUTE(context << " request_missing_objects: check " << check_having_blocks << ", force_next_span " << force_next_span
         << ", m_needed_objects " << context.m_needed_objects.size() << " lrh " << context.m_last_response_height << ", chain "
            << m_core.get_current_blockchain_height());
     if(context.m_needed_objects.size() || force_next_span)
@@ -1755,7 +1802,7 @@ skip:
       }
       if (span.second == 0)
       {
-        LOG_DEBUG(context << " span size is 0");
+        LOG_DEBUG(context.to_str() + " span size is 0");
         if (context.m_last_response_height + 1 < context.m_needed_objects.size())
         {
           LOG_ERROR(context << " ERROR: inconsistent context: lrh " << context.m_last_response_height << ", nos " << context.m_needed_objects.size());
@@ -1771,11 +1818,24 @@ skip:
 
         const uint64_t first_block_height = context.m_last_response_height - context.m_needed_objects.size() + 1;
         span = m_block_queue.reserve_span(first_block_height, context.m_last_response_height, count_limit, context.m_connection_id, context.m_remote_address, context.m_remote_blockchain_height, context.m_needed_objects);
-        LOG_DEBUG(context << " span from " << first_block_height << ": " << span.first << "/" << span.second);
+        LOG_DEBUG
+          (
+           context.to_str()
+           + " span from "
+           + std::to_string(first_block_height)
+           + ": "
+           + std::to_string(span.first)
+           + "/"
+           + std::to_string(span.second)
+           );
       }
       if (span.second == 0 && !force_next_span)
       {
-        LOG_DEBUG(context << " still no span reserved, we may be in the corner case of next span scheduled and everything else scheduled/filled");
+        LOG_DEBUG
+          (
+           context.to_str()
+           + " still no span reserved, we may be in the corner case of next span scheduled and everything else scheduled/filled"
+           );
         std::vector<crypto::hash> hashes;
         boost::uuids::uuid span_connection_id;
         std::chrono::time_point<std::chrono::system_clock> time;
@@ -1797,7 +1857,19 @@ skip:
           }
         }
       }
-      LOG_DEBUG(context << " span: " << span.first << "/" << span.second << " (" << span.first << " - " << (span.first + span.second - 1) << ")");
+      LOG_DEBUG
+        (
+         context.to_str()
+         + " span: "
+         + std::to_string(span.first)
+         + "/"
+         + std::to_string(span.second)
+         + " ("
+         + std::to_string(span.first)
+         + " - "
+         + std::to_string(span.first + span.second - 1)
+         + ")"
+         );
       if (span.second > 0)
       {
         if (!is_next)
@@ -1957,7 +2029,7 @@ skip:
       {
         if(context.m_state < cryptonote_connection_context::state_synchronizing)
         {
-          LOG_DEBUG(context << "not ready, ignoring");
+          LOG_DEBUG(context.to_str() +  "not ready, ignoring");
           return true;
         }
         if (!request_txpool_complement(context))
@@ -2027,7 +2099,14 @@ skip:
       drop_connection(context, true, false);
       return 1;
     }
-    LOG_DEBUG(context << "first block hash " << arg.m_block_ids.front() << ", last " << arg.m_block_ids.back());
+    LOG_DEBUG
+      (
+       context.to_str()
+       + "first block hash "
+       + arg.m_block_ids.front().to_str()
+       + ", last "
+       + arg.m_block_ids.back().to_str()
+       );
 
     if (arg.total_height >= CRYPTONOTE_MAX_BLOCK_NUMBER || arg.m_block_ids.size() > BLOCKS_IDS_SYNCHRONIZING_MAX_COUNT)
     {

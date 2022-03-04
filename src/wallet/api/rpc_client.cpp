@@ -244,7 +244,7 @@ void RPC_Client::get_tx_outputs
         // while we still need more mixins
         uint64_t num_usable_outs = num_outs;
         bool allow_blackballed = false;
-        LOG_DEBUG("Starting gamma picking with " << num_outs << ", num_usable_outs " << num_usable_outs
+        LOG_DEBUG_MUTE("Starting gamma picking with " << num_outs << ", num_usable_outs " << num_usable_outs
             << ", requested_outputs_count " << requested_outputs_count);
         while (num_found < requested_outputs_count)
         {
@@ -306,12 +306,12 @@ void RPC_Client::get_tx_outputs
           picks[type].insert(i);
           req.outputs.push_back({amount, i});
           ++num_found;
-          LOG_DEBUG("picked " << i << ", " << num_found << " now picked");
+          LOG_DEBUG_MUTE("picked " << i << ", " << num_found << " now picked");
         }
 
-        for (const auto &pick: picks)
-          LOG_DEBUG("picking " << pick.first << " outputs: " <<
-              boost::join(pick.second | boost::adaptors::transformed([](uint64_t out){return std::to_string(out);}), " "));
+        // for (const auto &pick: picks)
+        //   LOG_DEBUG_MUTE("picking " << pick.first << " outputs: " <<
+        //       boost::join(pick.second | boost::adaptors::transformed([](uint64_t out){return std::to_string(out);}), " "));
 
         // if we had enough unusable outputs, we might fall off here and still
         // have too few outputs, so we stuff with one to keep counts good, and
@@ -335,8 +335,13 @@ void RPC_Client::get_tx_outputs
       for (const auto &i: req.outputs)
         outs[i.amount].insert(i.index);
       for (const auto &o: outs)
-        LOG_DEBUG("asking for outputs with amount " << print_money(o.first) << ": " <<
-            boost::join(o.second | boost::adaptors::transformed([](uint64_t out){return std::to_string(out);}), " "));
+        LOG_DEBUG
+          (
+           "asking for outputs with amount "
+           + print_money(o.first)
+           + ": " 
+           + boost::join(o.second | boost::adaptors::transformed([](uint64_t out){return std::to_string(out);}), " ")
+           );
     }
 
     // get the keys for those

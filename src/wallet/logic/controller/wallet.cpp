@@ -348,7 +348,14 @@ namespace wallet {
   {
     using namespace cryptonote;
 
-    LOG_DEBUG("sanity_check: " << ptx_vector.size() << " txes, " << dsts.size() << " destinations");
+    LOG_DEBUG
+      (
+       "sanity_check: "
+       + std::to_string(ptx_vector.size())
+       + " txes, "
+       + std::to_string(dsts.size())
+       + " destinations"
+       );
 
     THROW_WALLET_EXCEPTION_IF(ptx_vector.empty(), tools::error::wallet_internal_error, "No transactions");
 
@@ -371,7 +378,7 @@ namespace wallet {
     for (const auto &r: required)
       change -= r.second.first;
 
-    LOG_DEBUG("Adding " << cryptonote::print_money(change) << " expected change");
+    LOG_DEBUG("Adding " + cryptonote::print_money(change) + " expected change");
 
     // for all txes that have actual change, check change is coming back to the sending wallet
     for (const type::tx::pending_tx &ptx: ptx_vector)
@@ -604,11 +611,11 @@ namespace wallet {
         LOG_DEBUG
           (
            "Ignoring output "
-           << i
-           << " of amount "
-           << print_money(td.amount())
-           << " which is below fractional threshold "
-           << print_money(fractional_threshold)
+           + std::to_string(i)
+           + " of amount "
+           + print_money(td.amount())
+           + " which is below fractional threshold "
+           + print_money(fractional_threshold)
            );
 
         continue;

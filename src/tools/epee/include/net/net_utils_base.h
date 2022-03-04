@@ -464,7 +464,8 @@ namespace net_utils
 #define LOG_ERROR_CC(ct, message) LOG_ERROR(ct << message)
 #define LOG_WARNING_CC(ct, message) LOG_WARNING(ct << message)
 #define LOG_INFO_CC(ct, message) LOG_INFO(ct << message)
-#define LOG_DEBUG_CC(ct, message) LOG_DEBUG(ct << message)
+// #define LOG_DEBUG_CC(ct, message) LOG_DEBUG(ct + message)
+#define LOG_DEBUG_CC(ct, message)
 // #define LOG_TRACE_CC(ct, message) LOG_TRACE(ct + message)
 #define LOG_TRACE_CC(ct, message)
 

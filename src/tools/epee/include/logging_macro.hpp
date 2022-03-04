@@ -84,22 +84,30 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_WARNING(x) LOG_DEFAULT(epee::LogLevel::Warning, x)
 #define LOG_INFO(x) LOG_DEFAULT(epee::LogLevel::Info, x)
 #define LOG_VERBOSE(x) LOG_DEFAULT(epee::LogLevel::Verbose, x)
-#define LOG_DEBUG(x) LOG_DEFAULT(epee::LogLevel::Debug, x)
+
+#define LOG_DEBUG_MUTE(x)
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)
 #define LOG_PRINT_L2(x) LOG_VERBOSE(x)
-#define LOG_PRINT_L3(x) LOG_DEBUG(x)
+// #define LOG_PRINT_L3(x) LOG_DEBUG(x)
+#define LOG_PRINT_L3(x)
 #define LOG_PRINT_L4(x) LOG_TRACE(x)
 
-#define _dbg2(x) LOG_DEBUG(x)
-#define _dbg1(x) LOG_DEBUG(x)
 #define _info(x) LOG_INFO(x)
 #define _note(x) LOG_VERBOSE(x)
-#define _fact(x) LOG_DEBUG(x)
-#define _mark(x) LOG_DEBUG(x)
 #define _warn(x) LOG_WARNING(x)
 #define _erro(x) LOG_ERROR(x)
+
+// #define _dbg2(x) LOG_DEBUG(x)
+// #define _dbg1(x) LOG_DEBUG(x)
+// #define _fact(x) LOG_DEBUG(x)
+// #define _mark(x) LOG_DEBUG(x)
+
+#define _dbg2(x)
+#define _dbg1(x)
+#define _fact(x)
+#define _mark(x)
 
 
 #define TRY_ENTRY()   try {

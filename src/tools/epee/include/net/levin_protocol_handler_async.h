@@ -125,7 +125,7 @@ class async_protocol_handler
     if(!m_pservice_endpoint->do_send(head_string + in_buff_string))
       return false;
 
-    LOG_DEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
+    LOG_DEBUG_MUTE(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
         << ", flags" << head.m_flags
         << ", r?=" << head.m_have_to_return_data
         <<", cmd = " << head.m_command
@@ -185,7 +185,12 @@ public:
     {
       if(m_con.start_outer_call())
       {
-        LOG_DEBUG(con.get_context_ref() << "anvoke_handler, timeout: " << timeout);
+        LOG_DEBUG
+          (
+           con.get_context_ref().to_str()
+           + "anvoke_handler, timeout: "
+           + std::to_string(timeout)
+           );
         m_timer.expires_after(std::chrono::milliseconds(timeout));
         m_timer.async_wait([&con, command, cb, timeout](const boost::system::error_code& ec)
         {
@@ -443,7 +448,7 @@ public:
               //async call scenario
               std::shared_ptr<invoke_response_handler_base> response_handler = m_invoke_response_handlers.front();
               response_handler->reset_timer();
-              LOG_DEBUG(m_connection_context << "LEVIN_PACKET partial msg received. len=" << cb << ", current total " << m_cache_in_buffer.size() << "/" << m_current_head.m_cb << " (" << (100.0f * m_cache_in_buffer.size() / (m_current_head.m_cb ? m_current_head.m_cb : 1)) << "%)");
+              LOG_DEBUG_MUTE(m_connection_context << "LEVIN_PACKET partial msg received. len=" << cb << ", current total " << m_cache_in_buffer.size() << "/" << m_current_head.m_cb << " (" << (100.0f * m_cache_in_buffer.size() / (m_current_head.m_cb ? m_current_head.m_cb : 1)) << "%)");
             }
           }
           break;
@@ -481,7 +486,7 @@ public:
 
           bool is_response = (m_oponent_protocol_ver == LEVIN_PROTOCOL_VER_1 && m_current_head.m_flags&LEVIN_PACKET_RESPONSE);
 
-          LOG_DEBUG(m_connection_context << "LEVIN_PACKET_RECEIVED. [len=" << m_current_head.m_cb
+          LOG_DEBUG_MUTE(m_connection_context << "LEVIN_PACKET_RECEIVED. [len=" << m_current_head.m_cb
             << ", flags" << m_current_head.m_flags
             << ", r?=" << m_current_head.m_have_to_return_data
             <<", cmd = " << m_current_head.m_command
@@ -541,7 +546,7 @@ public:
               if(!m_pservice_endpoint->do_send(epee::string_tools::string_to_blob(return_buff)))
                 return false;
 
-              LOG_DEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
+              LOG_DEBUG_MUTE(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
                 << ", flags" << head.m_flags
                 << ", r?=" << head.m_have_to_return_data
                 <<", cmd = " << head.m_command

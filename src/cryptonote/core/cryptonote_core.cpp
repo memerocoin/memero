@@ -490,7 +490,7 @@ namespace cryptonote
 
       if(tvc[i].m_added_to_pool)
       {
-        LOG_DEBUG("tx added: " << results[i].hash);
+        LOG_DEBUG("tx added: " + results[i].hash.to_str());
       }
       else
         results[i].res = false;
@@ -1184,10 +1184,27 @@ namespace cryptonote
       const time_t time_boundary = now - static_cast<time_t>(seconds[n]);
       for (time_t ts: timestamps) b += ts >= time_boundary;
       const double p = probability(b, seconds[n] / DIFFICULTY_TARGET_IN_SECONDS);
-      LOG_DEBUG("blocks in the last " << seconds[n] / 60 << " minutes: " << b << " (probability " << p << ")");
+      LOG_DEBUG
+        (
+         "blocks in the last "
+         + std::to_string(seconds[n] / 60)
+         + " minutes: "
+         + std::to_string(b)
+         + " (probability "
+         + std::to_string(p)
+         + ")"
+         );
       if (p < threshold)
       {
-        LOG_DEBUG("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Lolnero network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
+        LOG_DEBUG
+          (
+           "There were "
+           + std::to_string(b)
+           + (b == max_blocks_checked ? " or more" : "")
+           + " blocks in the last "
+           + std::to_string(seconds[n] / 60)
+           + " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Lolnero network or under attack, or your computer's time is off. Or it could be just sheer bad luck."
+           );
 
         break; // no need to look further
       }

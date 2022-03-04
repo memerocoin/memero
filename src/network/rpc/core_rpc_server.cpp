@@ -248,7 +248,15 @@ namespace cryptonote
       }
     }
 
-    LOG_DEBUG("on_get_blocks: " << bs.size() << " blocks, " << ntxes << " txes, size " << size);
+    LOG_DEBUG
+      (
+       "on_get_blocks: "
+       + std::to_string(bs.size())
+       + " blocks, "
+       + std::to_string(ntxes)
+       + " txes, size "
+       + std::to_string(size)
+       );
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }

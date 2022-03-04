@@ -155,7 +155,11 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_from_
     // check for partial results and add the rest if needed;
     if (outputs.size() < absolute_offsets.size() && outputs.size() > 0)
     {
-      LOG_DEBUG("Additional outputs needed: " << absolute_offsets.size() - outputs.size());
+      LOG_DEBUG
+        (
+         "Additional outputs needed: "
+         + std::to_string(absolute_offsets.size() - outputs.size())
+         );
       std::vector < uint64_t > add_offsets;
       std::vector<output_data_t> add_outputs;
       add_outputs.reserve(absolute_offsets.size() - outputs.size());
@@ -1175,7 +1179,17 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       expected_reward = m_btc_expected_reward;
       return true;
     }
-    LOG_DEBUG("Not using cached template: address " << (!memcmp(&miner_address, &m_btc_address, sizeof(cryptonote::spend_view_public_keys))) << ", nonce " << (m_btc_nonce == ex_nonce) << ", cookie " << (m_btc_pool_cookie == m_tx_pool.cookie()) << ", from_block " << (!!from_block));
+    LOG_DEBUG
+      (
+       "Not using cached template: address "
+       + std::to_string(!memcmp(&miner_address, &m_btc_address, sizeof(cryptonote::spend_view_public_keys)))
+       + ", nonce "
+       + std::to_string(m_btc_nonce == ex_nonce)
+       + ", cookie "
+       + std::to_string(m_btc_pool_cookie == m_tx_pool.cookie())
+       + ", from_block "
+       + std::to_string(!!from_block)
+       );
     invalidate_block_template_cache();
   }
 
@@ -1298,9 +1312,15 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
   {
     LOG_ERROR("Creating block template: error: wrongly calculated fee");
   }
-  LOG_DEBUG("Creating block template: height " << height <<
-      ", transaction weight " << txs_weight <<
-      ", fee " << fee);
+  LOG_DEBUG
+    (
+     "Creating block template: height "
+     + std::to_string(height)
+     + ", transaction weight "
+     + std::to_string(txs_weight)
+     + ", fee "
+     + std::to_string(fee)
+     );
 #endif
 
   /*
@@ -1347,11 +1367,23 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
         if (cumulative_weight != txs_weight + get_transaction_weight(b.miner_tx))
         {
           //fuck, not lucky, -1 makes varint-counter size smaller, in that case we continue to grow with cumulative_weight
-          LOG_DEBUG("Miner tx creation has no luck with delta_extra size = " << delta << " and " << delta - 1);
+          LOG_DEBUG
+            (
+             "Miner tx creation has no luck with delta_extra size = "
+             + std::to_string(delta)
+             + " and "
+             + std::to_string(delta - 1)
+             );
           cumulative_weight += delta - 1;
           continue;
         }
-        LOG_DEBUG("Setting extra for block: " << b.miner_tx.extra.size() << ", try_count=" << try_count);
+        LOG_DEBUG
+          (
+           "Setting extra for block: "
+           + std::to_string(b.miner_tx.extra.size())
+           + ", try_count="
+           + std::to_string(try_count)
+           );
       }
     }
     LOG_ERROR_AND_RETURN_UNLESS(cumulative_weight == txs_weight + get_transaction_weight(b.miner_tx), false, "unexpected case: cumulative_weight=" << cumulative_weight << " is not equal txs_cumulative_weight=" << txs_weight << " + get_transaction_weight(b.miner_tx)=" << get_transaction_weight(b.miner_tx));
@@ -2036,7 +2068,7 @@ static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, cryptonote::stri
   {
     if (!db->get_tx_blob(tx_hash, tx))
     {
-      LOG_DEBUG("Transaction blob not found for " << tx_hash);
+      LOG_DEBUG("Transaction blob not found for " + tx_hash.to_str());
       return false;
     }
   }
@@ -2542,7 +2574,7 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
   uint64_t needed_fee = 0;
   {
     uint64_t fee_per_byte = constant::FEE_PER_BYTE;
-    LOG_DEBUG("Using " << print_money(fee_per_byte) << "/byte fee");
+    LOG_DEBUG("Using " + print_money(fee_per_byte) + "/byte fee");
     needed_fee = tx_weight * fee_per_byte;
     // quantize fee up to 8 decimals
     const uint64_t mask = constant::fee_quantization_mask;
@@ -3732,7 +3764,14 @@ bool Blockchain::check_ringct_inputs(transaction& tx, tx_verification_context &t
         else
         {
           uint64_t n_outputs = m_db->get_num_outputs(in_to_key.amount);
-          LOG_DEBUG("output size " << print_money(in_to_key.amount) << ": " << n_outputs << " available");
+          LOG_DEBUG
+            (
+             "output size "
+             + print_money(in_to_key.amount)
+             + ": "
+             + std::to_string(n_outputs)
+             + " available"
+             );
           // n_outputs includes the output we're considering
           if (n_outputs <= min_mixin)
             ++n_unmixable;
@@ -3746,7 +3785,13 @@ bool Blockchain::check_ringct_inputs(transaction& tx, tx_verification_context &t
           max_actual_mixin = ring_mixin;
       }
     }
-    LOG_DEBUG("Mixin: " << min_actual_mixin << "-" << max_actual_mixin);
+    LOG_DEBUG
+      (
+       "Mixin: "
+       + std::to_string(min_actual_mixin)
+       + "-"
+       + std::to_string(max_actual_mixin)
+       );
 
     {
       if (min_actual_mixin != max_actual_mixin)

@@ -446,7 +446,12 @@ namespace net_utils
 			return true;
 		}
 
-		LOG_DEBUG(" -->> " << query_info.m_full_request_str << "\r\n<<--OK");
+		LOG_DEBUG
+    (
+     " -->> "
+     + query_info.m_full_request_str
+     + "\r\n<<--OK"
+     );
 		response.m_response_code = 200;
 		response.m_response_comment = "OK";
 		response.m_mime_tipe = get_file_mime_tipe(uri_to_path);

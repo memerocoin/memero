@@ -594,12 +594,17 @@ bool BlockchainLMDB::need_resize(uint64_t threshold_size) const
   // additional size needed.
   uint64_t size_used = mst.ms_psize * mei.me_last_pgno;
 
-  LOG_DEBUG("DB map size:     " << mei.me_mapsize);
-  LOG_DEBUG("Space used:      " << size_used);
-  LOG_DEBUG("Space remaining: " << mei.me_mapsize - size_used);
-  LOG_DEBUG("Size threshold:  " << threshold_size);
+  LOG_DEBUG("DB map size:     " + std::to_string(mei.me_mapsize));
+  LOG_DEBUG("Space used:      " + std::to_string(size_used));
+  LOG_DEBUG("Space remaining: " + std::to_string(mei.me_mapsize - size_used));
+  LOG_DEBUG("Size threshold:  " + std::to_string(threshold_size));
   float resize_percent = RESIZE_PERCENT;
-  LOG_DEBUG(boost::format("Percent used: %.04f  Percent threshold: %.04f") % (100.*size_used/mei.me_mapsize) % (100.*resize_percent));
+  const auto fmt = 
+    boost::format("Percent used: %.04f  Percent threshold: %.04f")
+    % (100.*size_used/mei.me_mapsize)
+    % (100.*resize_percent);
+
+  LOG_DEBUG(fmt.str());
 
   if (threshold_size > 0)
   {
@@ -638,7 +643,11 @@ void BlockchainLMDB::check_and_resize_for_batch(uint64_t batch_num_blocks, uint6
   if (batch_num_blocks > 0)
   {
     threshold_size = get_estimated_batch_size(batch_num_blocks, batch_bytes);
-    LOG_DEBUG("calculated batch size: " << threshold_size);
+    LOG_DEBUG
+      (
+       "calculated batch size: "
+       + std::to_string(threshold_size)
+       );
 
     // The increased DB size could be a multiple of threshold_size, a fixed
     // size increase (> threshold_size), or other variations.
@@ -647,7 +656,11 @@ void BlockchainLMDB::check_and_resize_for_batch(uint64_t batch_num_blocks, uint6
     // minimum size increase is used to avoid frequent resizes when the batch
     // size is set to a very small numbers of blocks.
     increase_size = (threshold_size > min_increase_size) ? threshold_size : min_increase_size;
-    LOG_DEBUG("increase size: " << increase_size);
+    LOG_DEBUG
+      (
+       "increase size: "
+       + std::to_string(increase_size)
+       );
   }
 
   // if threshold_size is 0 (i.e. number of blocks for batch not passed in), it
@@ -685,7 +698,18 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
     block_start = block_stop - num_prev_blocks + 1;
   uint32_t num_blocks_used = 0;
   uint64_t total_block_size = 0;
-  LOG_DEBUG("[" << __func__ << "] " << "m_height: " << m_height << "  block_start: " << block_start << "  block_stop: " << block_stop);
+  LOG_DEBUG
+    (
+     "["
+     + std::string(__func__)
+     + "] "
+     + "m_height: "
+     + std::to_string(m_height)
+     + "  block_start: "
+     + std::to_string(block_start)
+     + "  block_stop: "
+     + std::to_string(block_stop)
+     );
   size_t avg_block_size = 0;
   if (batch_bytes)
   {
@@ -714,12 +738,22 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
     }
     if (my_rtxn) block_rtxn_stop();
     avg_block_size = total_block_size / (num_blocks_used ? num_blocks_used : 1);
-    LOG_DEBUG("average block size across recent " << num_blocks_used << " blocks: " << avg_block_size);
+    LOG_DEBUG
+      (
+       "average block size across recent "
+       + std::to_string(num_blocks_used)
+       + " blocks: "
+       + std::to_string(avg_block_size)
+       );
   }
 estim:
   if (avg_block_size < min_block_size)
     avg_block_size = min_block_size;
-  LOG_DEBUG("estimated average block size for batch: " << avg_block_size);
+  LOG_DEBUG
+    (
+     "estimated average block size for batch: "
+     + std::to_string(avg_block_size)
+     );
 
   // bigger safety margin on smaller block sizes
   if (batch_fudge_factor < 5000.0)
@@ -3498,7 +3532,13 @@ void BlockchainLMDB::get_output_key(const std::span<const uint64_t> &amounts, co
     {
       if (allow_partial)
       {
-        LOG_DEBUG("Partial result: " << outputs.size() << "/" << offsets.size());
+        LOG_DEBUG
+          (
+           "Partial result: "
+           + std::to_string(outputs.size())
+           + "/"
+           + std::to_string(offsets.size())
+           );
         break;
       }
       throw1(OUTPUT_DNE((std::string("Attempting to get output pubkey by global index (amount ") + boost::lexical_cast<std::string>(amount) + ", index " + boost::lexical_cast<std::string>(offsets[i]) + ", count " + boost::lexical_cast<std::string>(get_num_outputs(amount)) + "), but key does not exist (current height " + boost::lexical_cast<std::string>(height()) + ")").c_str()));

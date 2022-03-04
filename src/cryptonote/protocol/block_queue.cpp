@@ -179,9 +179,30 @@ uint64_t block_queue::get_next_needed_height(uint64_t blockchain_height) const
 void block_queue::print() const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  LOG_DEBUG("Block queue has " << blocks.size() << " spans");
-  for (const auto &span: blocks)
-    LOG_DEBUG("  " << span.start_block_height << " - " << (span.start_block_height+span.nblocks-1) << " (" << span.nblocks << ") - " << (span.blocks.empty() ? "scheduled" : "filled    ") << "  " << span.connection_id << " (" << ((unsigned)(span.rate*10/1024.f))/10.f << " kB/s)");
+  LOG_DEBUG_MUTE
+    (
+     "Block queue has "
+     + std::to_string(blocks.size())
+     + " spans"
+     );
+  for (const auto &span: blocks) {
+    LOG_DEBUG_MUTE
+      (
+       "  "
+       + std::to_string(span.start_block_height)
+       + " - "
+       + std::to_string(span.start_block_height+span.nblocks-1)
+       + " ("
+       + std::to_string(span.nblocks)
+       + ") - "
+       + (span.blocks.empty() ? "scheduled" : "filled    ")
+       + "  "
+       + boost::uuids::to_string(span.connection_id)
+       // + " ("
+       // + std::to_string((unsigned)(span.rate*10/1024.f))/10.f))
+       // + " kB/s)"
+       );
+  }
 }
 
 std::string block_queue::get_overview(uint64_t blockchain_height) const
@@ -232,7 +253,7 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
 
-  LOG_DEBUG("reserve_span: first_block_height " << first_block_height
+  LOG_DEBUG_MUTE("reserve_span: first_block_height " << first_block_height
          << ", last_block_height " << last_block_height
          << ", max " << max_blocks
          << ", blockchain_height " << blockchain_height
@@ -240,12 +261,12 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
          );
   if (last_block_height < first_block_height || max_blocks == 0)
   {
-    LOG_DEBUG("reserve_span: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
+    LOG_DEBUG_MUTE("reserve_span: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
     return std::make_pair(0, 0);
   }
   if (block_hashes.size() > last_block_height)
   {
-    LOG_DEBUG("reserve_span: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
+    LOG_DEBUG_MUTE("reserve_span: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
     return std::make_pair(0, 0);
   }
 
@@ -258,11 +279,11 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
     ++span_start_height;
   }
 
-  LOG_DEBUG("span_start_height: " <<span_start_height);
+  LOG_DEBUG_MUTE("span_start_height: " <<span_start_height);
   const uint64_t block_hashes_start_height = last_block_height - block_hashes.size() + 1;
   if (span_start_height >= block_hashes.size() + block_hashes_start_height)
   {
-    LOG_DEBUG("Out of hashes, cannot reserve");
+    LOG_DEBUG_MUTE("Out of hashes, cannot reserve");
     return std::make_pair(0, 0);
   }
 
@@ -283,10 +304,10 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
   }
   if (span_length == 0)
   {
-    LOG_DEBUG("span_length 0, cannot reserve");
+    LOG_DEBUG_MUTE("span_length 0, cannot reserve");
     return std::make_pair(0, 0);
   }
-  LOG_DEBUG("Reserving span " << span_start_height << " - " << (span_start_height + span_length - 1) << " for " << connection_id);
+  LOG_DEBUG_MUTE("Reserving span " << span_start_height << " - " << (span_start_height + span_length - 1) << " for " << connection_id);
   add_blocks(span_start_height, span_length, connection_id, addr, time);
   set_span_hashes(span_start_height, connection_id, hashes);
   return std::make_pair(span_start_height, span_length);

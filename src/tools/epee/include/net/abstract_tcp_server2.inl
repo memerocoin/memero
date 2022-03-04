@@ -87,7 +87,11 @@ namespace net_utils
 		m_local(false),
 		m_ready_to_close(false)
   {
-    LOG_DEBUG("test, connection constructor set m_connection_type="<<m_connection_type);
+    LOG_DEBUG_MUTE
+      (
+       "test, connection constructor set m_connection_type="
+       + m_connection_type
+       );
   }
 
   //---------------------------------------------------------------------------------
@@ -304,9 +308,22 @@ namespace net_utils
       address = endpoint.address().to_string();
       port = boost::lexical_cast<std::string>(endpoint.port());
     }
-    LOG_DEBUG(" connection type " << to_string( m_connection_type ) << " "
-        << socket().local_endpoint().address().to_string() << ":" << socket().local_endpoint().port()
-        << " <--> " << context.m_remote_address.str() << " (via " << address << ":" << port << ")");
+    LOG_DEBUG_MUTE
+      (
+       " connection type "
+       + to_string( m_connection_type )
+       + " "
+       + socket().local_endpoint().address().to_string()
+       + ":"
+       + socket().local_endpoint().port()
+       + " <--> "
+       + context.m_remote_address.str()
+       + " (via "
+       + address
+       + ":"
+       + port
+       + ")"
+       );
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
@@ -496,7 +513,13 @@ namespace net_utils
     if(m_send_que.size() > 1)
     { // active operation should be in progress, nothing to do, just wait last operation callback
         auto size_now = m_send_que.back().size();
-        LOG_DEBUG("do_send() NOW just queues: packet="<<size_now<<" B, is added to queue-size="<<m_send_que.size());
+        LOG_DEBUG
+          (
+           "do_send() NOW just queues: packet="
+           + std::to_string(size_now)
+           + " B, is added to queue-size="
+           + std::to_string(m_send_que.size())
+           );
         //do_send_handler_delayed( ptr , size_now ); // (((H))) // empty function
 
       LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] Async send requested " << m_send_que.front().size());
@@ -511,7 +534,12 @@ namespace net_utils
         }
 
         auto size_now = m_send_que.front().size();
-        LOG_DEBUG("do_send() NOW SENSD: packet="<<size_now<<" B");
+        LOG_DEBUG
+          (
+           "do_send() NOW SENSD: packet="
+           + std::to_string(size_now)
+           + " B"
+           );
 
         LOG_ERROR_AND_RETURN_UNLESS( size_now == m_send_que.front().size(), false, "Unexpected queue size");
         reset_timer(get_default_timeout());
@@ -617,7 +645,7 @@ namespace net_utils
     {
       if(ec == boost::asio::error::operation_aborted)
         return;
-      LOG_DEBUG(context << "connection timeout, closing");
+      LOG_DEBUG(context.to_str() + "connection timeout, closing");
       self->close();
     });
   }
@@ -720,7 +748,14 @@ namespace net_utils
         //have more data to send
       reset_timer(get_default_timeout());
       auto size_now = m_send_que.front().size();
-      LOG_DEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
+      LOG_DEBUG
+        (
+         "handle_write() NOW SENDS: packet="
+         + std::to_string(size_now)
+         + " B"
+         + ", from  queue size="
+         + std::to_string(m_send_que.size())
+         );
       LOG_ERROR_AND_RETURN_UNLESS( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
       async_write(boost::asio::buffer(m_send_que.front().data(), size_now) ,
                   strand_.wrap(
@@ -1262,7 +1297,7 @@ namespace net_utils
     connection_ptr new_connection_l(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type) );
     connections_mutex.lock();
     connections_.insert(new_connection_l);
-    LOG_DEBUG("connections_ size now " << connections_.size());
+    LOG_DEBUG("connections_ size now " + std::to_string(connections_.size()));
     connections_mutex.unlock();
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ LOCK_MUTEX(connections_mutex); connections_.erase(new_connection_l); });
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
@@ -1339,7 +1374,15 @@ namespace net_utils
 
     }
 
-    LOG_DEBUG("Trying to connect to " << adr << ":" << port << ", bind_ip = " << bind_ip_to_use);
+    LOG_DEBUG
+      (
+       "Trying to connect to "
+       + adr
+       + ":"
+       + port
+       + ", bind_ip = "
+       + bind_ip_to_use
+       );
 
     //boost::asio::ip::tcp::endpoint remote_endpoint(boost::asio::ip::address::from_string(addr.c_str()), port);
     boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
@@ -1378,7 +1421,7 @@ namespace net_utils
     connection_ptr new_connection_l(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type) );
     connections_mutex.lock();
     connections_.insert(new_connection_l);
-    LOG_DEBUG("connections_ size now " << connections_.size());
+    LOG_DEBUG("connections_ size now " + std::to_string(connections_.size()));
     connections_mutex.unlock();
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ LOCK_MUTEX(connections_mutex); connections_.erase(new_connection_l); });
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
