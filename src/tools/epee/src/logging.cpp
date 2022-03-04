@@ -308,6 +308,22 @@ namespace epee
 
 } // epee
 
+
+void LOG_AND_THROW
+(
+ const epee::LogLevel level
+ , const std::string_view x
+ )
+{
+  LOG_CATEGORY
+    (
+     level
+     , DEFAULT_LOG_CATEGORY
+     , x ) ;
+
+  throw std::runtime_error(std::string(x));
+}
+
 void LOG_ERROR_AND_THROW
 (
  const std::string_view x
@@ -315,8 +331,6 @@ void LOG_ERROR_AND_THROW
 {
   LOG_AND_THROW(epee::LogLevel::Error, x);
 }
-
-
 
 void LOG_ERROR_AND_THROW_IF
 (

@@ -26,19 +26,6 @@ see: etc/other-licenses/monero/LICENSE
 
 #pragma once
 
-#define LOG_AND_THROW(level, x)                 \
-  do {                                          \
-    LOG_CATEGORY                                \
-      (                                         \
-       level                                    \
-       , DEFAULT_LOG_CATEGORY                   \
-       , x ) ;                                  \
-                                                \
-    std::stringstream ss;                       \
-    ss << x;                                    \
-    throw std::runtime_error(ss.str());         \
-  } while (0)
-
 #define LOG_AND_RETURN_IF(level, expr, fail_ret_val, x) \
   do {                                                  \
     if(expr) {                                          \
