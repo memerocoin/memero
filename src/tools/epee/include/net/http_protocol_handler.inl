@@ -432,40 +432,13 @@ namespace net_utils
 		if("/" == uri_to_path)
 			uri_to_path = "/index.html";
 
-		//slash_to_back_slash(uri_to_path);
-		m_config.m_lock.lock();
-		std::string destination_file_path = m_config.m_folder + uri_to_path;
-		m_config.m_lock.unlock();
-		if(!file_io_utils::load_file_to_string(destination_file_path.c_str(), response.m_body))
-		{
-			LOG_WARNING_MUTE
-        (
-         "URI \""
-         + query_info.m_full_request_str.substr(0, query_info.m_full_request_str.size()-2)
-         + "\" ["
-         + destination_file_path
-         + "] Not Found (404 )"
-         );
-			response.m_body = get_not_found_response_body(query_info.m_URI);
-			response.m_response_code = 404;
-			response.m_response_comment = "Not found";
-			response.m_mime_tipe = "text/html";
-			return true;
-		}
-
-		LOG_DEBUG
-    (
-     " -->> "
-     + query_info.m_full_request_str
-     + "\r\n<<--OK"
-     );
-		response.m_response_code = 200;
-		response.m_response_comment = "OK";
-		response.m_mime_tipe = get_file_mime_tipe(uri_to_path);
-
-		return true;
-	}
-	//-----------------------------------------------------------------------------------
+    response.m_body = get_not_found_response_body(query_info.m_URI);
+    response.m_response_code = 404;
+    response.m_response_comment = "Not found";
+    response.m_mime_tipe = "text/html";
+    return true;
+  }
+  //-----------------------------------------------------------------------------------
   template<class t_connection_context>
 	std::string simple_http_connection_handler<t_connection_context>::get_response_header(const http_response_info& response)
 	{

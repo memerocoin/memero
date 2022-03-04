@@ -61,9 +61,6 @@ namespace epee
       //set self as callback handler
       m_net_server.get_config_object().m_phandler = static_cast<t_child_class*>(this);
 
-      //here set folder for hosting reqests
-      m_net_server.get_config_object().m_folder = "";
-
       //set access control allow origins if configured
       std::sort(access_control_origins.begin(), access_control_origins.end());
       m_net_server.get_config_object().m_access_control_origins = std::move(access_control_origins);

@@ -59,7 +59,6 @@ namespace net_utils
 		/************************************************************************/
 		struct http_server_config
 		{
-			std::string m_folder;
 			std::vector<std::string> m_access_control_origins;
 			std::recursive_mutex m_lock;
 		};
