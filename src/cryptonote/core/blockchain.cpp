@@ -56,7 +56,8 @@
 
 using namespace cryptonote;
 
-#define LOG_ERROR_VER(x) LOG_CATEGORY(epee::LogLevel::Error, "verify", x)
+// #define LOG_ERROR_VER(x) LOG_CATEGORY(epee::LogLevel::Error, "verify", x)
+#define LOG_ERROR_VER(x)
 
 std::recursive_mutex m_blockchain_lock; // TODO: add here reader/writer lock
 
@@ -1061,7 +1062,17 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
     }
 
     // make sure we haven't accidentally grabbed too many blocks...maybe don't need this check?
-    LOG_ERROR_AND_RETURN_UNLESS((alt_chain.size() + timestamps.size()) <= difficulty_blocks_count, false, "Internal error, alt_chain.size()[" << alt_chain.size() << "] + vtimestampsec.size()[" << timestamps.size() << "] NOT <= DIFFICULTY_WINDOW[]" << difficulty_blocks_count);
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       (alt_chain.size() + timestamps.size()) <= difficulty_blocks_count
+       , false
+       , "Internal error, alt_chain.size()["
+       + std::to_string(alt_chain.size())
+       + "] + vtimestampsec.size()["
+       + std::to_string(timestamps.size())
+       + "] NOT <= DIFFICULTY_WINDOW[]"
+       + std::to_string(difficulty_blocks_count)
+       );
 
     for (const auto &bei : alt_chain)
     {
@@ -1390,7 +1401,17 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       //here  could be 1 byte difference, because of extra field counter is varint, and it can become from 1-byte len to 2-bytes len.
       if (cumulative_weight != txs_weight + get_transaction_weight(b.miner_tx))
       {
-        LOG_ERROR_AND_RETURN_UNLESS(cumulative_weight + 1 == txs_weight + get_transaction_weight(b.miner_tx), false, "unexpected case: cumulative_weight=" << cumulative_weight << " + 1 is not equal txs_cumulative_weight=" << txs_weight << " + get_transaction_weight(b.miner_tx)=" << get_transaction_weight(b.miner_tx));
+        LOG_ERROR_AND_RETURN_UNLESS
+          (
+           cumulative_weight + 1 == txs_weight + get_transaction_weight(b.miner_tx)
+           , false
+           , "unexpected case: cumulative_weight="
+           + std::to_string(cumulative_weight)
+           + " + 1 is not equal txs_cumulative_weight="
+           + std::to_string(txs_weight)
+           + " + get_transaction_weight(b.miner_tx)="
+           + std::to_string(get_transaction_weight(b.miner_tx))
+           );
         b.miner_tx.extra.resize(b.miner_tx.extra.size() - 1);
         if (cumulative_weight != txs_weight + get_transaction_weight(b.miner_tx))
         {
@@ -1414,7 +1435,17 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
            );
       }
     }
-    LOG_ERROR_AND_RETURN_UNLESS(cumulative_weight == txs_weight + get_transaction_weight(b.miner_tx), false, "unexpected case: cumulative_weight=" << cumulative_weight << " is not equal txs_cumulative_weight=" << txs_weight << " + get_transaction_weight(b.miner_tx)=" << get_transaction_weight(b.miner_tx));
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       cumulative_weight == txs_weight + get_transaction_weight(b.miner_tx)
+       , false
+       , "unexpected case: cumulative_weight="
+       + std::to_string(cumulative_weight)
+       + " is not equal txs_cumulative_weight="
+       + std::to_string(txs_weight)
+       + " + get_transaction_weight(b.miner_tx)="
+       + std::to_string(get_transaction_weight(b.miner_tx))
+       );
 
     if (!from_block)
       cache_block_template(b, miner_address, ex_nonce, diffic, height, expected_reward, pool_cookie);
@@ -1445,7 +1476,17 @@ bool Blockchain::complete_timestamps_vector(uint64_t start_top_height, std::vect
 
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   size_t need_elements = blockchain_timestamp_check_window - timestamps.size();
-  LOG_ERROR_AND_RETURN_UNLESS(start_top_height < m_db->height(), false, "internal error: passed start_height not < " << " m_db->height() -- " << start_top_height << " >= " << m_db->height());
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+     start_top_height < m_db->height()
+     , false
+     , std::string()
+     + "internal error: passed start_height not < "
+     + " m_db->height() -- "
+     + std::to_string(start_top_height)
+     + " >= "
+     + std::to_string(m_db->height())
+     );
   size_t stop_offset = start_top_height > need_elements ? start_top_height - need_elements : 0;
   timestamps.reserve(timestamps.size() + start_top_height - stop_offset);
   while (start_top_height != stop_offset)
@@ -1999,7 +2040,12 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   // how can we expect to sync from the client that the block list came from?
   if(qblock_ids.empty())
   {
-    LOG_CATEGORY(epee::LogLevel::Error, "net.p2p", "Client sent wrong NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << qblock_ids.size() << ", dropping connection");
+    LOG_ERROR
+      (
+       "Client sent wrong NOTIFY_REQUEST_CHAIN: m_block_ids.size()="
+       + std::to_string(qblock_ids.size())
+       + ", dropping connection"
+       );
     return false;
   }
 
@@ -2009,7 +2055,22 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   auto gen_hash = m_db->get_block_hash_from_height(0);
   if(qblock_ids.back() != gen_hash)
   {
-    LOG_CATEGORY(epee::LogLevel::Error, "net.p2p", "Client sent wrong NOTIFY_REQUEST_CHAIN: genesis block mismatch: " << std::endl << "id: " << qblock_ids.back() << ", " << std::endl << "expected: " << gen_hash << "," << std::endl << " dropping connection");
+    LOG_ERROR
+      (
+       "Client sent wrong NOTIFY_REQUEST_CHAIN: genesis block mismatch: "
+       );
+    LOG_ERROR
+      (
+       "id: "
+       + qblock_ids.back().to_str()
+       );
+    LOG_ERROR
+      (
+       "expected: "
+       + gen_hash.to_str()
+       );
+    LOG_ERROR(" dropping connection");
+
     return false;
   }
 
@@ -2530,7 +2591,15 @@ bool Blockchain::check_ringct_inputs(transaction& tx, uint64_t& max_used_block_h
   if (!res)
     return false;
 
-  LOG_ERROR_AND_RETURN_UNLESS(max_used_block_height < m_db->height(), false,  "internal error: max used block index=" << max_used_block_height << " is not less then blockchain size = " << m_db->height());
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+     max_used_block_height < m_db->height()
+     , false
+     ,  "internal error: max used block index="
+     + std::to_string(max_used_block_height)
+     + " is not less then blockchain size = "
+     + std::to_string(m_db->height())
+     );
   max_used_block_id = m_db->get_block_hash_from_height(max_used_block_height);
   return true;
 }
@@ -3950,7 +4019,13 @@ bool Blockchain::check_ringct_inputs(transaction& tx, tx_verification_context &t
     const txin_from_key& in_to_key = boost::get<txin_from_key>(txin);
 
     // make sure tx output has key offset(s) (is signed to be used)
-    LOG_ERROR_AND_RETURN_UNLESS(in_to_key.output_relative_offsets.size(), false, "empty in_to_key.output_relative_offsets in transaction with id " << get_transaction_hash(tx));
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       in_to_key.output_relative_offsets.size()
+       , false
+       , "empty in_to_key.output_relative_offsets in transaction with id "
+       + get_transaction_hash(tx).to_str()
+       );
 
     if(have_tx_keyimg_as_spent(in_to_key.output_key_image))
     {

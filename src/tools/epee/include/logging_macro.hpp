@@ -55,15 +55,6 @@ see: etc/other-licenses/monero/LICENSE
     epee::log_level_cat_color(level, cat, s, color);  \
   } while (0)
 
-#define LOG_CATEGORY(level, cat, x) do {        \
-    LOG_CATEGORY_COLOR                          \
-      (                                         \
-       level                                    \
-       , cat                                    \
-       , epee::console_colors::color_default    \
-       , x );                                   \
-  } while (0)
-
 #define LOG_DEBUG_MUTE(x)
 #define LOG_VERBOSE_MUTE(x)
 #define LOG_WARNING_MUTE(x)

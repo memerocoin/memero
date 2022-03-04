@@ -402,3 +402,19 @@ void LOG_COLOR
      , x
      );
 }
+
+void LOG_CATEGORY
+(
+ const epee::LogLevel level
+ , const std::string_view cat
+ , const std::string_view x
+ )
+{
+  LOG_CATEGORY_COLOR
+    (
+     level
+     , cat
+     , epee::console_colors::color_default
+     , x
+     );
+}

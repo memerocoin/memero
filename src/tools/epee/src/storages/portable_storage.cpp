@@ -229,8 +229,14 @@ namespace epee
     {
       TRY_ENTRY();
       RETURN_UNLESS(hsec_array, false);
-      LOG_ERROR_AND_RETURN_UNLESS(hsec_array->type() == typeid(array_entry_t<section>),
-        false, "unexpected type(not 'section') in insert_next_section, type: " << hsec_array->type().name());
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         hsec_array->type() == typeid(array_entry_t<section>)
+         , false
+         , std::string()
+         + "unexpected type(not 'section') in insert_next_section, type: "
+         + hsec_array->type().name()
+         );
 
       array_entry_t<section>& sec_array = boost::get<array_entry_t<section>>(*hsec_array);
       hinserted_childsection = &sec_array.insert_next_value(section());

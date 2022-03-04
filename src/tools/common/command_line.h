@@ -184,7 +184,13 @@ namespace command_line
   {
     if (0 != description.find_nothrow(arg.name, false))
     {
-      LOG_ERROR_AND_RETURN_UNLESS(!unique, void(), "Argument already exists: " << arg.name);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         !unique
+         , void()
+         , "Argument already exists: "
+         + std::string(arg.name)
+         );
       return;
     }
 
@@ -196,7 +202,7 @@ namespace command_line
   {
     if (0 != description.find_nothrow(arg.name, false))
     {
-      LOG_ERROR_AND_RETURN_UNLESS(!unique, void(), "Argument already exists: " << arg.name);
+      LOG_ERROR_AND_RETURN_UNLESS(!unique, void(), "Argument already exists: " + std::string(arg.name));
       return;
     }
 
@@ -208,7 +214,7 @@ namespace command_line
   {
     if (0 != description.find_nothrow(arg.name, false))
     {
-      LOG_ERROR_AND_RETURN_UNLESS(!unique, void(), "Argument already exists: " << arg.name);
+      LOG_ERROR_AND_RETURN_UNLESS(!unique, void(), "Argument already exists: " + std::string(arg.name));
       return;
     }
 

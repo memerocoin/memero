@@ -487,7 +487,5 @@ namespace net_utils
 #define LOG_PRINT_CCONTEXT_L3(message) LOG_PRINT_CC_L3(context, message)
 #define LOG_ERROR_CCONTEXT(message)    LOG_ERROR_CC(context, message)
 
-#define LOG_ERROR_WITH_CONNECTION_CONTEXT_RETURN_UNLESS(condition, return_val, err_message) LOG_ERROR_AND_RETURN_UNLESS(condition, return_val, "[" << epee::net_utils::print_connection_context_short(context) << "]" << err_message)
-
 }
 }

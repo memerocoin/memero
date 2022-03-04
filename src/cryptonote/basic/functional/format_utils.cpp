@@ -321,7 +321,9 @@ namespace cryptonote
       (
        is_coinbase(b.miner_tx)
        , 0
-       , "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1"
+       , "wrong miner tx in block: "
+       + get_block_hash(b).to_str()
+       + ", b.miner_tx.vin.size() != 1"
        );
 
     CHECKED_GET_SPECIFIC_VARIANT(b.miner_tx.vin[0], const txin_gen, coinbase_in, 0);
@@ -337,9 +339,13 @@ namespace cryptonote
         (
          in.type() == typeid(txin_from_key)
          , false
-         , "wrong variant type: "
-         << in.type().name() << ", expected " << typeid(txin_from_key).name()
-         << ", in transaction id=" << get_transaction_hash(tx)
+         , std::string()
+         + "wrong variant type: "
+         + in.type().name()
+         + ", expected "
+         + typeid(txin_from_key).name()
+         + ", in transaction id="
+         + get_transaction_hash(tx).to_str()
          );
 
     }
@@ -378,7 +384,8 @@ namespace cryptonote
            epee::LogLevel::Warning
            , 0 < out.amount
            , false
-           , "zero amount output in transaction id=" << get_transaction_hash(tx)
+           , "zero amount output in transaction id="
+           + get_transaction_hash(tx).to_str()
            );
       }
     }

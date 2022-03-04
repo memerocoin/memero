@@ -371,7 +371,14 @@ namespace cryptonote
     if (tx.version == 0 || tx.version > max_tx_version)
     {
       // v2 is the latest one we know
-      LOG_ERROR_VER("Bad tx version (" << tx.version << ", max is " << max_tx_version << ")");
+      LOG_ERROR_VER
+        (
+         "Bad tx version ("
+         + std::to_string(tx.version)
+         + ", max is "
+         + std::to_string(max_tx_version)
+         + ")"
+         );
       tvc.m_verifivation_failed = true;
       return false;
     }
@@ -508,9 +515,21 @@ namespace cryptonote
       ok &= add_new_tx(results[i].tx, results[i].hash, tx_blobs[i].blob, weight, tvc[i], tx_relay, relayed);
 
       if(tvc[i].m_verifivation_failed)
-      {LOG_ERROR_VER("Transaction verification failed: " << results[i].hash);}
+      {
+        LOG_ERROR_VER
+          (
+           "Transaction verification failed: "
+           + results[i].hash.to_str()
+           );
+      }
       else if(tvc[i].m_verifivation_impossible)
-      {LOG_ERROR_VER("Transaction verification impossible: " << results[i].hash);}
+      {
+        LOG_ERROR_VER
+          (
+           "Transaction verification impossible: "
+           + results[i].hash.to_str()
+           );
+      }
 
       if(tvc[i].m_added_to_pool)
       {
@@ -541,24 +560,40 @@ namespace cryptonote
 
     if(!consensus::rule_25_ringct_should_have_at_least_one_input(tx.vin))
     {
-      LOG_ERROR_VER("tx with empty inputs, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER
+        (
+         "tx with empty inputs, rejected for tx id= "
+         + get_transaction_hash(tx).to_str()
+         );
       return false;
     }
 
     if(!check_inputs_types_supported(tx))
     {
-      LOG_ERROR_VER("unsupported input types for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER
+        (
+         "unsupported input types for tx id= "
+         + get_transaction_hash(tx).to_str()
+         );
       return false;
     }
 
     if(!check_outs_valid(tx))
     {
-      LOG_ERROR_VER("tx with invalid outputs, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER
+        (
+         "tx with invalid outputs, rejected for tx id= "
+         + get_transaction_hash(tx).to_str()
+         );
       return false;
     }
     if (tx.ringct.output_commits.size() != tx.vout.size())
     {
-      LOG_ERROR_VER("tx with mismatched vout/output_commits count, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER
+        (
+         "tx with mismatched vout/output_commits count, rejected for tx id= "
+         + get_transaction_hash(tx).to_str()
+         );
       return false;
     }
 
@@ -567,7 +602,13 @@ namespace cryptonote
     uint64_t tx_weight_limit = get_max_tx_size() - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     if(!tx_from_block && get_transaction_weight(tx) >= tx_weight_limit)
     {
-      LOG_ERROR_VER("tx is too large " << get_transaction_weight(tx) << ", expected not bigger than " << tx_weight_limit);
+      LOG_ERROR_VER
+        (
+         "tx is too large "
+         + std::to_string(get_transaction_weight(tx))
+         + ", expected not bigger than "
+         + std::to_string(tx_weight_limit)
+         );
       return false;
     }
 
@@ -886,8 +927,19 @@ namespace cryptonote
         LOG_PRINT_L1("Block found but, seems that reorganize just happened after that, do not relay this block");
         return true;
       }
-      LOG_ERROR_AND_RETURN_UNLESS(txs.size() == b.tx_hashes.size() && !missed_txs.size(), false, "can't find some transactions in found block:" << get_block_hash(b) << " txs.size()=" << txs.size()
-        << ", b.tx_hashes.size()=" << b.tx_hashes.size() << ", missed_txs.size()" << missed_txs.size());
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         txs.size() == b.tx_hashes.size() && !missed_txs.size()
+         , false
+         , "can't find some transactions in found block:"
+         + get_block_hash(b).to_str()
+         + " txs.size()="
+         + std::to_string(txs.size())
+         + ", b.tx_hashes.size()="
+         + std::to_string(b.tx_hashes.size())
+         + ", missed_txs.size()"
+         + std::to_string(missed_txs.size())
+         );
 
       const auto maybe_block_blob = maybe_block_to_blob(b);
       LOG_ERROR_AND_RETURN_UNLESS
@@ -1347,7 +1399,7 @@ namespace cryptonote
         }
 
         default: {
-          LOG_ERROR_VER("Unknown rct type: " << rv.type);
+          LOG_ERROR_VER("Unknown rct type: " + std::to_string(rv.type));
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;

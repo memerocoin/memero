@@ -44,8 +44,11 @@
 
 
 
-#define LOG_P2P_MESSAGE(x) \
-  LOG_CATEGORY(epee::LogLevel::Verbose, "net.p2p.msg", context << x)
+// #define LOG_P2P_MESSAGE(x) \
+//   LOG_CATEGORY(epee::LogLevel::Verbose, "net.p2p.msg"\
+//                , context.to_str() + x)
+
+#define LOG_P2P_MESSAGE(x) 
 
 #define LOG_P2P_MESSAGE_IF(init, test, x) \
   do { \
@@ -125,7 +128,18 @@ namespace cryptonote
   bool t_cryptonote_protocol_handler::on_callback(cryptonote_connection_context& context)
   {
     LOG_PRINT_CCONTEXT_L2("callback fired");
-    LOG_ERROR_WITH_CONNECTION_CONTEXT_RETURN_UNLESS( context.m_callback_request_count > 0, false, "false callback fired, but context.m_callback_request_count=" << context.m_callback_request_count);
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       context.m_callback_request_count > 0
+       , false
+       , std::string()
+       + "["
+       + epee::net_utils::print_connection_context_short(context)
+       + "]"
+       + "false callback fired, but context.m_callback_request_count="
+       + std::to_string(context.m_callback_request_count)
+       );
+
     --context.m_callback_request_count;
 
     if(context.m_state == cryptonote_connection_context::state_synchronizing
@@ -2055,14 +2069,26 @@ skip:
       LOG_PEER_STATE("requesting chain");
     }else
     {
-      LOG_ERROR_AND_RETURN_UNLESS(context.m_last_response_height == context.m_remote_blockchain_height-1
-                           && !context.m_needed_objects.size()
-                           && !context.m_requested_objects.size(), false, "request_missing_blocks final condition failed!"
-                           << "\r\nm_last_response_height=" << context.m_last_response_height
-                           << "\r\nm_remote_blockchain_height=" << context.m_remote_blockchain_height
-                           << "\r\nm_needed_objects.size()=" << context.m_needed_objects.size()
-                           << "\r\nm_requested_objects.size()=" << context.m_requested_objects.size()
-                           << "\r\non connection [" << epee::net_utils::print_connection_context_short(context)<< "]");
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         context.m_last_response_height == context.m_remote_blockchain_height-1
+         && !context.m_needed_objects.size()
+         && !context.m_requested_objects.size()
+         , false
+         , std::string()
+         + "request_missing_blocks final condition failed!"
+         + "\r\nm_last_response_height="
+         + std::to_string(context.m_last_response_height)
+         + "\r\nm_remote_blockchain_height="
+         + std::to_string(context.m_remote_blockchain_height)
+         + "\r\nm_needed_objects.size()="
+         + std::to_string(context.m_needed_objects.size())
+         + "\r\nm_requested_objects.size()="
+         + std::to_string(context.m_requested_objects.size())
+         + "\r\non connection ["
+         + epee::net_utils::print_connection_context_short(context)
+         + "]"
+         );
 
       context.m_state = cryptonote_connection_context::state_normal;
       if (context.m_remote_blockchain_height >= m_core.get_target_blockchain_height())

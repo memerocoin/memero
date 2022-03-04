@@ -129,6 +129,13 @@ void LOG_COLOR
  , const std::string_view x
  );
 
+void LOG_CATEGORY
+(
+ const epee::LogLevel level
+ , const std::string_view cat
+ , const std::string_view x
+ );
+
 constexpr auto _dbg3 = LOG_TRACE;
 
 constexpr auto _note = LOG_VERBOSE;

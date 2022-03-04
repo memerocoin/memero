@@ -61,7 +61,20 @@ namespace epee
       std::string blob;
       if(!stg.get_value(pname, blob, hparent_section))
         return false;
-      LOG_ERROR_AND_RETURN_UNLESS(blob.size() == sizeof(d), false, "unserialize_t_val_as_blob: size of " << typeid(t_type).name() << " = " << sizeof(t_type) << ", but stored blod size = " << blob.size() << ", value name = " << pname);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         blob.size() == sizeof(d)
+         , false
+         , std::string()
+         + "unserialize_t_val_as_blob: size of "
+         + typeid(t_type).name()
+         + " = "
+         + std::to_string(sizeof(t_type))
+         + ", but stored blod size = "
+         + std::to_string(blob.size())
+         + ", value name = "
+         + pname
+         );
       d = *(const t_type*)blob.data();
       return true;
     }
@@ -70,7 +83,7 @@ namespace epee
     static bool serialize_t_obj(const serializible_type& obj, t_storage& stg, typename t_storage::hsection hparent_section, const char* pname)
     {
       typename t_storage::hsection	hchild_section = stg.open_section(pname, hparent_section, true);
-      LOG_ERROR_AND_RETURN_UNLESS(hchild_section, false, "serialize_t_obj: failed to open/create section " << pname);
+      LOG_ERROR_AND_RETURN_UNLESS(hchild_section, false, "serialize_t_obj: failed to open/create section " + std::string(pname));
       return obj.store(stg, hchild_section);
     }
     //-------------------------------------------------------------------------------------------------------------------
@@ -153,9 +166,19 @@ namespace epee
       {
         size_t loaded_size = buff.size();
         typename stl_container::value_type* pelem =  (typename stl_container::value_type*)buff.data();
-        LOG_ERROR_AND_RETURN_IF((loaded_size%sizeof(typename stl_container::value_type)),
-          false,
-          "size in blob " << loaded_size << " not have not zero modulo for sizeof(value_type) = " << sizeof(typename stl_container::value_type) << ", type " << typeid(typename stl_container::value_type).name());
+        LOG_ERROR_AND_RETURN_IF
+          (
+           (loaded_size%sizeof(typename stl_container::value_type))
+           , false
+           , std::string()
+           + "size in blob "
+           + std::to_string(loaded_size)
+           + " not have not zero modulo for sizeof(value_type) = "
+           + std::to_string(sizeof(typename stl_container::value_type))
+           + ", type "
+           + typeid(typename stl_container::value_type).name()
+           );
+
         size_t count = (loaded_size/sizeof(typename stl_container::value_type));
         hint_resize(container, count);
         for(size_t i = 0; i < count; i++)
@@ -172,7 +195,14 @@ namespace epee
       typename stl_container::const_iterator it = container.begin();
       typename t_storage::hsection hchild_section = nullptr;
       typename t_storage::harray hsec_array = stg.insert_first_section(pname, hchild_section, hparent_section);
-      LOG_ERROR_AND_RETURN_UNLESS(hsec_array && hchild_section, false, "failed to insert first section with section name " << pname);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         hsec_array && hchild_section
+         , false
+         , std::string()
+         + "failed to insert first section with section name "
+         + pname
+         );
       res = it->store(stg, hchild_section);
       it++;
       for(;it!= container.end();it++)

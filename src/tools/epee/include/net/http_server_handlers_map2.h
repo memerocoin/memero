@@ -71,7 +71,7 @@
       handled = true; \
       boost::value_initialized<command_type::request> req; \
       bool parse_res = epee::serialization::load_t_from_json(static_cast<command_type::request&>(req), query_info.m_body); \
-      LOG_ERROR_AND_RETURN_UNLESS(parse_res, false, "Failed to parse json: \r\n" << query_info.m_body); \
+      LOG_ERROR_AND_RETURN_UNLESS(parse_res, false, "Failed to parse json: \r\n" + query_info.m_body); \
       boost::value_initialized<command_type::response> resp;\
       LOG_VERBOSE(m_conn_context.to_str() + "calling " + s_pattern);  \
       bool res = false; \

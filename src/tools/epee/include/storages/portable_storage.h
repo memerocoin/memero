@@ -291,8 +291,14 @@ namespace epee
       TRY_ENTRY();
       RETURN_UNLESS(hval_array, false);
 
-      LOG_ERROR_AND_RETURN_UNLESS(hval_array->type() == typeid(array_entry_t<t_real_value>),
-        false, "unexpected type in insert_next_value: " << typeid(array_entry_t<t_real_value>).name());
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         hval_array->type() == typeid(array_entry_t<t_real_value>)
+         , false
+         , std::string()
+         + "unexpected type in insert_next_value: "
+         + typeid(array_entry_t<t_real_value>).name()
+         );
 
       array_entry_t<t_real_value>& arr_typed = boost::get<array_entry_t<t_real_value> >(*hval_array);
       arr_typed.insert_next_value(std::forward<t_value>(target));

@@ -443,9 +443,19 @@ namespace cryptonote
       {
         const bool one_txid =
           (kei_image_set.empty() || (kei_image_set.size() == 1 && *(kei_image_set.cbegin()) == id));
-        LOG_ERROR_AND_RETURN_UNLESS(one_txid, false, "internal error: tx_relay=" << unsigned(tx_relay)
-                                           << ", kei_image_set.size()=" << kei_image_set.size() << std::endl << "txin.output_key_image=" << txin.output_key_image << std::endl
-                                           << "tx_id=" + id.to_str());
+        LOG_ERROR_AND_RETURN_UNLESS
+          (
+           one_txid
+           , false
+           , "internal error: tx_relay="
+           + std::to_string(unsigned(tx_relay))
+           + ", kei_image_set.size()="
+           + std::to_string(kei_image_set.size())
+           + "\t txin.output_key_image="
+           + txin.output_key_image.to_str()
+           + "\t tx_id="
+           + id.to_str()
+           );
       }
 
       const bool new_or_previously_private =
@@ -469,15 +479,36 @@ namespace cryptonote
     {
       CHECKED_GET_SPECIFIC_VARIANT(vi, const txin_from_key, txin, false);
       auto it = m_spent_output_key_images.find(txin.output_key_image);
-      LOG_ERROR_AND_RETURN_UNLESS(it != m_spent_output_key_images.end(), false, "failed to find transaction input in key images. img=" << txin.output_key_image << std::endl
-                                    << "transaction id = " << actual_hash);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         it != m_spent_output_key_images.end()
+         , false
+         , "failed to find transaction input in key images. img="
+         + txin.output_key_image.to_str()
+         + "\t transaction id = "
+         + actual_hash.to_str()
+         );
       std::unordered_set<crypto::hash>& output_key_image_set =  it->second;
-      LOG_ERROR_AND_RETURN_UNLESS(output_key_image_set.size(), false, "empty output_key_image set, img=" << txin.output_key_image << std::endl
-        << "transaction id = " << actual_hash);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         output_key_image_set.size()
+         , false
+         , "empty output_key_image set, img="
+         + txin.output_key_image.to_str()
+         + "\t transaction id = "
+         + actual_hash.to_str()
+         );
 
       auto it_in_set = output_key_image_set.find(actual_hash);
-      LOG_ERROR_AND_RETURN_UNLESS(it_in_set != output_key_image_set.end(), false, "transaction id not found in output_key_image set, img=" << txin.output_key_image << std::endl
-        << "transaction id = " << actual_hash);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         it_in_set != output_key_image_set.end()
+         , false
+         , "transaction id not found in output_key_image set, img="
+         + txin.output_key_image.to_str()
+         + "\t transaction id = "
+         + actual_hash.to_str()
+         );
       output_key_image_set.erase(it_in_set);
       if(!output_key_image_set.size())
       {
@@ -1209,7 +1240,13 @@ namespace cryptonote
     {
       CHECKED_GET_SPECIFIC_VARIANT(tx.vin[i], const txin_from_key, itk, false);
       auto i_res = output_key_images.insert(itk.output_key_image);
-      LOG_ERROR_AND_RETURN_UNLESS(i_res.second, false, "internal error: key images pool cache - inserted duplicate image in set: " << itk.output_key_image);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         i_res.second
+         , false
+         , "internal error: key images pool cache - inserted duplicate image in set: "
+         + itk.output_key_image.to_str()
+         );
     }
     return true;
   }

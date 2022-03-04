@@ -96,7 +96,12 @@ namespace cryptonote
        eph_pk
        , {}
        , "at creation outs: failed to compute_output_public_key_from_subaddress_spend_pk("
-       << tx_output_shared_secret << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
+       + tx_output_shared_secret.to_str()
+       + ", "
+       + std::to_string(output_index)
+       + ", "
+       + dst_entr.addr.m_spend_public_key.to_str()
+       + ")"
        );
 
     // carry
@@ -297,7 +302,7 @@ namespace cryptonote
     size_t output_index = 0;
     for(const tx_destination_entry& dst_entr: destinations)
     {
-      LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, {}, "Destination with wrong amount: " << dst_entr.amount);
+      LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, {}, "Destination with wrong amount: " + std::to_string(dst_entr.amount));
 
       const auto r = generate_output_key_pairs
         (
@@ -521,8 +526,10 @@ namespace cryptonote
        out_eph_public_key
        , {}
        , "while creating outs: failed to compute_output_public_key_from_subaddress_spend_pk("
-       << tx_output_shared_secret << ", " << 0 << ", "
-       << miner_address.m_spend_public_key << ")"
+       + tx_output_shared_secret.to_str()
+       + ", "
+       + miner_address.m_spend_public_key.to_str()
+       + ")"
        );
 
     txout_to_key tk;
@@ -539,7 +546,7 @@ namespace cryptonote
     tx.unlock_height = consensus::get_coinbase_unlock_height(height);
     tx.vin.push_back(in);
 
-    //LOG_PRINT("MINER_TX generated ok, block_reward=" << print_money(block_reward) << "("  << print_money(block_reward - fee) << "+" << print_money(fee)
+    //LOG_PRINT("MINER_TX generated ok, block_reward=" << print_money(block_reward) << "("  << print_money(block_reward - fee) << "+" << print_money(fee).to_str()
     //  << "), current_block_size=" << current_block_size << ", already_generated_coins=" << already_generated_coins << ", tx_id=" << get_transaction_hash(tx), LOG_LEVEL_2);
     return tx;
   }

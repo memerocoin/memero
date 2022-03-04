@@ -68,7 +68,7 @@ namespace cryptonote
          , r
          , {}
          , "failed to deserialize extra field. extra = "
-         << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+         + epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
          );
       tx_extra_fields.push_back(field);
 
@@ -82,7 +82,7 @@ namespace cryptonote
        , ::serialization::check_stream_state(ar)
        , {}
        , "failed to deserialize extra field. extra = "
-       << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+       + epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
        );
 
     return tx_extra_fields;
@@ -206,7 +206,7 @@ namespace cryptonote
          , r
          , {}
          , "failed to deserialize extra field. extra = "
-         << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+         + epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
          );
       if (field.type() != type)
         ::do_serialize(newar, field);
@@ -221,7 +221,7 @@ namespace cryptonote
        , ::serialization::check_stream_state(ar)
        , {}
        , "failed to deserialize extra field. extra = "
-       << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+       + epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
        );
     std::string s = oss.str();
     tx_extra.reserve(s.size());

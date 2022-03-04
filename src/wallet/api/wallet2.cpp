@@ -2077,7 +2077,13 @@ bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable
   bool r = ::serialization::dump_binary(keys_file_data.value(), buf);
   r = r && wallet::logic::controller::wallet::save_to_file
     (tmp_file_name, buf);
-  LOG_ERROR_AND_RETURN_UNLESS(r, false, "failed to generate wallet keys file " << tmp_file_name);
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+     r
+     , false
+     , "failed to generate wallet keys file "
+     + tmp_file_name
+     );
 
   std::error_code e = tools::replace_file(tmp_file_name, keys_file_name);
 

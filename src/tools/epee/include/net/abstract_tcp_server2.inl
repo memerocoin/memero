@@ -139,7 +139,17 @@ namespace net_utils
 
     boost::system::error_code ec;
     auto remote_ep = socket().remote_endpoint(ec);
-    LOG_AND_RETURN_UNLESS(LogLevel::Warning, !ec, false, "Failed to get remote endpoint: " << ec.message() << ':' << ec.value());
+    LOG_AND_RETURN_UNLESS
+      (
+       LogLevel::Warning
+       , !ec
+       , false
+       , std::string()
+       + "Failed to get remote endpoint: "
+       + ec.message()
+       + ':'
+       + std::to_string(ec.value())
+       );
     LOG_AND_RETURN_UNLESS(LogLevel::Warning, remote_ep.address().is_v4() || remote_ep.address().is_v6(), false, "only IPv4 and IPv6 supported here");
 
     if (remote_ep.address().is_v4())
@@ -176,7 +186,17 @@ namespace net_utils
 
     boost::system::error_code ec;
     auto local_ep = socket().local_endpoint(ec);
-    LOG_AND_RETURN_UNLESS(LogLevel::Warning, !ec, false, "Failed to get local endpoint: " << ec.message() << ':' << ec.value());
+    LOG_AND_RETURN_UNLESS
+      (
+       LogLevel::Warning
+       , !ec
+       , false
+       , std::string()
+       + "Failed to get local endpoint: "
+       + ec.message()
+       + ':'
+       + std::to_string(ec.value())
+       );
 
     _dbg3
       (
@@ -283,7 +303,14 @@ namespace net_utils
     LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] release");
     {
       LOCK_RECURSIVE_MUTEX(m_self_refs_lock);
-      LOG_ERROR_AND_RETURN_UNLESS(m_reference_count, false, "[sock " << socket().native_handle() << "] m_reference_count already at 0 at connection<t_protocol_handler>::release() call");
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         m_reference_count
+         , false
+         , "[sock "
+         + std::to_string(socket().native_handle())
+         + "] m_reference_count already at 0 at connection<t_protocol_handler>::release() call"
+         );
       // is this the last reference?
       if (--m_reference_count == 0) {
           // move the held reference to a local variable, keeping the object alive until the function terminates

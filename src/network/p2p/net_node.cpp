@@ -167,11 +167,11 @@ namespace nodetool
             proxies.emplace_back();
 
             auto next = boost::algorithm::make_split_iterator(arg, boost::algorithm::first_finder(","));
-            LOG_ERROR_AND_RETURN_UNLESS(!next.eof() && !next->empty(), std::nullopt, "No network type for --" << arg_proxy.name);
+            LOG_ERROR_AND_RETURN_UNLESS(!next.eof() && !next->empty(), std::nullopt, "No network type for --" + std::string(arg_proxy.name));
             const std::string_view zone{next->begin(), next->size()};
 
             ++next;
-            LOG_ERROR_AND_RETURN_UNLESS(!next.eof() && !next->empty(), std::nullopt, "No ipv4:port given for --" << arg_proxy.name);
+            LOG_ERROR_AND_RETURN_UNLESS(!next.eof() && !next->empty(), std::nullopt, "No ipv4:port given for --" + std::string(arg_proxy.name));
             const std::string_view proxy{next->begin(), next->size()};
 
             ++next;
@@ -241,15 +241,15 @@ namespace nodetool
             inbounds.emplace_back();
 
             auto next = boost::algorithm::make_split_iterator(arg, boost::algorithm::first_finder(","));
-            LOG_ERROR_AND_RETURN_UNLESS(!next.eof() && !next->empty(), std::nullopt, "No inbound address for --" << arg_anonymous_inbound.name);
+            LOG_ERROR_AND_RETURN_UNLESS(!next.eof() && !next->empty(), std::nullopt, "No inbound address for --" + std::string(arg_anonymous_inbound.name));
             const std::string_view address{next->begin(), next->size()};
 
             ++next;
-            LOG_ERROR_AND_RETURN_UNLESS(!next.eof() && !next->empty(), std::nullopt, "No local ipv4:port given for --" << arg_anonymous_inbound.name);
+            LOG_ERROR_AND_RETURN_UNLESS(!next.eof() && !next->empty(), std::nullopt, "No local ipv4:port given for --" + std::string(arg_anonymous_inbound.name));
             const std::string_view bind{next->begin(), next->size()};
 
             const std::size_t colon = bind.find_first_of(':');
-            LOG_ERROR_AND_RETURN_UNLESS(colon < bind.size(), std::nullopt, "No local port given for --" << arg_anonymous_inbound.name);
+            LOG_ERROR_AND_RETURN_UNLESS(colon < bind.size(), std::nullopt, "No local port given for --" + std::string(arg_anonymous_inbound.name));
 
             ++next;
             if (!next.eof())
@@ -445,7 +445,18 @@ namespace nodetool
     ip::tcp::resolver::query query(host, port, boost::asio::ip::tcp::resolver::query::canonical_name);
     boost::system::error_code ec;
     ip::tcp::resolver::iterator i = resolver.resolve(query, ec);
-    LOG_ERROR_AND_RETURN_UNLESS(!ec, false, "Failed to resolve host name '" << host << "': " << ec.message() << ':' << ec.value());
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       !ec
+       , false
+       , std::string()
+       + "Failed to resolve host name '"
+       + host
+       + "': "
+       + ec.message()
+       + ':'
+       + std::to_string(ec.value())
+       );
 
     ip::tcp::resolver::iterator iend;
     for (; i != iend; ++i)

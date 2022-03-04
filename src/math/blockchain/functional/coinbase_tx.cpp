@@ -98,9 +98,9 @@ std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx) {
       )
      , {}
      , "coinbase transaction transaction has the wrong unlock time="
-     << tx.unlock_height
-     << ", expected "
-     << consensus::get_coinbase_unlock_height(input.height)
+     + std::to_string(tx.unlock_height)
+     + ", expected "
+     + std::to_string(consensus::get_coinbase_unlock_height(input.height))
      );
 
   const tx_common common = {

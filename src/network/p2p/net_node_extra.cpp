@@ -393,13 +393,25 @@ namespace nodetool
           m_command_line_peers.push_back(std::move(pe));
           continue;
         }
-        LOG_ERROR_AND_RETURN_UNLESS(
-          adr == net::error::unsupported_address, false, "Bad address (\"" << pr_str << "\"): " << adr.error().message()
-        );
+        LOG_ERROR_AND_RETURN_UNLESS
+          (
+           adr == net::error::unsupported_address
+           , false
+           , "Bad address (\""
+           + pr_str
+           + "\"): "
+           + adr.error().message()
+           );
 
         std::vector<epee::net_utils::network_address> resolved_addrs;
         bool r = append_net_address(resolved_addrs, pr_str, default_port);
-        LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse or resolve address from string: " << pr_str);
+        LOG_ERROR_AND_RETURN_UNLESS
+          (
+           r
+           , false
+           , "Failed to parse or resolve address from string: "
+           + pr_str
+           );
         for (const epee::net_utils::network_address& addr : resolved_addrs)
         {
           pe.id = crypto::rand<uint64_t>();
@@ -1417,7 +1429,14 @@ namespace nodetool
       tried_peers.insert(random_index);
       peerlist_entry pe = AUTO_VAL_INIT(pe);
       bool r = use_white_list ? zone.m_peerlist.get_white_peer_by_index(pe, random_index):zone.m_peerlist.get_gray_peer_by_index(pe, random_index);
-      LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to get random peer from peerlist(white:" << use_white_list << ")");
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         r
+         , false
+         , "Failed to get random peer from peerlist(white:"
+         + std::to_string(use_white_list)
+         + ")"
+         );
 
       ++try_count;
 
@@ -2516,7 +2535,7 @@ namespace nodetool
       }
       std::vector<epee::net_utils::network_address> resolved_addrs;
       bool r = append_net_address(resolved_addrs, pr_str, default_port);
-      LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse or resolve address from string: " << pr_str);
+      LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse or resolve address from string: " + pr_str);
       for (const epee::net_utils::network_address& addr : resolved_addrs)
       {
         container.push_back(addr);

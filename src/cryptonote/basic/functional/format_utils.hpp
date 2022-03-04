@@ -215,8 +215,9 @@ namespace cryptonote
   (                                                                     \
    variant_var.type() == typeid(specific_type)                          \
    , fail_return_val                                                    \
-   , "wrong variant type: "                                             \
-   << variant_var.type().name()                                         \
-   << ", expected "                                                     \
-   << typeid(specific_type).name());                                    \
+   , std::string()                                                      \
+   + "wrong variant type: "                                             \
+   + variant_var.type().name()                                          \
+   + ", expected "                                                      \
+   + typeid(specific_type).name());                                     \
   specific_type& variable_name = boost::get<specific_type>(variant_var);
