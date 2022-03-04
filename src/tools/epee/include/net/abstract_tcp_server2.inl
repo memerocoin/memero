@@ -194,7 +194,14 @@ namespace net_utils
 
     if(static_cast<shared_state&>(get_state()).pfilter && !static_cast<shared_state&>(get_state()).pfilter->is_remote_host_allowed(context.m_remote_address))
     {
-      _dbg2("[sock " << socket().native_handle() << "] host denied " << context.m_remote_address.host_str() << ", shutdowning connection");
+      _dbg2
+        (
+         "[sock "
+         + std::to_string(socket().native_handle())
+         + "] host denied "
+         + context.m_remote_address.host_str()
+         + ", shutdowning connection"
+         );
       close();
       return false;
     }
@@ -226,7 +233,12 @@ namespace net_utils
   bool connection<t_protocol_handler>::request_callback()
   {
     TRY_ENTRY();
-    _dbg2("[" << print_connection_context_short(context) << "] request_callback");
+    _dbg2
+      (
+       "["
+       + print_connection_context_short(context)
+       + "] request_callback"
+       );
     // Use safe_shared_from_this, because of this is public method and it can be called on the object being deleted
     auto self = safe_shared_from_this();
     if(!self)
@@ -286,7 +298,12 @@ namespace net_utils
   void connection<t_protocol_handler>::call_back_starter()
   {
     TRY_ENTRY();
-    _dbg2("[" << print_connection_context_short(context) << "] fired_callback");
+    _dbg2
+      (
+       "["
+       + print_connection_context_short(context)
+       + "] fired_callback"
+       );
     m_protocol_handler.handle_qued_callback();
     CATCH_ENTRY_L0("connection<t_protocol_handler>::call_back_starter()", void());
   }
@@ -719,7 +736,15 @@ namespace net_utils
 
     if (e)
     {
-      _dbg1("[sock " << socket().native_handle() << "] Some problems at write: " << e.message() << ':' << e.value());
+      _dbg1
+        (
+         "[sock "
+         + std::to_string(socket().native_handle())
+         + "] Some problems at write: "
+         + e.message()
+         + ':'
+         + std::to_string(e.value())
+         );
       shutdown();
       return;
     }

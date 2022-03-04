@@ -84,19 +84,6 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_WARNING_MUTE(x)
 #define LOG_ERROR_MUTE(x)
 
-#define _info(x) LOG_INFO(x)
-
-// #define _dbg2(x) LOG_DEBUG(x)
-// #define _dbg1(x) LOG_DEBUG(x)
-// #define _fact(x) LOG_DEBUG(x)
-// #define _mark(x) LOG_DEBUG(x)
-
-#define _dbg2(x)
-#define _dbg1(x)
-#define _fact(x)
-#define _mark(x)
-
-
 #define TRY_ENTRY()   try {
 
 #define CATCH_ENTRY(location, return_val) }     \

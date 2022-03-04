@@ -119,6 +119,11 @@ constexpr auto _dbg3 = LOG_TRACE;
 
 constexpr auto _note = LOG_VERBOSE;
 constexpr auto _erro = LOG_ERROR;
+constexpr auto _info = LOG_INFO;
+constexpr auto _fact = LOG_DEBUG;
+constexpr auto _dbg1 = LOG_DEBUG;
+constexpr auto _dbg2 = LOG_DEBUG;
+
 constexpr auto LOG_PRINT_L0 = LOG_WARNING;
 constexpr auto LOG_PRINT_L1 = LOG_INFO;
 constexpr auto LOG_PRINT_L2 = LOG_VERBOSE;
