@@ -2291,12 +2291,24 @@ namespace nodetool
       if (!check_connection_and_handshake_with_peer(pe.adr, pe.last_seen))
       {
         zone.second.m_peerlist.remove_from_peer_gray(pe);
-        LOG_PRINT_L2("PEER EVICTED FROM GRAY PEER LIST: address: " << pe.adr.host_str() << " Peer ID: " << peerid_to_string(pe.id));
+        LOG_VERBOSE
+          (
+           "PEER EVICTED FROM GRAY PEER LIST: address: "
+           + pe.adr.host_str()
+           + " Peer ID: "
+           + peerid_to_string(pe.id)
+           );
       }
       else
       {
         zone.second.m_peerlist.set_peer_just_seen(pe.id, pe.adr);
-        LOG_PRINT_L2("PEER PROMOTED TO WHITE PEER LIST IP address: " << pe.adr.host_str() << " Peer ID: " << peerid_to_string(pe.id));
+        LOG_VERBOSE
+          (
+           "PEER PROMOTED TO WHITE PEER LIST IP address: "
+           + pe.adr.host_str()
+           + " Peer ID: "
+           + peerid_to_string(pe.id)
+           );
       }
     }
     return true;

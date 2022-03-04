@@ -293,9 +293,9 @@ namespace cryptonote
     }
 
     LOG_PRINT_L2("tx output pubkeys: ");
-    for (size_t i = 0; i < output_public_keys.size(); ++i)
-      LOG_PRINT_L2(output_public_keys[i]);
-
+    for (size_t i = 0; i < output_public_keys.size(); ++i) {
+      LOG_PRINT_L2(output_public_keys[i].to_str());
+    }
     tx.extra = add_output_ecdh_public_keys_to_extra(tx.extra, output_public_keys);
 
     //check money

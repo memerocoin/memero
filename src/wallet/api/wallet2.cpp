@@ -925,7 +925,15 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       }
       else
         m_payments.emplace(crypto::null_hash, payment);
-      LOG_PRINT_L2("Payment found in " << (pool ? "pool" : "block") << " / " << payment.m_tx_hash << " / " << payment.m_amount);
+      LOG_VERBOSE
+        (
+         std::string("Payment found in ")
+         + (pool ? "pool" : "block")
+         + " / "
+         + payment.m_tx_hash.to_str()
+         + " / "
+         + std::to_string(payment.m_amount)
+         );
     }
   }
 }
@@ -1039,7 +1047,15 @@ void wallet2::process_new_blockchain_entry
   else
   {
     if (!(height % 128))
-      LOG_PRINT_L2( "Skipped block by timestamp, height: " << height << ", block time " << b.timestamp << ", account time " << m_account.get_createtime());
+      LOG_VERBOSE
+        (
+         "Skipped block by timestamp, height: "
+         + std::to_string(height)
+         + ", block time "
+         + std::to_string(b.timestamp)
+         + ", account time "
+         + std::to_string(m_account.get_createtime())
+         );
   }
 
   m_blockchain.push_back(bl_id);
@@ -1440,7 +1456,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
       // if it's for us, we want to keep track of whether we saw a double spend, so don't bail out
       if (!txid_found_in_up)
       {
-        LOG_PRINT_L2("Already seen " << txid << ", and not for us, skipped");
+        LOG_PRINT_L2("Already seen " + txid.to_str() + ", and not for us, skipped");
         continue;
       }
     }
@@ -1605,7 +1621,11 @@ void wallet2::fast_refresh(uint64_t stop_height, uint64_t &blocks_start_height, 
       if(current_index >= m_blockchain.size())
       {
         if (!(current_index % 1024))
-          LOG_PRINT_L2( "Skipped block by height: " << current_index);
+          LOG_VERBOSE
+            (
+             "Skipped block by height: "
+             + std::to_string(current_index)
+             );
         m_blockchain.push_back(bl_id);
 
         if (0 != m_callback)
@@ -2907,7 +2927,14 @@ void wallet2::commit_tx(pending_tx& ptx)
     m_output_secret_keys[txid] = ptx.output_secret_keys;
   }
 
-  LOG_PRINT_L2("transaction " << txid << " generated ok and sent to daemon, output_key_images: [" << ptx.output_key_images << "]");
+  LOG_VERBOSE
+    (
+     "transaction "
+     + txid.to_str()
+     + " generated ok and sent to daemon, output_key_images: ["
+     + ptx.output_key_images
+     + "]"
+     );
 
   for(size_t idx: ptx.selected_transfers)
   {

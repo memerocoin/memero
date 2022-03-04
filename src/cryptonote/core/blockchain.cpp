@@ -2323,21 +2323,21 @@ bool Blockchain::have_block_unlocked(const crypto::hash& id, int *where) const
 
   if(m_db->block_exists(id))
   {
-    LOG_PRINT_L2("block " << id << " found in main chain");
+    LOG_PRINT_L2("block " + id.to_str() + " found in main chain");
     if (where) *where = HAVE_BLOCK_MAIN_CHAIN;
     return true;
   }
 
   if(m_db->get_alt_block(id))
   {
-    LOG_PRINT_L2("block " << id << " found in alternative chains");
+    LOG_PRINT_L2("block " + id.to_str() +  " found in alternative chains");
     if (where) *where = HAVE_BLOCK_ALT_CHAIN;
     return true;
   }
 
   if(m_invalid_blocks.count(id))
   {
-    LOG_PRINT_L2("block " << id << " found in m_invalid_blocks");
+    LOG_PRINT_L2("block " + id.to_str() + " found in m_invalid_blocks");
     if (where) *where = HAVE_BLOCK_INVALID;
     return true;
   }

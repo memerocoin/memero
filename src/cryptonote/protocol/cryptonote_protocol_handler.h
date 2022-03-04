@@ -161,7 +161,14 @@ namespace cryptonote
     template<class t_parameter>
       bool post_notify(typename t_parameter::request& arg, cryptonote_connection_context& context)
       {
-        LOG_PRINT_L2("[" << epee::net_utils::print_connection_context_short(context) << "] post " << typeid(t_parameter).name() << " -->");
+        LOG_VERBOSE
+          (
+           "["
+           + epee::net_utils::print_connection_context_short(context)
+           + "] post "
+           + std::string(typeid(t_parameter).name())
+           + " -->"
+           );
         std::string blob;
         epee::serialization::store_t_to_binary(arg, blob);
         //handler_response_blocks_now(blob.size()); // XXX

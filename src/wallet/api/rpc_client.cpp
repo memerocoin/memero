@@ -146,7 +146,7 @@ void RPC_Client::get_tx_outputs
  , std::vector<uint64_t> &rct_offsets
  ) const
 {
-  LOG_PRINT_L2("fake_outputs_count: " << fake_outputs_count);
+  LOG_VERBOSE("fake_outputs_count: " + std::to_string(fake_outputs_count));
   outs.clear();
 
   if (fake_outputs_count > 0)
@@ -179,7 +179,11 @@ void RPC_Client::get_tx_outputs
 
     // we ask for more, to have spares if some outputs are still locked
     size_t base_requested_outputs_count = (size_t)((fake_outputs_count + 1) * 1.5 + 1);
-    LOG_PRINT_L2("base_requested_outputs_count: " << base_requested_outputs_count);
+    LOG_VERBOSE
+      (
+       "base_requested_outputs_count: "
+       + std::to_string(base_requested_outputs_count)
+       );
 
     // generate output indices to request
     cryptonote::COMMAND_RPC_GET_OUTPUTS::request req = AUTO_VAL_INIT(req);
@@ -415,11 +419,17 @@ void RPC_Client::get_tx_outputs
         order[n] = n;
       std::shuffle(order.begin(), order.end(), crypto::random_device{});
 
-      LOG_PRINT_L2("Looking for " << (fake_outputs_count+1) << " outputs of size " << print_money(td.is_rct() ? 0 : td.amount()));
+      LOG_VERBOSE
+        (
+         "Looking for "
+         + std::to_string(fake_outputs_count+1)
+         + " outputs of size "
+         + print_money(td.is_rct() ? 0 : td.amount())
+         );
       for (size_t o = 0; o < requested_outputs_count && outs.back().size() < fake_outputs_count + 1; ++o)
       {
         size_t i = base + order[o];
-        LOG_PRINT_L2("Index " << i << "/" << requested_outputs_count << ": idx " << req.outputs[i].index << " (real " << td.m_global_output_index << "), unlocked " << resp_outputs[i].unlocked << ", key " << resp_outputs[i].key);
+        LOG_VERBOSE_MUTE("Index " << i << "/" << requested_outputs_count << ": idx " << req.outputs[i].index << " (real " << td.m_global_output_index << "), unlocked " << resp_outputs[i].unlocked << ", key " << resp_outputs[i].key);
         tx_add_fake_output(outs, req.outputs[i].index, resp_outputs[i].key, resp_outputs[i].mask, td.m_global_output_index, resp_outputs[i].unlocked);
       }
       if (outs.back().size() < fake_outputs_count + 1)

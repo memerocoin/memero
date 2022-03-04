@@ -172,7 +172,7 @@ namespace epee
 
           boost::trim(command);
 
-          LOG_PRINT_L2("Read command: " << command);
+          LOG_VERBOSE("Read command: " + command);
           if(cmd_handler(command))
           {
             continue;

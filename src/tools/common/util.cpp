@@ -78,11 +78,17 @@ namespace tools
     bool res = fs::create_directories(fs_path, ec);
     if (res)
     {
-      LOG_PRINT_L2("Created directory: " << path);
+      LOG_VERBOSE("Created directory: " + path);
     }
     else
     {
-      LOG_PRINT_L2("Can't create directory: " << path << ", err: "<< ec.message());
+      LOG_VERBOSE
+        (
+         "Can't create directory: "
+         + path
+         + ", err: "
+         + ec.message()
+         );
     }
 
     return res;

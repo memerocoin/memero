@@ -357,7 +357,8 @@ std::vector<size_t> pick_preferred_rct_inputs
 
   using namespace cryptonote;
 
-  LOG_PRINT_L2("pick_preferred_rct_inputs: needed_money " << print_money(needed_money));
+  LOG_PRINT_L2
+    ("pick_preferred_rct_inputs: needed_money " + print_money(needed_money));
 
   // try to find a rct input of enough size
   for (size_t i = 0; i < m_transfers.size(); ++i)
@@ -374,7 +375,13 @@ std::vector<size_t> pick_preferred_rct_inputs
        && subaddr_indices.count(td.m_subaddr_index.minor) == 1
        )
     {
-      LOG_PRINT_L2("We can use " << i << " alone: " << print_money(td.amount()));
+      LOG_VERBOSE
+        (
+         "We can use "
+         + std::to_string(i)
+         + " alone: "
+         + print_money(td.amount())
+         );
       picks.push_back(i);
       return picks;
     }
@@ -398,7 +405,13 @@ std::vector<size_t> pick_preferred_rct_inputs
        && subaddr_indices.count(td.m_subaddr_index.minor) == 1
        )
     {
-      LOG_PRINT_L2("Considering input " << i << ", " << print_money(td.amount()));
+      LOG_VERBOSE
+        (
+         "Considering input "
+         + std::to_string(i)
+         + ", "
+         + print_money(td.amount())
+         );
       for (size_t j = i + 1; j < m_transfers.size(); ++j)
       {
         const transfer_details& td2 = m_transfers[j];
@@ -421,12 +434,11 @@ std::vector<size_t> pick_preferred_rct_inputs
           LOG_PRINT_L2
             (
              "  with input "
-             <<
-             j
-             << ", "
-             << print_money(td2.amount())
-             << ", relatedness "
-             << relatedness
+             + std::to_string(j)
+             + ", "
+             + print_money(td2.amount())
+             + ", relatedness "
+             + std::to_string(relatedness)
              );
 
           if (relatedness < current_output_relatdness)
@@ -477,8 +489,8 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
     get_upper_transaction_weight_limit();
 
   uint64_t needed_money = fee;
-  LOG_PRINT_L2("transfer_selected_rct: starting with fee " << print_money (needed_money));
-  LOG_PRINT_L2("selected transfers: " << helper::strjoin(selected_transfers, " "));
+  LOG_PRINT_L2("transfer_selected_rct: starting with fee " + print_money (needed_money));
+  LOG_PRINT_L2("selected transfers: " + helper::strjoin(selected_transfers, " "));
 
   // calculate total amount being sent to all destinations
   // throw if total amount overflows uint64_t
@@ -486,7 +498,13 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   {
     THROW_WALLET_EXCEPTION_IF(0 == dt.amount, tools::error::zero_destination);
     needed_money += dt.amount;
-    LOG_PRINT_L2("transfer: adding " << print_money(dt.amount) << ", for a total of " << print_money (needed_money));
+    LOG_VERBOSE
+      (
+       "transfer: adding "
+       + print_money(dt.amount)
+       + ", for a total of "
+       + print_money (needed_money)
+       );
     THROW_WALLET_EXCEPTION_IF(needed_money < dt.amount, tools::error::tx_sum_overflow, dsts, fee, m_nettype);
   }
 
@@ -498,7 +516,16 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
     found_money += m_transfers[idx].amount();
   }
 
-  LOG_PRINT_L2("wanted " << print_money(needed_money) << ", found " << print_money(found_money) << ", fee " << print_money(fee));
+  LOG_VERBOSE
+    (
+     "wanted "
+     + print_money(needed_money)
+     + ", found "
+     + print_money(found_money)
+     + ", fee "
+     + print_money(fee)
+     );
+     
   THROW_WALLET_EXCEPTION_IF(found_money < needed_money, tools::error::not_enough_unlocked_money, found_money, needed_money - fee, fee);
 
   uint32_t subaddr_account = m_transfers[*selected_transfers.begin()].m_subaddr_index.major;

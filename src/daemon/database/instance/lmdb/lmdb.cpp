@@ -1404,7 +1404,11 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
   MDB_stat db_stats;
   if ((result = mdb_stat(txn, m_blocks, &db_stats)))
     throw0(DB_ERROR(lmdb_error("Failed to query m_blocks: ", result).c_str()));
-  LOG_PRINT_L2("Setting m_height to: " << db_stats.ms_entries);
+  LOG_VERBOSE
+    (
+     "Setting m_height to: "
+     + std::to_string(db_stats.ms_entries)
+     );
   uint64_t m_height = db_stats.ms_entries;
 
   bool compatible = true;

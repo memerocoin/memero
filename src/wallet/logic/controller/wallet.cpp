@@ -530,7 +530,13 @@ namespace wallet {
     {
       THROW_WALLET_EXCEPTION_IF(0 == dt.amount, tools::error::zero_destination);
       needed_money += dt.amount;
-      LOG_PRINT_L2("transfer: adding " << print_money(dt.amount) << ", for a total of " << print_money (needed_money));
+      LOG_VERBOSE
+        (
+         "transfer: adding "
+         + print_money(dt.amount)
+         + ", for a total of "
+         + print_money (needed_money)
+         );
       THROW_WALLET_EXCEPTION_IF(needed_money < dt.amount, tools::error::tx_sum_overflow, dsts, 0, m_nettype);
     }
 
@@ -678,7 +684,14 @@ namespace wallet {
       std::sort(unused_dust_indices_per_subaddr.begin(), unused_dust_indices_per_subaddr.end(), sort_predicate);
     }
 
-    LOG_PRINT_L2("Starting with " << num_nondust_outputs << " non-dust outputs and " << num_dust_outputs << " dust outputs");
+    LOG_VERBOSE
+      (
+       "Starting with "
+       + std::to_string(num_nondust_outputs)
+       + " non-dust outputs and "
+       + std::to_string(num_dust_outputs)
+       + " dust outputs"
+       );
 
     if (unused_dust_indices_per_subaddr.empty() && unused_transfers_indices_per_subaddr.empty()) {
       return std::vector<type::tx::pending_tx>();
@@ -766,10 +779,26 @@ namespace wallet {
     while ((!dsts.empty() && dsts[0].amount > 0) || adding_fee || !preferred_inputs.empty()) {
       TX &tx = txes.back();
 
-      LOG_PRINT_L2("Start of loop with " << unused_transfers_indices.size() << ", tx.dsts.size() " << tx.dsts.size());
-      LOG_PRINT_L2("unused_transfers_indices: " << functional::helper::strjoin(unused_transfers_indices, " "));
-      LOG_PRINT_L2("dsts size " << dsts.size() << ", first " << (dsts.empty() ? "-" : cryptonote::print_money(dsts[0].amount)));
-      LOG_PRINT_L2("adding_fee " << adding_fee);
+      LOG_VERBOSE
+        (
+         "Start of loop with "
+         + std::to_string(unused_transfers_indices.size())
+         + ", tx.dsts.size() "
+         + std::to_string(tx.dsts.size())
+         );
+      LOG_VERBOSE
+        (
+         "unused_transfers_indices: "
+         + functional::helper::strjoin(unused_transfers_indices, " ")
+         );
+      LOG_VERBOSE
+        (
+         "dsts size "
+         + std::to_string(dsts.size())
+         + ", first "
+         + (dsts.empty() ? "-" : cryptonote::print_money(dsts[0].amount))
+         );
+      LOG_VERBOSE("adding_fee " + std::to_string(adding_fee));
 
       // if we need to spend money and don't have any left, we fail
       if (unused_transfers_indices.empty()) {
@@ -797,11 +826,11 @@ namespace wallet {
       LOG_PRINT_L2
         (
          "Picking output "
-         << idx
-         << ", amount "
-         << print_money(td.amount())
-         << ", ki "
-         << td.m_output_key_image
+         + std::to_string(idx)
+         + ", amount "
+         + print_money(td.amount())
+         + ", ki "
+         + td.m_output_key_image.to_str()
          );
 
       // add this output to the list to spend
@@ -835,9 +864,9 @@ namespace wallet {
             LOG_PRINT_L2
               (
                "We can fully pay "
-               << get_account_address_as_str(m_nettype, dsts[0].is_subaddress, dsts[0].addr)
-               << " for "
-               << print_money(dsts[0].amount)
+               + get_account_address_as_str(m_nettype, dsts[0].is_subaddress, dsts[0].addr)
+               + " for "
+               + print_money(dsts[0].amount)
                );
 
             tx.add(dsts[0], dsts[0].amount, original_output_index, m_merge_destinations);
@@ -864,12 +893,11 @@ namespace wallet {
             LOG_PRINT_L2
               (
                "We can partially pay "
-               << get_account_address_as_str(m_nettype, dsts[0].is_subaddress, dsts[0].addr)
-               << " for "
-               << print_money(available_amount)
-               << "/"
-               <<
-               print_money(dsts[0].amount)
+               + get_account_address_as_str(m_nettype, dsts[0].is_subaddress, dsts[0].addr)
+               + " for "
+               + print_money(available_amount)
+               + "/"
+               + print_money(dsts[0].amount)
                );
 
             tx.add(dsts[0], available_amount, original_output_index, m_merge_destinations);
@@ -882,9 +910,9 @@ namespace wallet {
       LOG_PRINT_L2
         (
          "Considering whether to create a tx now, "
-         << tx.selected_transfers.size()
-         << " inputs, tx limit "
-         << upper_transaction_weight_limit
+         + std::to_string(tx.selected_transfers.size())
+         + " inputs, tx limit "
+         + std::to_string(upper_transaction_weight_limit)
          );
 
       bool try_tx = false;
@@ -933,8 +961,14 @@ namespace wallet {
           goto skip_tx;
         }
 
-        LOG_PRINT_L2("Trying to create a tx now, with " << tx.dsts.size() << " outputs and " <<
-                    tx.selected_transfers.size() << " inputs");
+        LOG_PRINT_L2
+          (
+           "Trying to create a tx now, with "
+           + std::to_string(tx.dsts.size())
+           + " outputs and "
+           + std::to_string(tx.selected_transfers.size())
+           + " inputs"
+           );
 
         std::tie(test_ptx, test_tx) = transfer_selected_rct
           (
@@ -959,13 +993,13 @@ namespace wallet {
         LOG_PRINT_L2
           (
            "Made a "
-           << functional::wallet::get_weight_string(test_ptx.tx, txBlob.size())
-           << " tx"
-           << ", with "
-           << print_money(available_for_fee)
-           << " available for fee ("
-           << print_money(needed_fee)
-           << " needed)"
+           + functional::wallet::get_weight_string(test_ptx.tx, txBlob.size())
+           + " tx"
+           + ", with "
+           + print_money(available_for_fee)
+           + " available for fee ("
+           + print_money(needed_fee)
+           + " needed)"
            );
 
         if (needed_fee > available_for_fee && !dsts.empty() && dsts[0].amount > 0)
@@ -990,14 +1024,14 @@ namespace wallet {
             LOG_PRINT_L2
               (
                "Adjusting amount paid to "
-               << get_account_address_as_str(m_nettype, i->is_subaddress, i->addr)
-               << " from "
-               << print_money(i->amount)
-               << " to "
-               << print_money(new_paid_amount)
-               << " to accommodate "
-               << print_money(needed_fee)
-               << " fee"
+               + get_account_address_as_str(m_nettype, i->is_subaddress, i->addr)
+               + " from "
+               + print_money(i->amount)
+               + " to "
+               + print_money(new_paid_amount)
+               + " to accommodate "
+               + print_money(needed_fee)
+               + " fee"
                );
 
             dsts[0].amount += i->amount - new_paid_amount;
@@ -1017,9 +1051,9 @@ namespace wallet {
           LOG_PRINT_L2
             (
              "We made a tx, adjusting fee and saving it, we need "
-             << print_money(needed_fee)
-             << " and we have "
-             << print_money(test_ptx.fee)
+             + print_money(needed_fee)
+             + " and we have "
+             + print_money(test_ptx.fee)
              );
 
           while (needed_fee > test_ptx.fee) {
@@ -1045,24 +1079,24 @@ namespace wallet {
             LOG_PRINT_L2
               (
                "Made an attempt at a final "
-               << functional::wallet::get_weight_string(test_ptx.tx, txBlob.size())
-               << " tx, with "
-               << print_money(test_ptx.fee)
-               << " fee  and "
-               << print_money(test_ptx.change_dts.amount)
-               << " change"
+               + functional::wallet::get_weight_string(test_ptx.tx, txBlob.size())
+               + " tx, with "
+               + print_money(test_ptx.fee)
+               + " fee  and "
+               + print_money(test_ptx.change_dts.amount)
+               + " change"
                );
           }
 
           LOG_PRINT_L2
             (
              "Made a final "
-             << functional::wallet::get_weight_string(test_ptx.tx, txBlob.size())
-             << " tx, with "
-             << print_money(test_ptx.fee)
-             << " fee and "
-             << print_money(test_ptx.change_dts.amount)
-             << " change"
+             + functional::wallet::get_weight_string(test_ptx.tx, txBlob.size())
+             + " tx, with "
+             + print_money(test_ptx.fee)
+             + " fee and "
+             + print_money(test_ptx.change_dts.amount)
+             + " change"
              );
 
           tx.tx = test_tx;

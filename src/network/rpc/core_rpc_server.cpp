@@ -368,7 +368,14 @@ namespace cryptonote
       res.status = "Failed";
       return true;
     }
-    LOG_PRINT_L2("Found " << txs.size() << "/" << vh.size() << " transactions on the blockchain");
+    LOG_VERBOSE
+      (
+       "Found "
+       + std::to_string(txs.size())
+       + "/"
+       + std::to_string(vh.size())
+       + " transactions on the blockchain"
+       );
 
     // try the pool for any missing txes
     size_t found_in_pool = 0;
@@ -437,7 +444,14 @@ namespace cryptonote
         }
         txs = sorted_txs;
       }
-      LOG_PRINT_L2("Found " << found_in_pool << "/" << vh.size() << " transactions in the pool");
+      LOG_VERBOSE
+        (
+         "Found "
+         + std::to_string(found_in_pool)
+         + "/"
+         + std::to_string(vh.size())
+         + " transactions in the pool"
+         );
     }
 
     std::vector<std::string>::const_iterator txhi = req.txs_hashes.begin();
@@ -514,7 +528,13 @@ namespace cryptonote
       res.missed_tx.push_back(epee::string_tools::pod_to_hex(miss_tx));
     }
 
-    LOG_PRINT_L2(res.txs.size() << " transactions found, " << res.missed_tx.size() << " not found");
+    LOG_VERBOSE
+      (
+       std::to_string(res.txs.size())
+       + " transactions found, "
+       + std::to_string(res.missed_tx.size())
+       + " not found"
+       );
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }
