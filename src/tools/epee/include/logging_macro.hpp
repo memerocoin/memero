@@ -75,12 +75,11 @@ see: etc/other-licenses/monero/LICENSE
   LOG_AND_RETURN_UNLESS(epee::LogLevel::Error, expr, fail_ret_val, x)
 
 
-#define LOG_CATEGORY_COLOR(level, cat, color, x) do {                 \
-    epee::set_console_color(color, false);                            \
-    std::ostringstream stream;                                        \
-    stream << x;                                                      \
-    epee::log_level_cat(level, cat, std::string_view(stream.str()));  \
-    epee::reset_console_color();                                      \
+#define LOG_CATEGORY_COLOR(level, cat, color, x) do { \
+    std::ostringstream stream;                        \
+    stream << x;                                      \
+    const auto s = stream.str();                      \
+    epee::log_level_cat_color(level, cat, s, color);  \
   } while (0)
 
 #define LOG_CATEGORY(level, cat, x) do {        \

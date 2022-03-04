@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-Parts of this file are originally 
+Parts of this file are originally
 Copyright (c) 2014-2020, The Monero Project
 
 see: etc/other-licenses/monero/LICENSE
@@ -291,6 +291,19 @@ namespace epee
     default:
       break;
     }
+  }
+
+  void log_level_cat_color
+  (
+   const epee::LogLevel level
+   , const std::string_view cat
+   , const std::string_view x
+   , const epee::console_colors color
+   )
+  {
+    epee::set_console_color(color, false);
+    epee::log_level_cat(level, cat, x);
+    epee::reset_console_color();
   }
 
 } // epee

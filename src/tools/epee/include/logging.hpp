@@ -82,5 +82,13 @@ namespace epee
   void set_console_color(int color, bool bright);
   void reset_console_color();
 
+  void log_level_cat_color
+  (
+   const epee::LogLevel level
+   , const std::string_view cat
+   , const std::string_view x
+   , const epee::console_colors color
+   );
+
 } // epee
 
