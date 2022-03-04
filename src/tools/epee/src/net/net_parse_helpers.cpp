@@ -102,7 +102,7 @@ namespace net_utils
     std::smatch result;
     if(!(std::regex_search(uri, result, rexp_match_uri) && result[0].matched))
     {
-      LOG_PRINT_L1("[PARSE URI] regex not matched for uri: " << uri);
+      LOG_PRINT_L1("[PARSE URI] regex not matched for uri: " + uri);
       content.m_path = uri;
       return true;
     }

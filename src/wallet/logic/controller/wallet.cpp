@@ -749,7 +749,7 @@ namespace wallet {
           s += boost::lexical_cast<std::string>(i) + " (" + print_money(m_transfers[i].amount()) + ") ";
         }
 
-        LOG_PRINT_L1("Found preferred rct inputs for rct tx: " << s);
+        LOG_PRINT_L1("Found preferred rct inputs for rct tx: " + s);
 
         // bring the list of available outputs stored by the same subaddress index to the front of the list
         uint32_t index_minor = m_transfers[preferred_inputs[0]].m_subaddr_index.minor;
@@ -1151,12 +1151,12 @@ namespace wallet {
     LOG_PRINT_L1
       (
        "Done creating "
-       << txes.size()
-       << " transactions, "
-       << print_money(accumulated_fee)
-       << " total fee, "
-       << print_money(accumulated_change)
-       << " total change"
+       + std::to_string(txes.size())
+       + " transactions, "
+       + print_money(accumulated_fee)
+       + " total fee, "
+       + print_money(accumulated_change)
+       + " total change"
        );
 
     for (auto& tx: txes)
@@ -1193,12 +1193,27 @@ namespace wallet {
         tx_money += m_transfers[idx].amount();
       LOG_PRINT_L1
         (
-        "  Transaction " << i << "/" << txes.size()
-        << " " << get_transaction_hash(tx.ptx.tx) << ": " << functional::wallet::get_weight_string(tx.weight)
-        << ", sending " << print_money(tx_money) << " in " << tx.selected_transfers.size()
-        << " outputs to " << tx.dsts.size() << " destination(s)"
-        << ", including " << print_money(tx.ptx.fee) << " fee"
-        << ", " << print_money(tx.ptx.change_dts.amount) << " change"
+        "  Transaction "
+        + std::to_string(i)
+        + "/"
+        + std::to_string(txes.size())
+        + " "
+        + get_transaction_hash(tx.ptx.tx).to_str()
+        + ": "
+        + functional::wallet::get_weight_string(tx.weight)
+        + ", sending "
+        + print_money(tx_money)
+        + " in "
+        + std::to_string(tx.selected_transfers.size())
+        + " outputs to "
+        + std::to_string(tx.dsts.size())
+        + " destination(s)"
+        + ", including "
+        + print_money(tx.ptx.fee)
+        + " fee"
+        + ", "
+        + print_money(tx.ptx.change_dts.amount)
+        + " change"
         );
       ptx_vector.push_back(tx.ptx);
     }

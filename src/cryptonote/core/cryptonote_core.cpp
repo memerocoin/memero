@@ -322,7 +322,12 @@ namespace cryptonote
 
     if(tx_blob.blob.size() > get_max_tx_size())
     {
-      LOG_PRINT_L1("WRONG TRANSACTION BLOB, too big size " << tx_blob.blob.size() << ", rejected");
+      LOG_PRINT_L1
+        (
+         "WRONG TRANSACTION BLOB, too big size "
+         + std::to_string(tx_blob.blob.size())
+         + ", rejected"
+         );
       tvc.m_verifivation_failed = true;
       tvc.m_too_big = true;
       return false;
@@ -373,7 +378,12 @@ namespace cryptonote
   {
     if(!check_tx_syntax(tx))
     {
-      LOG_PRINT_L1("WRONG TRANSACTION BLOB, Failed to check tx " << tx_hash << " syntax, rejected");
+      LOG_PRINT_L1
+        (
+         "WRONG TRANSACTION BLOB, Failed to check tx "
+         + tx_hash.to_str()
+         + " syntax, rejected"
+         );
       tvc.m_verifivation_failed = true;
       return false;
     }
@@ -383,7 +393,12 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   void core::set_semantics_failed(const crypto::hash &tx_hash)
   {
-    LOG_PRINT_L1("WRONG TRANSACTION BLOB, Failed to check tx " << tx_hash << " semantic, rejected");
+    LOG_PRINT_L1
+      (
+       "WRONG TRANSACTION BLOB, Failed to check tx "
+       + tx_hash.to_str()
+       + " semantic, rejected"
+       );
     bad_semantics_txes_lock.lock();
     bad_semantics_txes[0].insert(tx_hash);
     if (bad_semantics_txes[0].size() >= BAD_SEMANTICS_TXES_MAX_SIZE)
@@ -979,7 +994,12 @@ namespace cryptonote
     const auto max_weight = consensus::get_block_size_bound(get_current_blockchain_height());
     if(block_blob.size() > max_weight + BLOCK_SIZE_SANITY_LEEWAY)
     {
-      LOG_PRINT_L1("WRONG BLOCK BLOB, sanity check failed on size " << block_blob.size() << ", rejected");
+      LOG_PRINT_L1
+        (
+         "WRONG BLOCK BLOB, sanity check failed on size "
+         + std::to_string(block_blob.size())
+         + ", rejected"
+         );
       return false;
     }
     return true;

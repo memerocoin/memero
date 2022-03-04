@@ -500,7 +500,7 @@ namespace cryptonote
       LOG_PRINT_L1
         (
          "Failed to parse transaction from blob, bad output_commits size in tx "
-         << get_transaction_hash(tx)
+         + get_transaction_hash(tx).to_str()
          );
       return {};
     }
@@ -511,7 +511,7 @@ namespace cryptonote
       LOG_PRINT_L1
         (
          "Failed to parse transaction from blob, bad rct data size in tx "
-         << get_transaction_hash(tx)
+         + get_transaction_hash(tx).to_str()
          );
       return {};
     }

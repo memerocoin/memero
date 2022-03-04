@@ -123,7 +123,13 @@ namespace epee
       int res = transport.invoke(command, buff_to_send, buff_to_recv, conn_id);
       if( res <=0 )
       {
-        LOG_PRINT_L1("Failed to invoke command " << command << " return code " << res);
+        LOG_PRINT_L1
+          (
+           "Failed to invoke command "
+           + std::to_string(command)
+           + " return code "
+           + std::to_string(res)
+           );
         return false;
       }
       typename serialization::portable_storage stg_ret;
@@ -153,7 +159,13 @@ namespace epee
         {
           if (!buff.empty())
             on_levin_traffic(context, true, false, true, buff.size(), command);
-          LOG_PRINT_L1("Failed to invoke command " << command << " return code " << code);
+          LOG_PRINT_L1
+            (
+             "Failed to invoke command "
+             + std::to_string(command)
+             + " return code "
+             + std::to_string(code)
+             );
           cb(code, result_struct, context);
           return false;
         }
@@ -178,7 +190,13 @@ namespace epee
       }, inv_timeout);
       if( res <=0 )
       {
-        LOG_PRINT_L1("Failed to invoke command " << command << " return code " << res);
+        LOG_PRINT_L1
+          (
+           "Failed to invoke command "
+           + std::to_string(command)
+           + " return code "
+           + std::to_string(res)
+           );
         return false;
       }
       return true;

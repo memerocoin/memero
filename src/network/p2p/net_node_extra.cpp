@@ -1114,9 +1114,14 @@ namespace nodetool
     if (zone.m_connect == nullptr)
       return false;
 
-    LOG_PRINT_L1("Connecting to " << na.str() << "(last_seen: "
-                                  << (last_seen_stamp ? epee::misc_utils::get_time_interval_string(time(NULL) - last_seen_stamp):"never")
-                                  << ")...");
+    LOG_PRINT_L1
+      (
+       std::string("Connecting to ")
+       + na.str()
+       + "(last_seen: "
+       + (last_seen_stamp ? epee::misc_utils::get_time_interval_string(time(NULL) - last_seen_stamp):"never")
+       + ")..."
+       );
 
     auto con = zone.m_connect(zone, na);
     if (!con) {

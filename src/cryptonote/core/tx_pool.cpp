@@ -129,7 +129,13 @@ namespace cryptonote
       uint64_t outputs_amount = get_tx_outputs_money_amount(tx);
       if(outputs_amount > inputs_amount)
       {
-        LOG_PRINT_L1("transaction use more money than it has: use " << print_money(outputs_amount) << ", have " << print_money(inputs_amount));
+        LOG_PRINT_L1
+          (
+           "transaction use more money than it has: use "
+           + print_money(outputs_amount)
+           + ", have "
+           + print_money(inputs_amount)
+           );
         tvc.m_verifivation_failed = true;
         tvc.m_overspend = true;
         return false;
@@ -159,7 +165,13 @@ namespace cryptonote
     size_t tx_weight_limit = get_transaction_weight_limit();
     if (tx_weight > tx_weight_limit)
     {
-      LOG_PRINT_L1("transaction is too heavy: " << tx_weight << " bytes, maximum weight: " << tx_weight_limit);
+      LOG_PRINT_L1
+        (
+         "transaction is too heavy: "
+         + std::to_string(tx_weight)
+         + " bytes, maximum weight: "
+         + std::to_string(tx_weight_limit)
+         );
       tvc.m_verifivation_failed = true;
       tvc.m_too_big = true;
       return false;
@@ -173,7 +185,7 @@ namespace cryptonote
       if(have_tx_keyimges_as_spent(tx, id))
       {
         mark_double_spend(tx);
-        LOG_PRINT_L1("Transaction with id= "<< id << " used already spent key images");
+        LOG_PRINT_L1("Transaction with id= " + id.to_str() + " used already spent key images");
         tvc.m_verifivation_failed = true;
         tvc.m_double_spend = true;
         return false;
@@ -182,7 +194,7 @@ namespace cryptonote
 
     if (!m_blockchain.check_ringct_outputs(tx, tvc))
     {
-      LOG_PRINT_L1("Transaction with id= "<< id << " has at least one invalid output");
+      LOG_PRINT_L1("Transaction with id= " + id.to_str() + " has at least one invalid output");
       tvc.m_verifivation_failed = true;
       tvc.m_invalid_output = true;
       return false;
@@ -645,11 +657,22 @@ namespace cryptonote
       if((tx_age > constant::CRYPTONOTE_MEMPOOL_TX_LIVETIME && !meta.tx_from_block) ||
          (tx_age > constant::CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME && meta.tx_from_block) )
       {
-        LOG_PRINT_L1("Tx " << txid << " removed from tx pool due to outdated, age: " << tx_age );
+        LOG_PRINT_L1
+          (
+           "Tx "
+           + txid.to_str()
+           + " removed from tx pool due to outdated, age: "
+           + std::to_string(tx_age)
+           );
         auto sorted_it = find_tx_in_sorted_container(txid);
         if (sorted_it == m_txs_by_fee_and_receive_time.end())
         {
-          LOG_PRINT_L1("Removing tx " << txid << " from tx pool, but it was not found in the sorted txs container!");
+          LOG_PRINT_L1
+            (
+             "Removing tx "
+             + txid.to_str()
+             + " from tx pool, but it was not found in the sorted txs container!"
+             );
         }
         else
         {
@@ -1410,11 +1433,21 @@ namespace cryptonote
     m_blockchain.for_all_txpool_txes([this, &remove, tx_weight_limit](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::string_blob_view) {
       m_txpool_weight += meta.weight;
       if (meta.weight > tx_weight_limit) {
-        LOG_PRINT_L1("Transaction " << txid << " is too big (" << meta.weight << " bytes), removing it from pool");
+        LOG_PRINT_L1
+          (
+           "Transaction "
+           + txid.to_str()
+           + " is too big ("
+           + std::to_string(meta.weight)
+           + " bytes), removing it from pool"
+           );
         remove.insert(txid);
       }
       else if (m_blockchain.have_tx(txid)) {
-        LOG_PRINT_L1("Transaction " << txid << " is in the blockchain, removing it from pool");
+        LOG_PRINT_L1
+          (
+           "Transaction " + txid.to_str() + " is in the blockchain, removing it from pool"
+           );
         remove.insert(txid);
       }
       return true;
@@ -1442,7 +1475,12 @@ namespace cryptonote
           auto sorted_it = find_tx_in_sorted_container(txid);
           if (sorted_it == m_txs_by_fee_and_receive_time.end())
           {
-            LOG_PRINT_L1("Removing tx " << txid << " from tx pool, but it was not found in the sorted txs container!");
+            LOG_PRINT_L1
+              (
+               "Removing tx "
+               + txid.to_str()
+               + " from tx pool, but it was not found in the sorted txs container!"
+               );
           }
           else
           {

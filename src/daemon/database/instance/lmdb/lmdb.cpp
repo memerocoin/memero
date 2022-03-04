@@ -75,7 +75,7 @@ inline void throw0(const T &e)
 template <typename T>
 inline void throw1(const T &e)
 {
-  LOG_PRINT_L1(e.what());
+  LOG_PRINT_L1(std::string(e.what()));
   throw e;
 }
 
@@ -1015,7 +1015,7 @@ void BlockchainLMDB::remove_transaction_data(const crypto::hash& tx_hash, const 
 
   result = mdb_cursor_get(m_cur_tx_outputs, &val_tx_id, NULL, MDB_SET);
   if (result == MDB_NOTFOUND) {
-    LOG_PRINT_L1("tx has no outputs to remove: " << tx_hash);
+    LOG_PRINT_L1("tx has no outputs to remove: " + tx_hash.to_str());
   }
   else if (result)
     throw1(DB_ERROR(lmdb_error("Failed to locate tx outputs for removal: ", result).c_str()));
@@ -1335,7 +1335,7 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
       throw0(DB_ERROR(lmdb_error("Failed to set max memory map size: ", result).c_str()));
     mdb_env_info(m_env, &mei);
     cur_mapsize = (uint64_t)mei.me_mapsize;
-    LOG_PRINT_L1("LMDB memory map size: " << cur_mapsize);
+    LOG_PRINT_L1("LMDB memory map size: " + std::to_string(cur_mapsize));
   }
 
   if (need_resize())

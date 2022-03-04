@@ -331,18 +331,6 @@ void BlockchainDB::reset_stats()
   num_calls = 0;
 }
 
-void BlockchainDB::show_stats()
-{
-  LOG_PRINT_L1(std::endl
-    << "*********************************"
-    << std::endl
-    << "num_calls: " << num_calls
-    << std::endl
-    << "*********************************"
-    << std::endl
-  );
-}
-
 void BlockchainDB::fixup()
 {
   if (is_read_only()) {

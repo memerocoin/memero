@@ -208,7 +208,7 @@ void RPC_Client::get_tx_outputs
       {
         // the base offset of the first rct output in the first unlocked block (or the one to be if there's none)
         num_outs = rct_offsets[rct_offsets.size() - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE];
-        LOG_PRINT_L1("" << num_outs << " unlocked rct outputs");
+        LOG_PRINT_L1(std::to_string(num_outs) + " unlocked rct outputs");
         THROW_WALLET_EXCEPTION_IF(num_outs == 0, error::wallet_internal_error,
             "histogram reports no unlocked rct outputs, not even ours");
       }
@@ -217,8 +217,16 @@ void RPC_Client::get_tx_outputs
       // how many fake outs to draw otherwise
 
       size_t recent_outputs_count = 0;
-      LOG_PRINT_L1("Fake output makeup: " << requested_outputs_count << " requested: " << recent_outputs_count << " recent, " <<
-          (requested_outputs_count - recent_outputs_count) << " full-chain");
+      LOG_PRINT_L1
+        (
+         "Fake output makeup: "
+         + std::to_string(requested_outputs_count)
+         + " requested: "
+         + std::to_string(recent_outputs_count)
+         + " recent, " 
+         + std::to_string(requested_outputs_count - recent_outputs_count)
+         + " full-chain"
+         );
 
       uint64_t num_found = 0;
 
@@ -240,7 +248,13 @@ void RPC_Client::get_tx_outputs
           num_found = 1;
           seen_indices.emplace(td.m_global_output_index);
           req.outputs.push_back({amount, td.m_global_output_index});
-          LOG_PRINT_L1("Selecting real output: " << td.m_global_output_index << " for " << print_money(amount));
+          LOG_PRINT_L1
+            (
+             "Selecting real output: "
+             + std::to_string(td.m_global_output_index)
+             + " for "
+             + print_money(amount)
+             );
         }
 
         std::unordered_map<const char*, std::set<uint64_t>> picks;

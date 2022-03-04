@@ -568,14 +568,6 @@ public:
   void reset_stats();
 
   /**
-   * @brief show profiling stats
-   *
-   * This function prints current performance/profiling data to whichever
-   * log file(s) are set up (possibly including stdout or stderr)
-   */
-  void show_stats();
-
-  /**
    * @brief open a db, or create it if necessary.
    *
    * This function opens an existing database or creates it if it

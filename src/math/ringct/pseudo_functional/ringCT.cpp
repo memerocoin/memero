@@ -203,7 +203,7 @@ namespace rct {
 
     for (size_t i = 0; i < results.size(); ++i) {
       if (!results[i]) {
-        LOG_PRINT_L1("verify_clsag_signature failed for input " << i);
+        LOG_PRINT_L1("verify_clsag_signature failed for input " + std::to_string(i));
         return false;
       }
     }

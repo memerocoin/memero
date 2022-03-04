@@ -171,7 +171,7 @@ namespace daemonize {
         LOG_INFO(rpc_description + " started");
 
         tools::signal_handler_install([this](int type) {
-          LOG_INFO("Daemon interrupted with signal: " + type);
+          LOG_INFO("Daemon interrupted with signal: " + std::to_string(type));
 
           LOG_INFO
             ("Stopping " + p2p_description + " ...");

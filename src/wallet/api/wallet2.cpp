@@ -1418,12 +1418,20 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
       // we're sure we've seen the blockchain state first)
       if (pit->second.m_state == wallet::logic::type::transfer::unconfirmed_transfer_details::pending)
       {
-        LOG_PRINT_L1("Pending txid " << txid << " not in pool, marking as not in pool");
+        LOG_PRINT_L1
+          (
+           "Pending txid "
+           + txid.to_str()
+           + " not in pool, marking as not in pool"
+           );
         pit->second.m_state = wallet::logic::type::transfer::unconfirmed_transfer_details::pending_not_in_pool;
       }
       else if (pit->second.m_state == wallet::logic::type::transfer::unconfirmed_transfer_details::pending_not_in_pool && refreshed)
       {
-        LOG_PRINT_L1("Pending txid " << txid << " not in pool, marking as failed");
+        LOG_PRINT_L1
+          (
+           "Pending txid " + txid.to_str() + " not in pool, marking as failed"
+           );
         pit->second.m_state = wallet::logic::type::transfer::unconfirmed_transfer_details::failed;
 
         // the inputs aren't spent anymore, since the tx failed
@@ -1437,7 +1445,13 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
               const transfer_details &td = m_transfers[i];
               if (td.m_output_key_image == tx_in_to_key.output_key_image)
               {
-                 LOG_PRINT_L1("Resetting spent status for output " << vini << ": " << td.m_output_key_image);
+                 LOG_PRINT_L1
+                   (
+                    "Resetting spent status for output "
+                    + std::to_string(vini)
+                    + ": "
+                    + td.m_output_key_image.to_str()
+                    );
                  set_unspent(i);
                  break;
               }
@@ -1482,7 +1496,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
     }
     if (!txid_found_in_up)
     {
-      LOG_PRINT_L1("Found new pool tx: " << txid);
+      LOG_PRINT_L1("Found new pool tx: " + txid.to_str());
       bool found = false;
       for (const auto &i: m_unconfirmed_txs)
       {
@@ -1825,7 +1839,12 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
       THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
       if(try_count < config::lol::reorg_buffer)
       {
-        LOG_PRINT_L1("Another try pull_blocks (try_count=" << try_count << ")...");
+        LOG_PRINT_L1
+          (
+           "Another try pull_blocks (try_count="
+           + std::to_string(try_count)
+           + ")..."
+           );
         first = true;
         start_height = 0;
         blocks.clear();
@@ -1855,7 +1874,15 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
     LOG_PRINT_L1("Failed to check pending transactions");
   }
 
-  LOG_PRINT_L1("Refresh done, blocks received: " << blocks_fetched << ", balance (all accounts): " << print_money(balance_all(false)) << ", unlocked: " << print_money(unlocked_balance_all(false)));
+  LOG_PRINT_L1
+    (
+     "Refresh done, blocks received: "
+     + std::to_string(blocks_fetched)
+     + ", balance (all accounts): "
+     + print_money(balance_all(false))
+     + ", unlocked: "
+     + print_money(unlocked_balance_all(false))
+     );
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::refresh(uint64_t & blocks_fetched, bool& received_money, bool& ok)
@@ -1889,7 +1916,13 @@ void wallet2::detach_blockchain(uint64_t height)
     wallet::logic::type::transfer::transfer_details &td = m_transfers[i];
     if (td.m_spent && td.m_spent_height >= height)
     {
-      LOG_PRINT_L1("Resetting spent/frozen status for output " << i << ": " << td.m_output_key_image);
+      LOG_PRINT_L1
+        (
+         "Resetting spent/frozen status for output "
+         + std::to_string(i)
+         + ": "
+         + td.m_output_key_image.to_str()
+         );
       set_unspent(i);
     }
   }
@@ -2991,11 +3024,35 @@ void wallet2::commit_tx(pending_tx& ptx)
   }
 
   //fee includes dust if dust policy specified it.
-  LOG_PRINT_L1("Transaction successfully sent. <" << txid << ">" << std::endl
-            << "Commission: " << print_money(ptx.fee) << " (dust sent to dust addr: " << print_money((ptx.dust_added_to_fee ? 0 : ptx.dust)) << ")" << std::endl
-            << "Balance: " << print_money(balance(ptx.construction_data.subaddr_account, false)) << std::endl
-            << "Unlocked: " << print_money(unlocked_balance(ptx.construction_data.subaddr_account, false)) << std::endl
-            << "Please, wait for confirmation for your balance to be unlocked.");
+  LOG_INFO
+    (
+     "Transaction successfully sent. "
+     + txid.to_str()
+     );
+
+  LOG_INFO
+    (
+     "Commission: "
+     + print_money(ptx.fee)
+     + " (dust sent to dust addr: "
+     + print_money((ptx.dust_added_to_fee ? 0 : ptx.dust))
+     + ")"
+     );
+
+  LOG_INFO
+    (
+     "Balance: "
+     + print_money(balance(ptx.construction_data.subaddr_account, false))
+     );
+
+  LOG_INFO
+    (
+     "Unlocked: "
+     + print_money
+     (unlocked_balance(ptx.construction_data.subaddr_account, false))
+     );
+
+  LOG_INFO("Please, wait for confirmation for your balance to be unlocked.");
 }
 
 void wallet2::commit_tx(std::vector<pending_tx>& ptx_vector)

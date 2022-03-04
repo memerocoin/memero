@@ -232,8 +232,15 @@ namespace cryptonote
         info.is_subaddress = true;
       }
       else {
-        LOG_PRINT_L1("Wrong address prefix: " << prefix << ", expected " << address_prefix
-          << " or " << subaddress_prefix);
+        LOG_PRINT_L1
+          (
+           "Wrong address prefix: "
+           + std::to_string(prefix)
+           + ", expected "
+           + std::to_string(address_prefix)
+           + " or "
+           + std::to_string(subaddress_prefix)
+           );
         return false;
       }
 
