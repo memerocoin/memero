@@ -939,10 +939,12 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
          level
          , epee::GLOBAL_CATEGORY
          , epee::red
-         , "**********************************************************************"
-         << "Consistency failure in amounts received"
-         << "Check transaction " << txid
-         << "**********************************************************************"
+         , std::string()
+         + "**********************************************************************"
+         + "Consistency failure in amounts received"
+         + "Check transaction "
+         + txid.to_str()
+         + "**********************************************************************"
          );
       exit(1);
       return;

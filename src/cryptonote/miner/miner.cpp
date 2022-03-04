@@ -441,9 +441,9 @@ namespace cryptonote
                , epee::GLOBAL_CATEGORY
                , epee::green
                , "Found block "
-               << get_block_hash(mined_block)
-               << " for difficulty: "
-               << local_diff
+               + get_block_hash(mined_block).to_str()
+               + " for difficulty: "
+               + boost::multiprecision::to_string(local_diff)
                );
 
             cryptonote::block_verification_context bvc;
@@ -601,9 +601,9 @@ namespace cryptonote
                , epee::GLOBAL_CATEGORY
                , epee::green
                , "Found block "
-               << get_block_hash(mined_block)
-               << " for difficulty: "
-               << local_diff
+               + get_block_hash(mined_block).to_str()
+               + " for difficulty: "
+               + boost::multiprecision::to_string(local_diff)
                );
 
             cryptonote::block_verification_context bvc;

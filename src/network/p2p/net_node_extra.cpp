@@ -148,7 +148,10 @@ namespace nodetool
            epee::LogLevel::Info
            , epee::GLOBAL_CATEGORY
            , epee::cyan
-           , "Host " << address.host_str() << " unblocked."
+           , std::string()
+           + "Host "
+           + address.host_str()
+           + " unblocked."
            );
         it = m_blocked_hosts.end();
       }
@@ -175,7 +178,9 @@ namespace nodetool
              epee::LogLevel::Info
              , epee::GLOBAL_CATEGORY
              , epee::cyan
-             , "Subnet " << it->first.host_str() << " unblocked."
+             , "Subnet "
+             + it->first.host_str()
+             + " unblocked."
              );
           continue;
         }
@@ -242,7 +247,9 @@ namespace nodetool
        epee::LogLevel::Info
        , epee::GLOBAL_CATEGORY
        , epee::cyan
-       , "Host " << host_str << " blocked."
+       , "Host "
+       + host_str
+       + " blocked."
        );
     return true;
   }
@@ -260,7 +267,9 @@ namespace nodetool
        epee::LogLevel::Info
        , epee::GLOBAL_CATEGORY
        , epee::cyan
-       , "Host " << address.host_str() << " unblocked."
+       , "Host "
+       + address.host_str()
+       + " unblocked."
        );
     return true;
   }
@@ -306,7 +315,9 @@ namespace nodetool
        epee::LogLevel::Info
        , epee::GLOBAL_CATEGORY
        , epee::cyan
-       , "Subnet " << subnet.host_str() << " blocked."
+       , "Subnet "
+       + subnet.host_str()
+       + " blocked."
        );
     return true;
   }
@@ -324,7 +335,10 @@ namespace nodetool
        epee::LogLevel::Info
        , epee::GLOBAL_CATEGORY
        , epee::cyan
-       , "Subnet " << subnet.host_str() << " unblocked.");
+       , "Subnet "
+       + subnet.host_str()
+       + " unblocked."
+       );
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -1812,7 +1826,10 @@ namespace nodetool
              level
              , "Debug"
              , epee::red
-             , "No incoming connections - check firewalls/routers allow port " << get_this_peer_port());
+             , std::string()
+             + "No incoming connections - check firewalls/routers allow port "
+             + std::to_string(get_this_peer_port())
+             );
         }
       }
     }

@@ -48,11 +48,11 @@ see: etc/other-licenses/monero/LICENSE
   LOG_AND_RETURN_UNLESS(epee::LogLevel::Error, expr, fail_ret_val, x)
 
 
-#define LOG_CATEGORY_COLOR(level, cat, color, x) do { \
-    std::ostringstream stream;                        \
-    stream << x;                                      \
-    const auto s = stream.str();                      \
-    epee::log_level_cat_color(level, cat, s, color);  \
+#define LOG_CATEGORY_COLOR_LEGACY(level, cat, color, x) do {  \
+    std::ostringstream stream;                                \
+    stream << x;                                              \
+    const auto s = stream.str();                              \
+    epee::log_level_cat_color(level, cat, s, color);          \
   } while (0)
 
 #define LOG_DEBUG_MUTE(x)

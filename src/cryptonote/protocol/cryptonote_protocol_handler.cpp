@@ -344,10 +344,32 @@ namespace cryptonote
     uint64_t abs_diff = std::abs(diff);
     uint64_t max_block_height = std::max(hshd.current_height,m_core.get_current_blockchain_height());
     uint64_t diff_v2 = std::min(abs_diff, max_block_height);
-    LOG_CATEGORY_COLOR(is_inital ? epee::LogLevel::Info : epee::LogLevel::Debug, epee::GLOBAL_CATEGORY, epee::console_colors::yellow, context <<  "Sync data returned a new top block candidate: " << m_core.get_current_blockchain_height() << " -> " << hshd.current_height
-      << " [Your node is " << abs_diff << " blocks (" << tools::get_human_readable_timespan(diff_v2 * DIFFICULTY_TARGET_IN_SECONDS) << ") "
-      << (0 <= diff ? std::string("behind") : std::string("ahead"))
-      << "] " << std::endl << "SYNCHRONIZATION started");
+    LOG_CATEGORY_COLOR
+      (
+       is_inital ? epee::LogLevel::Info : epee::LogLevel::Debug
+       , epee::GLOBAL_CATEGORY
+       , epee::console_colors::yellow
+       , context.to_str()
+       + "Sync data returned a new top block candidate: "
+       + std::to_string(m_core.get_current_blockchain_height())
+       + " -> "
+       + std::to_string(hshd.current_height)
+       + " [Your node is "
+       + std::to_string(abs_diff)
+       + " blocks ("
+       + tools::get_human_readable_timespan(diff_v2 * DIFFICULTY_TARGET_IN_SECONDS)
+       + ") "
+       + (0 <= diff ? std::string("behind") : std::string("ahead"))
+       + "]"
+       );
+
+    LOG_CATEGORY_COLOR
+      (
+       is_inital ? epee::LogLevel::Info : epee::LogLevel::Debug
+       , epee::GLOBAL_CATEGORY
+       , epee::console_colors::yellow
+       , "SYNCHRONIZATION started"
+       );
       if (hshd.current_height >= m_core.get_current_blockchain_height() + 5) // don't switch to unsafe mode just for a few blocks
       {
         m_core.safesyncmode(false);
@@ -1523,11 +1545,11 @@ namespace cryptonote
                , epee::GLOBAL_CATEGORY
                , epee::yellow
                , "Synced "
-               << current_blockchain_height
-               << "/"
-               << target_blockchain_height
-               << progress_message
-               << timing_message
+               + std::to_string(current_blockchain_height)
+               + "/"
+               + std::to_string(target_blockchain_height)
+               + progress_message
+               + timing_message
                );
           }
         }
@@ -2131,11 +2153,25 @@ skip:
          epee::LogLevel::Info
          , epee::GLOBAL_CATEGORY
          , epee::yellow
-         , std::endl << "**********************************************************************" << std::endl
-        << "You are now synchronized with the network. You may now start lolnero." << std::endl
-        << std::endl
-        << "Use the \"help\" command to see the list of available commands." << std::endl
-        << "**********************************************************************");
+         , "**********************************************************************"
+         );
+
+      LOG_CATEGORY_COLOR
+        (
+         epee::LogLevel::Info
+         , epee::GLOBAL_CATEGORY
+         , epee::yellow
+         , "You are now synchronized with the network. You may now start lolnero."
+         );
+
+      LOG_CATEGORY_COLOR
+        (
+         epee::LogLevel::Info
+         , epee::GLOBAL_CATEGORY
+         , epee::yellow
+         , "**********************************************************************"
+         );
+
       m_core.on_synchronized();
     }
     m_core.safesyncmode(true);

@@ -1183,10 +1183,23 @@ namespace cryptonote
            epee::LogLevel::Info
            , epee::GLOBAL_CATEGORY
            , epee::yellow
-           , std::endl
-           << "**********************************************************************" << std::endl
-           << main_message << std::endl
-           << "**********************************************************************" << std::endl
+           , "**********************************************************************"
+           );
+
+        LOG_CATEGORY_COLOR
+          (
+           epee::LogLevel::Info
+           , epee::GLOBAL_CATEGORY
+           , epee::yellow
+           , main_message
+           );
+ 
+        LOG_CATEGORY_COLOR
+          (
+           epee::LogLevel::Info
+           , epee::GLOBAL_CATEGORY
+           , epee::yellow
+           , "**********************************************************************"
            );
       }
       m_starter_message_showed = true;
@@ -1211,7 +1224,8 @@ namespace cryptonote
          level
          , epee::GLOBAL_CATEGORY
          , epee::red
-         , "Free space is below 1 GB on " << m_config_folder
+         , "Free space is below 1 GB on "
+         + m_config_folder
          );
     }
     return true;

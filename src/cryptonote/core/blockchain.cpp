@@ -1017,9 +1017,9 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
      , epee::GLOBAL_CATEGORY
      , epee::green
      , "REORGANIZE SUCCESS! on height: "
-     << split_height
-     << ", new blockchain size: "
-     << m_db->height()
+     + std::to_string(split_height)
+     + ", new blockchain size: "
+     + std::to_string(m_db->height())
      );
   return true;
 }
@@ -1702,10 +1702,10 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     if(main_chain_cumulative_difficulty < bei.cumulative_difficulty) //check if difficulty bigger then in main chain
     {
       //do reorganize!
-      LOG_CATEGORY_COLOR
+      LOG_CATEGORY_COLOR_LEGACY
         (
          epee::LogLevel::Info
-         , epee:: GLOBAL_CATEGORY
+         , epee::GLOBAL_CATEGORY
          , epee::green
          , std::endl
          << config::lol::hash_sep << "REORGANIZE" << std::endl
@@ -1734,7 +1734,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     }
     else
     {
-      LOG_CATEGORY_COLOR
+      LOG_CATEGORY_COLOR_LEGACY
         (
          epee::LogLevel::Info
          , epee::GLOBAL_CATEGORY

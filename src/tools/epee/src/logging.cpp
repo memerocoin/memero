@@ -418,3 +418,14 @@ void LOG_CATEGORY
      , x
      );
 }
+
+void LOG_CATEGORY_COLOR
+(
+ const epee::LogLevel level
+ , const std::string_view cat
+ , const epee::console_colors color
+ , const std::string_view x
+ ) {
+  epee::log_level_cat_color(level, cat, x, color);
+}
+
