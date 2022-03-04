@@ -130,7 +130,15 @@ connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::sha
 	std::string remote_addr_str = "?";
 	try { boost::system::error_code e; remote_addr_str = socket().remote_endpoint(e).address().to_string(); } catch(...){} ;
 
-	_note("Spawned connection #"<<mI->m_peer_number<<" to " << remote_addr_str << " currently we have sockets count:" << m_state->sock_count);
+	_note
+    (
+     "Spawned connection #"
+     + std::to_string(mI->m_peer_number)
+     + " to "
+     + remote_addr_str
+     + " currently we have sockets count:"
+     + std::to_string(m_state->sock_count)
+     );
 }
 
 connection_basic::~connection_basic() noexcept(false) {
@@ -138,7 +146,13 @@ connection_basic::~connection_basic() noexcept(false) {
 
 	std::string remote_addr_str = "?";
 	try { boost::system::error_code e; remote_addr_str = socket().remote_endpoint(e).address().to_string(); } catch(...){} ;
-	_note("Destructing connection #"<<mI->m_peer_number << " to " << remote_addr_str);
+	_note
+    (
+     "Destructing connection #"
+     + std::to_string(mI->m_peer_number)
+     + " to "
+     + remote_addr_str
+     );
 }
 
 void connection_basic::do_send_handler_write(const void* ptr , size_t cb ) {

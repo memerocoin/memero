@@ -1164,7 +1164,13 @@ namespace nodetool
   bool node_server::make_new_connection_from_anchor_peerlist(const std::vector<anchor_peerlist_entry>& anchor_peerlist)
   {
     for (const auto& pe: anchor_peerlist) {
-      _note("Considering connecting (out) to anchor peer: " << peerid_to_string(pe.id) << " " << pe.adr.str());
+      _note
+        (
+         "Considering connecting (out) to anchor peer: "
+         + peerid_to_string(pe.id)
+         + " "
+         + pe.adr.str()
+         );
 
       if(is_peer_used(pe)) {
         _note("Peer is used");
@@ -1338,8 +1344,15 @@ namespace nodetool
 
       ++try_count;
 
-      _note("Considering connecting (out) to " << (use_white_list ? "white" : "gray") << " list peer: " <<
-          peerid_to_string(pe.id) << " " << pe.adr.str());
+      _note
+        (
+         std::string("Considering connecting (out) to ")
+         + (use_white_list ? "white" : "gray")
+         + " list peer: "
+         + peerid_to_string(pe.id)
+         + " "
+         + pe.adr.str()
+         );
 
       if(zone.m_our_address == pe.adr)
         continue;

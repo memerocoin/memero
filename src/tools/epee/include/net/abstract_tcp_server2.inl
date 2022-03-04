@@ -1017,7 +1017,7 @@ namespace net_utils
         {
           std::shared_ptr<std::thread> thread =
             std::make_shared<std::thread>(std::bind(&boosted_tcp_server<t_protocol_handler>::worker_thread, this, i));
-            _note("Run server thread name: " << m_thread_name_prefix);
+            _note("Run server thread name: " + m_thread_name_prefix);
           m_threads.push_back(thread);
         }
       }
