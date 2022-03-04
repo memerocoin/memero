@@ -41,7 +41,6 @@
 #include <boost/uuid/nil_generator.hpp>
 
 
-
 #define LOG_ERROR_VER(x) LOG_CATEGORY(epee::LogLevel::Error, "verify", x)
 
 #define BAD_SEMANTICS_TXES_MAX_SIZE 100

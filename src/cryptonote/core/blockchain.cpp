@@ -56,9 +56,13 @@
 
 using namespace cryptonote;
 
-// #define LOG_ERROR_VER(x) LOG_CATEGORY(epee::LogLevel::Error, "verify", x)
-#define LOG_ERROR_VER(x)
-
+#define LOG_ERROR_VER(x) do {                         \
+    std::ostringstream stream;                        \
+    stream << x;                                      \
+    const auto s = stream.str();                      \
+    LOG_CATEGORY(epee::LogLevel::Error, "verify", s); \
+  } while (0)
+ 
 std::recursive_mutex m_blockchain_lock; // TODO: add here reader/writer lock
 
 //------------------------------------------------------------------
