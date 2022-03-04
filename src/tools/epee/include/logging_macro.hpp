@@ -105,23 +105,28 @@ see: etc/other-licenses/monero/LICENSE
 
 
 #define TRY_ENTRY()   try {
-#define CATCH_ENTRY(location, return_val) }                         \
-  catch(const std::exception& ex)                                   \
-    {                                                               \
-      (void)(ex);                                                   \
-      LOG_ERROR                                                     \
-        ("Exception at [" << location << "], what=" << ex.what());  \
-      return return_val;                                            \
-    }                                                               \
-  catch(...)                                                        \
-    {                                                               \
-      LOG_ERROR                                                     \
-        (                                                           \
-         "Exception at ["                                           \
-         << location <<                                             \
-         "], generic exception \"...\"");                           \
-      return return_val;                                            \
-    }
+
+#define CATCH_ENTRY(location, return_val) }     \
+    catch(const std::exception& ex)             \
+      {                                         \
+        (void)(ex);                             \
+        LOG_ERROR                               \
+          (                                     \
+           "Exception at ["                     \
+           + std::string(location)              \
+           + "], what="                         \
+           + std::string(ex.what())) ;          \
+        return return_val;                      \
+      }                                         \
+    catch(...)                                  \
+      {                                         \
+        LOG_ERROR                               \
+          (                                     \
+           "Exception at ["                     \
+           + std::string(location)              \
+           + "], generic exception \"...\"") ;  \
+        return return_val;                      \
+      }
 
 #define CATCH_ENTRY_L0(lacation, return_val)    \
   CATCH_ENTRY(lacation, return_val)
