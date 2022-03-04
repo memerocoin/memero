@@ -347,6 +347,14 @@ void LOG_ERROR_AND_THROW_UNLESS
   LOG_ERROR_AND_THROW_IF(!(expr), x);
 }
 
+void LOG_DEFAULT
+(
+ const epee::LogLevel level
+ , const std::string_view x
+ ) {
+  LOG_CATEGORY(level, DEFAULT_LOG_CATEGORY, x);
+}
+
 void LOG_TRACE(const std::string_view x) {
   LOG_DEFAULT(epee::LogLevel::Trace, x);
 }

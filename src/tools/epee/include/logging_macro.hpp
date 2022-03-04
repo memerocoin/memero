@@ -64,9 +64,6 @@ see: etc/other-licenses/monero/LICENSE
        , x );                                   \
   } while (0)
 
-#define LOG_DEFAULT(level, x)                   \
-  LOG_CATEGORY(level, DEFAULT_LOG_CATEGORY, x)
-
 #define LOG_DEBUG_MUTE(x)
 #define LOG_VERBOSE_MUTE(x)
 #define LOG_WARNING_MUTE(x)
