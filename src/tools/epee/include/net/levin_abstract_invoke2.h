@@ -77,13 +77,13 @@ namespace epee
       int res = transport.invoke(command, buff_to_send, buff_to_recv);
       if( res <=0 )
       {
-        LOG_ERROR("Failed to invoke command " << command << " return code " << res);
+        LOG_ERROR("Failed to invoke command " + std::to_string(command) + " return code " + std::to_string(res));
         return false;
       }
       serialization::portable_storage stg_ret;
       if(!stg_ret.load_from_binary(buff_to_recv, &default_levin_limits))
       {
-        LOG_ERROR("Failed to load_from_binary on command " << command);
+        LOG_ERROR("Failed to load_from_binary on command " + std::to_string(command));
         return false;
       }
       return result_struct.load(stg_ret);
@@ -103,7 +103,7 @@ namespace epee
       int res = transport.notify(command, buff_to_send);
       if(res <=0 )
       {
-        LOG_ERROR("Failed to notify command " << command << " return code " << res);
+        LOG_ERROR("Failed to notify command " + std::to_string(command) + " return code " + std::to_string(res));
         return false;
       }
       return true;
@@ -136,7 +136,7 @@ namespace epee
       if(!stg_ret.load_from_binary(buff_to_recv, &default_levin_limits))
       {
         on_levin_traffic(context, true, false, true, buff_to_recv.size(), command);
-        LOG_ERROR("Failed to load_from_binary on command " << command);
+        LOG_ERROR("Failed to load_from_binary on command " + std::to_string(command));
         return false;
       }
       on_levin_traffic(context, true, false, false, buff_to_recv.size(), command);
@@ -173,14 +173,14 @@ namespace epee
         if(!stg_ret.load_from_binary(buff, &default_levin_limits))
         {
           on_levin_traffic(context, true, false, true, buff.size(), command);
-          LOG_ERROR("Failed to load_from_binary on command " << command);
+          LOG_ERROR("Failed to load_from_binary on command " + std::to_string(command));
           cb(epee::levin::LEVIN_ERROR_FORMAT, result_struct, context);
           return false;
         }
         if (!result_struct.load(stg_ret))
         {
           on_levin_traffic(context, true, false, true, buff.size(), command);
-          LOG_ERROR("Failed to load result struct on command " << command);
+          LOG_ERROR("Failed to load result struct on command " + std::to_string(command));
           cb(epee::levin::LEVIN_ERROR_FORMAT, result_struct, context);
           return false;
         }
@@ -215,7 +215,7 @@ namespace epee
       int res = transport.notify(command, epee::string_tools::string_to_blob(buff_to_send), conn_id);
       if(res <=0 )
       {
-        LOG_ERROR("Failed to notify command " << command << " return code " << res);
+        LOG_ERROR("Failed to notify command " + std::to_string(command) + " return code " + std::to_string(res));
         return false;
       }
       return true;
@@ -229,7 +229,7 @@ namespace epee
       if(!strg.load_from_binary(in_buff, &default_levin_limits))
       {
         on_levin_traffic(context, false, false, true, in_buff.size(), command);
-        LOG_ERROR("Failed to load_from_binary in command " << command);
+        LOG_ERROR("Failed to load_from_binary in command " + std::to_string(command));
         return -1;
       }
       boost::value_initialized<t_in_type> in_struct;
@@ -238,7 +238,7 @@ namespace epee
       if (!static_cast<t_in_type&>(in_struct).load(strg))
       {
         on_levin_traffic(context, false, false, true, in_buff.size(), command);
-        LOG_ERROR("Failed to load in_struct in command " << command);
+        LOG_ERROR("Failed to load in_struct in command " + std::to_string(command));
         return -1;
       }
       on_levin_traffic(context, false, false, false, in_buff.size(), command);
@@ -248,7 +248,7 @@ namespace epee
 
       if(!strg_out.store_to_binary(buff_out))
       {
-        LOG_ERROR("Failed to store_to_binary in command" << command);
+        LOG_ERROR("Failed to store_to_binary in command" + std::to_string(command));
         return -1;
       }
       on_levin_traffic(context, false, true, false, buff_out.size(), command);
@@ -263,14 +263,14 @@ namespace epee
       if(!strg.load_from_binary(in_buff, &default_levin_limits))
       {
         on_levin_traffic(context, false, false, true, in_buff.size(), command);
-        LOG_ERROR("Failed to load_from_binary in notify " << command);
+        LOG_ERROR("Failed to load_from_binary in notify " + std::to_string(command));
         return -1;
       }
       boost::value_initialized<t_in_type> in_struct;
       if (!static_cast<t_in_type&>(in_struct).load(strg))
       {
         on_levin_traffic(context, false, false, true, in_buff.size(), command);
-        LOG_ERROR("Failed to load in_struct in notify " << command);
+        LOG_ERROR("Failed to load in_struct in notify " + std::to_string(command));
         return -1;
       }
       on_levin_traffic(context, false, false, false, in_buff.size(), command);
@@ -358,12 +358,12 @@ namespace epee
 
 
 #define END_INVOKE_MAP2() \
-  LOG_ERROR("Unknown command:" << command); \
+    LOG_ERROR("Unknown command:" + std::to_string(command));            \
   on_levin_traffic(context, false, false, true, in_buff.size(), "invalid-command"); \
   return epee::levin::LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED;       \
   } \
   catch (const std::exception &e) { \
-    LOG_ERROR("Error in handle_invoke_map: " << e.what()); \
+    LOG_ERROR("Error in handle_invoke_map: " + std::string(e.what())); \
     return epee::levin::LEVIN_ERROR_CONNECTION_TIMEDOUT; /* seems kinda appropriate */ \
   } \
   }

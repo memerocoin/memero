@@ -149,7 +149,7 @@ int main(int argc, char const * argv[])
   }
   catch (std::exception const & ex)
     {
-      LOG_ERROR("Exception in main! " << ex.what());
+      LOG_ERROR("Exception in main! " + std::string(ex.what()));
     }
   catch (...)
     {

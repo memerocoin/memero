@@ -71,7 +71,11 @@ namespace cryptonote
       boost::system::error_code ec{};
       if (ec)
       {
-        LOG_ERROR(tr("Invalid IP address given for --") << arg.rpc_bind_ip.name);
+        LOG_ERROR
+          (
+           "Invalid IP address given for --"
+           + std::string(arg.rpc_bind_ip.name)
+           );
         return std::nullopt;
       }
     }
@@ -88,7 +92,11 @@ namespace cryptonote
       boost::system::error_code ec{};
       if (ec)
       {
-        LOG_ERROR(tr("Invalid IP address given for --") << arg.rpc_bind_ipv6_address.name);
+        LOG_ERROR
+          (
+           "Invalid IP address given for --"
+           + std::string(arg.rpc_bind_ipv6_address.name)
+           );
         return std::nullopt;
       }
     }

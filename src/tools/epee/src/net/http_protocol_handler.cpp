@@ -78,7 +78,11 @@ namespace net_utils
 					entry.m_etc_header_fields.push_back(std::pair<std::string, std::string>(result[field_etc_name], result[field_val]));
 				else
 				{
-					LOG_ERROR("simple_http_connection_handler::parse_header() not matched last entry in:"<<std::string(it_current_bound, it_end));
+					LOG_ERROR
+            (
+             "simple_http_connection_handler::parse_header() not matched last entry in:"
+             + std::string(it_current_bound, it_end)
+             );
 				}
 
 				it_current_bound = result[(int)result.size()-1].first;
@@ -98,7 +102,7 @@ namespace net_utils
 
 			if(!parse_header(it_begin, end_header_it+4, entry))
 			{
-				LOG_ERROR("Failed to parse header:" << std::string(it_begin, end_header_it+2));
+				LOG_ERROR("Failed to parse header:" + std::string(it_begin, end_header_it+2));
 				return false;
 			}
 
@@ -114,7 +118,11 @@ namespace net_utils
 			std::string boundary;
 			if(!match_boundary(content_type, boundary))
 			{
-				LOG_ERROR("Failed to match boundary in content type: " << content_type);
+				LOG_ERROR
+          (
+           "Failed to match boundary in content type: "
+           + content_type
+           );
 				return false;
 			}
 

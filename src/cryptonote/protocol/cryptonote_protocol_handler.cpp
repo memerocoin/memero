@@ -645,12 +645,14 @@ namespace cryptonote
       if(context.m_requested_objects.size())
       {
         LOG_ERROR
-        (
-          "NOTIFY_NEW_FLUFFY_BLOCK: peer sent the number of transaction requested"
-          << ", but not the actual transactions requested"
-          << ", context.m_requested_objects.size() = " << context.m_requested_objects.size()
-          << ", dropping connection"
-        );
+          (
+           std::string()
+           + "NOTIFY_NEW_FLUFFY_BLOCK: peer sent the number of transaction requested"
+           + ", but not the actual transactions requested"
+           + ", context.m_requested_objects.size() = "
+           + std::to_string(context.m_requested_objects.size())
+           + ", dropping connection"
+           );
 
         drop_connection(context, false, false);
         m_core.resume_mine();
@@ -679,7 +681,12 @@ namespace cryptonote
             }
             else
             {
-              LOG_ERROR("1 tx requested, none not found, but " << txes.size() << " returned");
+              LOG_ERROR
+                (
+                 "1 tx requested, none not found, but "
+                 + std::to_string(txes.size())
+                 + " returned"
+                 );
               m_core.resume_mine();
               return 1;
             }
@@ -1149,8 +1156,13 @@ namespace cryptonote
 
     if(!context.m_requested_objects.empty())
     {
-      LOG_ERROR(context << "returned not all requested objects (context.m_requested_objects.size()="
-        << context.m_requested_objects.size() << "), dropping connection");
+      LOG_ERROR
+        (
+         context.to_str()
+         + "returned not all requested objects (context.m_requested_objects.size()="
+         + std::to_string(context.m_requested_objects.size())
+         + "), dropping connection"
+         );
       drop_connection(context, false, false);
       ++m_sync_bad_spans_downloaded;
       return 1;
@@ -1164,14 +1176,14 @@ namespace cryptonote
       {
         if (block_entry.pruned)
         {
-          LOG_ERROR(context << "returned a pruned block, dropping connection");
+          LOG_ERROR(context.to_str() + "returned a pruned block, dropping connection");
           drop_connection(context, false, false);
           ++m_sync_bad_spans_downloaded;
           return 1;
         }
         if (block_entry.block_weight)
         {
-          LOG_ERROR(context << "returned a block weight for a non pruned block, dropping connection");
+          LOG_ERROR(context.to_str() + "returned a block weight for a non pruned block, dropping connection");
           drop_connection(context, false, false);
           ++m_sync_bad_spans_downloaded;
           return 1;
@@ -1180,7 +1192,7 @@ namespace cryptonote
         {
           if (tx_entry.prunable_hash != crypto::null_hash)
           {
-            LOG_ERROR(context << "returned at least one pruned object which we did not expect, dropping connection");
+            LOG_ERROR(context.to_str() + "returned at least one pruned object which we did not expect, dropping connection");
             drop_connection(context, false, false);
             ++m_sync_bad_spans_downloaded;
             return 1;
@@ -1252,7 +1264,7 @@ namespace cryptonote
 
           if (blocks.empty())
           {
-            LOG_ERROR(context << "Next span has no blocks");
+            LOG_ERROR(context.to_str() + "Next span has no blocks");
             m_block_queue.remove_spans(span_connection_id, start_height);
             continue;
           }
@@ -1263,7 +1275,7 @@ namespace cryptonote
           const auto r = maybe_block_and_hash_from_blob(blocks.back().block);
           if (!r)
           {
-            LOG_ERROR(context << "Failed to parse block, but it should already have been parsed");
+            LOG_ERROR(context.to_str() + "Failed to parse block, but it should already have been parsed");
             m_block_queue.remove_spans(span_connection_id, start_height);
             continue;
           }
@@ -1281,7 +1293,7 @@ namespace cryptonote
           const auto maybeBlock = maybe_block_from_blob(blocks.front().block);
           if (!maybeBlock)
           {
-            LOG_ERROR(context << "Failed to parse block, but it should already have been parsed");
+            LOG_ERROR(context.to_str() + "Failed to parse block, but it should already have been parsed");
             m_block_queue.remove_spans(span_connection_id, start_height);
             continue;
           }
@@ -1860,14 +1872,21 @@ skip:
         LOG_DEBUG(context.to_str() + " span size is 0");
         if (context.m_last_response_height + 1 < context.m_needed_objects.size())
         {
-          LOG_ERROR(context << " ERROR: inconsistent context: lrh " << context.m_last_response_height << ", nos " << context.m_needed_objects.size());
+          LOG_ERROR
+            (
+             context.to_str()
+             + " ERROR: inconsistent context: lrh "
+             + std::to_string(context.m_last_response_height)
+             + ", nos "
+             + std::to_string(context.m_needed_objects.size())
+             );
           context.m_needed_objects.clear();
           context.m_last_response_height = 0;
           goto skip;
         }
         if (skip_unneeded_hashes(context, false) && context.m_needed_objects.empty() && context.m_num_requested == 0)
         {
-          LOG_ERROR(context << "Nothing we can request from this peer, and we did not request anything previously");
+          LOG_ERROR(context.to_str() + "Nothing we can request from this peer, and we did not request anything previously");
           return false;
         }
 
@@ -1933,7 +1952,7 @@ skip:
           uint64_t skip = span.first - first_context_block_height;
           if (skip > context.m_needed_objects.size())
           {
-            LOG_ERROR("ERROR: skip " << skip << ", m_needed_objects " << context.m_needed_objects.size() << ", first_context_block_height" << first_context_block_height);
+            LOG_ERROR_MUTE("ERROR: skip " << skip << ", m_needed_objects " << context.m_needed_objects.size() << ", first_context_block_height" << first_context_block_height);
             return false;
           }
           if (skip > 0)
@@ -1941,7 +1960,7 @@ skip:
               (std::next(context.m_needed_objects.begin(), skip), context.m_needed_objects.end());
           if (context.m_needed_objects.size() < span.second)
           {
-            LOG_ERROR("ERROR: span " << span.first << "/" << span.second << ", m_needed_objects " << context.m_needed_objects.size());
+            LOG_ERROR_MUTE("ERROR: span " << span.first << "/" << span.second << ", m_needed_objects " << context.m_needed_objects.size());
             return false;
           }
 
@@ -2096,7 +2115,7 @@ skip:
         }
         if (!request_txpool_complement(context))
         {
-          LOG_ERROR(context << "Failed to request txpool complement");
+          LOG_ERROR(context.to_str() + "Failed to request txpool complement");
           return true;
         }
         return false;

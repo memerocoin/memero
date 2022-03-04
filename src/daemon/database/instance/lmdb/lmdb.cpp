@@ -520,8 +520,14 @@ void BlockchainLMDB::do_resize(uint64_t increase_size)
     std::filesystem::space_info si = std::filesystem::space(path);
     if(si.available < add_size)
     {
-      LOG_ERROR("!! WARNING: Insufficient free space to extend database !!: " <<
-          (si.available >> 20L) << " MB available, " << (add_size >> 20L) << " MB needed");
+      LOG_ERROR
+        (
+         "!! WARNING: Insufficient free space to extend database !!: "
+         + std::to_string(si.available >> 20L)
+         + " MB available, "
+         + std::to_string(add_size >> 20L)
+         + " MB needed"
+         );
       return;
     }
   }
@@ -1618,7 +1624,7 @@ bool BlockchainLMDB::remove_data_file(const std::string& folder) const
   }
   catch (const std::exception &e)
   {
-    LOG_ERROR("Failed to remove " << filename << ": " << e.what());
+    LOG_ERROR("Failed to remove " + filename + ": " + std::string(e.what()));
     return false;
   }
   return true;

@@ -738,10 +738,20 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         }
 	else if (m_transfers[kit->second].m_spent || m_transfers[kit->second].amount() >= tx_scan_info[o].amount)
         {
-	  LOG_ERROR("Public key " << epee::string_tools::pod_to_hex(kit->first)
-              << " from received " << print_money(tx_scan_info[o].amount) << " output already exists with "
-              << (m_transfers[kit->second].m_spent ? "spent" : "unspent") << " "
-              << print_money(m_transfers[kit->second].amount()) << " in tx " << m_transfers[kit->second].m_txid << ", received output ignored");
+	  LOG_ERROR
+      (
+       "Public key "
+       + epee::string_tools::pod_to_hex(kit->first)
+       + " from received "
+       + print_money(tx_scan_info[o].amount)
+       + " output already exists with "
+       + (m_transfers[kit->second].m_spent ? "spent" : "unspent")
+       + " "
+       + print_money(m_transfers[kit->second].amount())
+       + " in tx "
+       + m_transfers[kit->second].m_txid.to_str()
+       + ", received output ignored"
+       );
           THROW_WALLET_EXCEPTION_IF(tx_money_got_in_outs[tx_scan_info[o].received->index] < tx_scan_info[o].amount,
               error::wallet_internal_error, "Unexpected values of new and old outputs");
           tx_money_got_in_outs[tx_scan_info[o].received->index] -= tx_scan_info[o].amount;
@@ -754,9 +764,16 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         }
         else
         {
-	  LOG_ERROR("Public key " << epee::string_tools::pod_to_hex(kit->first)
-              << " from received " << print_money(tx_scan_info[o].amount) << " output already exists with "
-              << print_money(m_transfers[kit->second].amount()) << ", replacing with new output");
+	  LOG_ERROR
+      (
+       "Public key "
+       + epee::string_tools::pod_to_hex(kit->first)
+       + " from received "
+       + print_money(tx_scan_info[o].amount)
+       + " output already exists with "
+       + print_money(m_transfers[kit->second].amount())
+       + ", replacing with new output"
+       );
           // The new larger output replaced a previous smaller one
           THROW_WALLET_EXCEPTION_IF(tx_money_got_in_outs[tx_scan_info[o].received->index] < tx_scan_info[o].amount,
               error::wallet_internal_error, "Unexpected values of new and old outputs");
@@ -835,8 +852,13 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       {
         if(amount != td.amount())
         {
-          LOG_ERROR("Inconsistent amount in tx input: got " << print_money(amount) <<
-            ", expected " << print_money(td.amount()));
+          LOG_ERROR
+            (
+             "Inconsistent amount in tx input: got "
+             + print_money(amount)
+             + ", expected "
+             + print_money(td.amount())
+             );
           // this means:
           //   1) the same output pub key was used as destination multiple times,
           //   2) the wallet set the highest amount among them to transfer_details::m_amount, and
@@ -1580,7 +1602,12 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
                 }
                 else
                 {
-                  LOG_ERROR("Got txid " << tx_hash << " which we did not ask for");
+                  LOG_ERROR
+                    (
+                     "Got txid "
+                     + tx_hash.to_str()
+                     + " which we did not ask for"
+                     );
                 }
             }
             else
@@ -1649,7 +1676,13 @@ void wallet2::fast_refresh(uint64_t stop_height, uint64_t &blocks_start_height, 
       return;
     if (blocks_start_height < m_blockchain.offset())
     {
-      LOG_ERROR("Blocks start before blockchain offset: " << blocks_start_height << " " << m_blockchain.offset());
+      LOG_ERROR
+        (
+         "Blocks start before blockchain offset: "
+         + std::to_string(blocks_start_height)
+         + " "
+         + std::to_string(m_blockchain.offset())
+         );
       return;
     }
     current_index = blocks_start_height;
@@ -1799,7 +1832,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
         }
         catch (const std::exception &e)
         {
-          LOG_ERROR("Error parsing blocks: " << e.what());
+          LOG_ERROR("Error parsing blocks: " + std::string(e.what()));
           error = true;
         }
         blocks_fetched += added_blocks;
@@ -1855,7 +1888,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
       }
       else
       {
-        LOG_ERROR("pull_blocks failed, try_count=" << try_count);
+        LOG_ERROR("pull_blocks failed, try_count=" + std::to_string(try_count));
         throw;
       }
     }
@@ -2050,7 +2083,7 @@ bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable
 
   if (e) {
     std::filesystem::remove(tmp_file_name);
-    LOG_ERROR("failed to update wallet keys file " << keys_file_name);
+    LOG_ERROR("failed to update wallet keys file " + keys_file_name);
     return false;
   }
 
@@ -2771,12 +2804,12 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
     // remove old wallet file
     r = std::filesystem::remove(old_file);
     if (!r) {
-      LOG_ERROR("error removing file: " << old_file);
+      LOG_ERROR("error removing file: " + old_file);
     }
     // remove old keys file
     r = std::filesystem::remove(old_keys_file);
     if (!r) {
-      LOG_ERROR("error removing file: " << old_keys_file);
+      LOG_ERROR("error removing file: " + old_keys_file);
     }
   } else {
     // save to new file

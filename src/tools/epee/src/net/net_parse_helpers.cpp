@@ -72,7 +72,7 @@ namespace net_utils
         }
         break;
       default:
-        LOG_ERROR("Unknown state " << (int)st);
+        LOG_ERROR("Unknown state " + std::to_string((int)st));
         return false;
       }
     }

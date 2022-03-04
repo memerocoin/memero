@@ -163,7 +163,13 @@ namespace cryptonote
       ++idx;
       if(src_entr.real_output >= src_entr.outputs.size())
       {
-        LOG_ERROR("real_output index (" << src_entr.real_output << ")bigger than output_keys.size()=" << src_entr.outputs.size());
+        LOG_ERROR
+          (
+           "real_output index ("
+           + std::to_string(src_entr.real_output)
+           + ")bigger than output_keys.size()="
+           + std::to_string(src_entr.outputs.size())
+           );
         return {};
       }
       summary_inputs_money += src_entr.amount;
@@ -196,12 +202,47 @@ namespace cryptonote
       //check that derivated key is equal with real output key (if non multisig)
       if(!(output_key_pair.pub == src_entr.outputs[src_entr.real_output].second.output_public_key) )
       {
-        LOG_ERROR("derived public key mismatch with output public key at index " << idx << ", real out " << src_entr.real_output << "! "<< std::endl << "derived_key:"
-          << epee::string_tools::pod_to_hex(output_key_pair.pub) << std::endl << "real output_public_key:"
-          << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.output_public_key) );
-        LOG_ERROR("amount " << src_entr.amount << ", rct " << src_entr.rct);
-        LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key);
-        LOG_ERROR(", real_output_in_tx_index " << src_entr.real_output_in_tx_index);
+        LOG_ERROR
+          (
+           "derived public key mismatch with output public key at index "
+           + std::to_string(idx)
+           + ", real out "
+           + std::to_string(src_entr.real_output)
+           + "!"
+           );
+
+        LOG_ERROR
+          (
+           "derived_key:"
+           + epee::string_tools::pod_to_hex(output_key_pair.pub)
+           );
+        
+        LOG_ERROR
+          (
+           "real output_public_key:"
+           + src_entr.outputs[src_entr.real_output].second.output_public_key.to_str()
+           );
+
+        LOG_ERROR
+          (
+           "amount "
+           + std::to_string(src_entr.amount)
+           + ", rct "
+           + std::to_string(src_entr.rct)
+           );
+
+        LOG_ERROR
+          (
+           "tx pubkey "
+           + src_entr.real_out_tx_key.to_str()
+           );
+
+        LOG_ERROR
+          (
+           "real_output_in_tx_index "
+           + std::to_string(src_entr.real_output_in_tx_index)
+           );
+
         return {};
       }
 
@@ -301,7 +342,14 @@ namespace cryptonote
     //check money
     if(summary_outs_money > summary_inputs_money )
     {
-      LOG_ERROR("Transaction inputs money ("<< summary_inputs_money << ") less than outputs money (" << summary_outs_money << ")");
+      LOG_ERROR
+        (
+         "Transaction inputs money ("
+         + std::to_string(summary_inputs_money)
+         + ") less than outputs money ("
+         + std::to_string(summary_outs_money)
+         + ")"
+         );
       return {};
     }
 

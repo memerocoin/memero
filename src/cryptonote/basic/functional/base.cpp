@@ -83,7 +83,7 @@ namespace cryptonote
     bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
     if (!res || buf.size() != hash.data.size())
     {
-      LOG_ERROR("invalid hash format: " << str_hash);
+      LOG_ERROR("invalid hash format: " + str_hash);
       return {};
     }
     else
@@ -102,7 +102,7 @@ namespace cryptonote
     bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
     if (!res || buf.size() != out.data.size())
     {
-      LOG_ERROR("invalid hash format: " << str_hash);
+      LOG_ERROR("invalid hash format: " + str_hash);
       return {};
     }
     else

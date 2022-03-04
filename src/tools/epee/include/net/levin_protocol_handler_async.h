@@ -338,7 +338,10 @@ public:
     }
     if(0 != m_wait_count) {
       LOG_ERROR
-        ("Failed to wait for operation completion. m_wait_count = " << m_wait_count);
+        (
+         "Failed to wait for operation completion. m_wait_count = "
+         + std::to_string(m_wait_count)
+         );
     }
 
     LOG_TRACE(m_connection_context.to_str() + "~async_protocol_handler()");
@@ -425,7 +428,7 @@ public:
 
     if(!m_config.m_pcommands_handler)
     {
-      LOG_ERROR(m_connection_context << "Commands handler not set!");
+      LOG_ERROR(m_connection_context.to_str() + "Commands handler not set!");
       return false;
     }
 
@@ -486,7 +489,11 @@ public:
 
             if (m_fragment_buffer.size() < sizeof(bucket_head2))
             {
-              LOG_ERROR(m_connection_context << "Fragmented data too small for levin header");
+              LOG_ERROR
+                (
+                 m_connection_context.to_str()
+                 + "Fragmented data too small for levin header"
+                 );
               return false;
             }
 
@@ -496,9 +503,17 @@ public:
             const size_t max_bytes = m_connection_context.get_max_bytes(m_current_head.m_command);
             if(m_current_head.m_cb > std::min<size_t>(max_packet_size, max_bytes))
             {
-              LOG_ERROR(m_connection_context << "Maximum packet size exceed!, m_max_packet_size = " << std::min<size_t>(max_packet_size, max_bytes)
-                << ", packet header received " << m_current_head.m_cb << ", command " << m_current_head.m_command
-                << ", connection will be closed.");
+              LOG_ERROR
+                (
+                 m_connection_context.to_str()
+                 + "Maximum packet size exceed!, m_max_packet_size = "
+                 + std::to_string(std::min<size_t>(max_packet_size, max_bytes))
+                 + ", packet header received "
+                 + std::to_string(m_current_head.m_cb)
+                 + ", command "
+                 + std::to_string(m_current_head.m_command)
+                 + ", connection will be closed."
+                 );
               return false;
             }
             buff_to_invoke = {reinterpret_cast<const uint8_t*>(temp.data()) + sizeof(bucket_head2), temp.size() - sizeof(bucket_head2)};
@@ -533,7 +548,7 @@ public:
               //use sync call scenario
               if(!m_wait_count && !m_close_called)
               {
-                LOG_ERROR(m_connection_context << "no active invoke when response came, wtf?");
+                LOG_ERROR(m_connection_context.to_str() + "no active invoke when response came");
                 return false;
               }else
               {

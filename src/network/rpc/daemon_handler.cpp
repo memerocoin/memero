@@ -332,7 +332,11 @@ namespace rpc
     std::string tx_blob;
     if(!epee::string_tools::parse_hexstr_to_binbuff(req.tx_as_hex, tx_blob))
     {
-      LOG_ERROR("[SendRawTxHex]: Failed to parse tx from hexbuff: " << req.tx_as_hex);
+      LOG_ERROR
+        (
+         "[SendRawTxHex]: Failed to parse tx from hexbuff: "
+         + req.tx_as_hex
+         );
       res.status = Message::STATUS_FAILED;
       res.error_details = "Invalid hex";
       return;

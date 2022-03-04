@@ -59,7 +59,7 @@ namespace epee
       }
     else
       {
-        LOG_ERROR("Invalid numerical log level: " << x);
+        LOG_ERROR("Invalid numerical log level: " + x);
       }
   }
 
@@ -369,4 +369,8 @@ void LOG_WARNING(const std::string_view x) {
 
 void LOG_INFO(const std::string_view x) {
   LOG_DEFAULT(epee::LogLevel::Info, x);
+}
+
+void LOG_ERROR(const std::string_view x) {
+  LOG_DEFAULT(epee::LogLevel::Error, x);
 }

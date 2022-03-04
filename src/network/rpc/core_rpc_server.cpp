@@ -496,7 +496,7 @@ namespace cryptonote
         }
         else
         {
-          LOG_ERROR("Failed to determine pool info for " << tx_hash);
+          LOG_ERROR("Failed to determine pool info for " + tx_hash.to_str());
           e.double_spend_seen = false;
           e.relayed = false;
           e.received_timestamp = 0;

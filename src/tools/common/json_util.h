@@ -41,13 +41,13 @@
     } \
     else \
     { \
-      LOG_ERROR("Field " << #name << " found in JSON, but not " << #jtype); \
+      LOG_ERROR("Field " + std::string(#name) + " found in JSON, but not " + std::string(#jtype)); \
       return false; \
     } \
   } \
   else if (mandatory) \
   { \
-    LOG_ERROR("Field " << #name << " not found in JSON"); \
+    LOG_ERROR("Field " + std::string(#name) + " not found in JSON"); \
     return false; \
   } while(0)
 

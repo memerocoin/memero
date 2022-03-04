@@ -100,11 +100,11 @@ namespace epee
           LOG_ERROR
             (
              "RPC call of \""
-             << req_t.method
-             << "\" returned error: "
-             << resp_t.error.code
-             << ", message: "
-             << resp_t.error.message
+             + req_t.method
+             + "\" returned error: "
+             + std::to_string(resp_t.error.code)
+             + ", message: "
+             + resp_t.error.message
              );
           return false;
         }

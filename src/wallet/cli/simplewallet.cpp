@@ -177,7 +177,7 @@ bool simple_wallet::change_password(const std::vector<std::string> &args)
   }
   catch (const tools::error::wallet_logic_error& e)
   {
-    fail_msg_writer() << ("Error with wallet rewrite: ") << e.what();
+    fail_msg_writer() << ("Error with wallet rewrite: ") + std::string(e.what());
     return true;
   }
 
@@ -879,7 +879,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
   try { rc = tools::wallet2::make_new(vm, false, password_prompter); }
-  catch(const std::exception &e) { fail_msg_writer() << ("Error creating wallet: ") << e.what(); return {}; }
+  catch(const std::exception &e) { fail_msg_writer() << ("Error creating wallet: ") + std::string(e.what()); return {}; }
   m_wallet = std::move(rc.first);
   if (!m_wallet)
   {
@@ -926,7 +926,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet
   }
   catch (const std::exception& e)
   {
-    fail_msg_writer() << ("failed to generate new wallet: ") << e.what();
+    fail_msg_writer() << ("failed to generate new wallet: ") + std::string(e.what());
     return {};
   }
 
@@ -958,7 +958,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
   try { rc = tools::wallet2::make_new(vm, false, password_prompter); }
-  catch(const std::exception &e) { fail_msg_writer() << ("Error creating wallet: ") << e.what(); return {}; }
+  catch(const std::exception &e) { fail_msg_writer() << ("Error creating wallet: ") + std::string(e.what()); return {}; }
   m_wallet = std::move(rc.first);
   m_wallet->callback(this);
   if (!m_wallet)
@@ -1015,7 +1015,7 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
   }
   catch (const std::exception& e)
   {
-    fail_msg_writer() << ("failed to load wallet: ") << e.what();
+    fail_msg_writer() << ("failed to load wallet: ") + std::string(e.what());
     if (m_wallet)
     {
       // only suggest removing cache if the password was actually correct
@@ -1048,7 +1048,7 @@ bool simple_wallet::close_wallet()
   }
   catch (const std::exception& e)
   {
-    fail_msg_writer() << e.what();
+    fail_msg_writer() << std::string(e.what());
     return false;
   }
 
@@ -1217,23 +1217,23 @@ bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bo
   }
   catch (const tools::error::wallet_rpc_error& e)
   {
-    LOG_ERROR("RPC error: " << e.to_string());
-    ss << ("RPC error: ") << e.what();
+    LOG_ERROR("RPC error: " + e.to_string());
+    ss << ("RPC error: ") + std::string(e.what());
   }
   catch (const tools::error::refresh_error& e)
   {
-    LOG_ERROR("refresh error: " << e.to_string());
-    ss << ("refresh error: ") << e.what();
+    LOG_ERROR("refresh error: " + e.to_string());
+    ss << ("refresh error: ") + std::string(e.what());
   }
   catch (const tools::error::wallet_internal_error& e)
   {
-    LOG_ERROR("internal error: " << e.to_string());
-    ss << ("internal error: ") << e.what();
+    LOG_ERROR("internal error: " + e.to_string());
+    ss << ("internal error: ") + std::string(e.what());
   }
   catch (const std::exception& e)
   {
-    LOG_ERROR("unexpected error: " << e.what());
-    ss << ("unexpected error: ") << e.what();
+    LOG_ERROR("unexpected error: " + std::string(e.what()));
+    ss << ("unexpected error: ") + std::string(e.what());
   }
   catch (...)
   {
@@ -2002,7 +2002,7 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
     }
     catch (const std::exception& e)
     {
-      fail_msg_writer() << "Failed to get pool state:" << e.what();
+      fail_msg_writer() << "Failed to get pool state:" + std::string(e.what());
     }
   }
 
@@ -2220,7 +2220,7 @@ bool simple_wallet::account(const std::vector<std::string> &args/* = std::vector
     }
     catch (const std::exception& e)
     {
-      fail_msg_writer() << e.what();
+      fail_msg_writer() << std::string(e.what());
     }
   }
   else

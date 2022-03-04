@@ -179,7 +179,11 @@ namespace nodetool
             {
                 if (2 <= count)
                 {
-                    LOG_ERROR("Too many ',' characters given to --" << arg_proxy.name);
+                    LOG_ERROR
+                      (
+                       "Too many ',' characters given to --"
+                       + std::string(arg_proxy.name)
+                       );
                     return std::nullopt;
                 }
 
@@ -190,7 +194,11 @@ namespace nodetool
                     proxies.back().max_connections = get_max_connections(*next);
                     if (proxies.back().max_connections == 0)
                     {
-                        LOG_ERROR("Invalid max connections given to --" << arg_proxy.name);
+                        LOG_ERROR
+                          (
+                           "Invalid max connections given to --"
+                           + std::string(arg_proxy.name)
+                           );
                         return std::nullopt;
                     }
                 }
@@ -198,7 +206,7 @@ namespace nodetool
 
             const epee::net_utils::zone _zone = epee::net_utils::zone_from_string(zone);
             if (_zone == epee::net_utils::zone::invalid) {
-              LOG_ERROR("Invalid network for --" << arg_proxy.name);
+              LOG_ERROR("Invalid network for --" + std::string(arg_proxy.name));
               return std::nullopt;
             }
 
@@ -208,7 +216,11 @@ namespace nodetool
             std::uint16_t port = 0;
             if (!epee::string_tools::parse_peer_from_string(ip, port, std::string{proxy}) || port == 0)
             {
-                LOG_ERROR("Invalid ipv4:port given for --" << arg_proxy.name);
+                LOG_ERROR
+                  (
+                   "Invalid ipv4:port given for --"
+                   + std::string(arg_proxy.name)
+                   );
                 return std::nullopt;
             }
             proxies.back().address = ip::tcp::endpoint{ip::address_v4{boost::endian::native_to_big(ip)}, port};
@@ -245,7 +257,11 @@ namespace nodetool
                 inbounds.back().max_connections = get_max_connections(*next);
                 if (inbounds.back().max_connections == 0)
                 {
-                    LOG_ERROR("Invalid max connections given to --" << arg_proxy.name);
+                    LOG_ERROR
+                      (
+                       "Invalid max connections given to --"
+                       + std::string(arg_proxy.name)
+                       );
                     return std::nullopt;
                 }
             }
@@ -262,7 +278,15 @@ namespace nodetool
                 inbounds.back().default_remote = net::i2p_address::unknown();
                 break;
             default:
-                LOG_ERROR("Invalid inbound address (" << address << ") for --" << arg_anonymous_inbound.name << ": " << (our_address ? "invalid type" : our_address.error().message()));
+                LOG_ERROR
+                  (
+                   std::string("Invalid inbound address (")
+                   + std::string(address)
+                   + ") for --"
+                   + std::string(arg_anonymous_inbound.name)
+                   + ": "
+                   + (our_address ? "invalid type" : our_address.error().message())
+                   );
                 return std::nullopt;
             }
 
@@ -274,7 +298,11 @@ namespace nodetool
             std::uint16_t port = 0;
             if (!epee::string_tools::parse_peer_from_string(ip, port, std::string{bind}))
             {
-                LOG_ERROR("Invalid ipv4:port given for --" << arg_anonymous_inbound.name);
+                LOG_ERROR
+                  (
+                   "Invalid ipv4:port given for --"
+                   + std::string(arg_anonymous_inbound.name)
+                   );
                 return std::nullopt;
             }
             inbounds.back().local_ip = std::string{bind.substr(0, colon)};
@@ -346,7 +374,16 @@ namespace nodetool
         {
             if (socks_connect_timeout < std::chrono::steady_clock::now() - start)
             {
-                LOG_ERROR("Timeout on socks connect (" << proxy << " to " << remote.str() << ")");
+              std::stringstream ss;
+              ss << proxy;
+                LOG_ERROR
+                  (
+                   "Timeout on socks connect ("
+                   + ss.str()
+                   + " to "
+                   + remote.str()
+                   + ")"
+                   );
                 return std::nullopt;
             }
 
@@ -360,7 +397,17 @@ namespace nodetool
             if (!result.first)
                 return {std::move(result.second)};
 
-            LOG_ERROR("Failed to make socks connection to " << remote.str() << " (via " << proxy << "): " << result.first.message());
+            std::stringstream ss;
+            ss << proxy;
+            LOG_ERROR
+              (
+               "Failed to make socks connection to "
+               + remote.str()
+               + " (via "
+               + ss.str()
+               + "): "
+               + result.first.message()
+               );
         }
         catch (std::future_error const&)
         {}

@@ -79,14 +79,14 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_GLOBAL(x)                                           \
   LOG_CATEGORY(epee::LogLevel::Info, epee::GLOBAL_CATEGORY, x)
 
-#define LOG_ERROR(x) LOG_DEFAULT(epee::LogLevel::Error, x)
-
 #define LOG_DEBUG_MUTE(x)
 #define LOG_VERBOSE_MUTE(x)
 #define LOG_WARNING_MUTE(x)
+#define LOG_ERROR_MUTE(x)
 
 #define _info(x) LOG_INFO(x)
-#define _erro(x) LOG_ERROR(x)
+// #define _erro(x) LOG_ERROR(x)
+#define _erro(x)
 
 // #define _dbg2(x) LOG_DEBUG(x)
 // #define _dbg1(x) LOG_DEBUG(x)

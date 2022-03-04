@@ -411,7 +411,7 @@ namespace epee
         }
         catch(const std::exception& ex)
         {
-          LOG_ERROR("Failed to parse json, what: " << ex.what());
+          LOG_ERROR("Failed to parse json, what: " + std::string(ex.what()));
           return false;
         }
         catch(...)

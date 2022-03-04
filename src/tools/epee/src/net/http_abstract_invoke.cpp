@@ -97,7 +97,10 @@ namespace epee
       // so don't
       //
       if(ec && ec != beast::errc::not_connected) {
-        LOG_ERROR("Failed to invoke http request to  " << uri << ", not connected");
+        LOG_ERROR
+          (
+           "Failed to invoke http request to  " + uri + ", not connected"
+           );
         return {};
       }
 

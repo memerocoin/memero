@@ -189,7 +189,7 @@ namespace epee
         }
         catch (const std::exception &ex)
         {
-          LOG_ERROR("Exception at [console_handler], what=" << ex.what());
+          LOG_ERROR("Exception at [console_handler], what=" + std::string(ex.what()));
         }
       }
       if (exit_handler)

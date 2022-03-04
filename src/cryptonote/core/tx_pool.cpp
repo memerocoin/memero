@@ -250,7 +250,7 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          LOG_ERROR("Error adding transaction to txpool: " << e.what());
+          LOG_ERROR("Error adding transaction to txpool: " + std::string(e.what()));
           return false;
         }
         tvc.m_verifivation_impossible = true;
@@ -295,7 +295,7 @@ namespace cryptonote
       }
       catch (const std::exception &e)
       {
-        LOG_ERROR("internal error: error adding transaction to txpool: " << e.what());
+        LOG_ERROR("internal error: error adding transaction to txpool: " + std::string(e.what()));
         return false;
       }
       tvc.m_added_to_pool = true;
@@ -411,7 +411,7 @@ namespace cryptonote
       }
       catch (const std::exception &e)
       {
-        LOG_ERROR("Error while pruning txpool: " << e.what());
+        LOG_ERROR("Error while pruning txpool: " + std::string(e.what()));
         return;
       }
     }
@@ -445,7 +445,7 @@ namespace cryptonote
           (kei_image_set.empty() || (kei_image_set.size() == 1 && *(kei_image_set.cbegin()) == id));
         LOG_ERROR_AND_RETURN_UNLESS(one_txid, false, "internal error: tx_relay=" << unsigned(tx_relay)
                                            << ", kei_image_set.size()=" << kei_image_set.size() << std::endl << "txin.output_key_image=" << txin.output_key_image << std::endl
-                                           << "tx_id=" << id);
+                                           << "tx_id=" + id.to_str());
       }
 
       const bool new_or_previously_private =
@@ -536,7 +536,7 @@ namespace cryptonote
     }
     catch (const std::exception &e)
     {
-      LOG_ERROR("Failed to remove tx from txpool: " << e.what());
+      LOG_ERROR("Failed to remove tx from txpool: " + std::string(e.what()));
       return false;
     }
 
@@ -591,7 +591,7 @@ namespace cryptonote
     }
     catch (const std::exception &e)
     {
-      LOG_ERROR("Failed to get tx from txpool: " << e.what());
+      LOG_ERROR("Failed to get tx from txpool: " + std::string(e.what()));
       return false;
     }
 
@@ -615,14 +615,23 @@ namespace cryptonote
         {
           if (!m_blockchain.get_txpool_tx_blob(txid, bd, cryptonote::relay_category::broadcasted))
           {
-            LOG_ERROR("Failed to get blob for txpool transaction " << txid);
+            LOG_ERROR
+              (
+               "Failed to get blob for txpool transaction "
+               + txid.to_str()
+               );
             return true;
           }
           txes.emplace_back(std::move(bd));
         }
         catch (const std::exception &e)
         {
-          LOG_ERROR("Failed to get blob for txpool transaction " << txid << ": " << e.what());
+          LOG_ERROR
+            (
+             "Failed to get blob for txpool transaction "
+             + txid.to_str()
+             + ": " + std::string(e.what())
+             );
           return true;
         }
       }
@@ -776,7 +785,7 @@ namespace cryptonote
       }
       catch (const std::exception &e)
       {
-        LOG_ERROR("Failed to update txpool transaction metadata: " << e.what());
+        LOG_ERROR("Failed to update txpool transaction metadata: " + std::string(e.what()));
         // continue
       }
     }
@@ -1243,7 +1252,7 @@ namespace cryptonote
             }
             catch (const std::exception &e)
             {
-              LOG_ERROR("Failed to update tx meta: " << e.what());
+              LOG_ERROR("Failed to update tx meta: " + std::string(e.what()));
               // continue, not fatal
             }
           }
@@ -1372,7 +1381,7 @@ namespace cryptonote
       }
       catch (const std::exception &e)
       {
-        LOG_ERROR("Failed to check transaction readiness: " << e.what());
+        LOG_ERROR("Failed to check transaction readiness: " + std::string(e.what()));
         // continue, not fatal
       }
       if (memcmp(&original_meta, &meta, sizeof(meta)))
@@ -1383,7 +1392,7 @@ namespace cryptonote
 	}
         catch (const std::exception &e)
 	{
-	  LOG_ERROR("Failed to update tx meta: " << e.what());
+	  LOG_ERROR("Failed to update tx meta: " + std::string(e.what()));
 	  // continue, not fatal
 	}
       }

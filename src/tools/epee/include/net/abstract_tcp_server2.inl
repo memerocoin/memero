@@ -877,7 +877,7 @@ namespace net_utils
 
     if (ipv4_failed != "")
     {
-      LOG_ERROR("Failed to bind IPv4: " << ipv4_failed);
+      LOG_ERROR("Failed to bind IPv4: " + ipv4_failed);
       if (require_ipv4)
       {
         throw std::runtime_error("Failed to bind IPv4 (set to required)");
@@ -915,7 +915,7 @@ namespace net_utils
 
       if (use_ipv6 && ipv6_failed != "")
       {
-        LOG_ERROR("Failed to bind IPv6: " << ipv6_failed);
+        LOG_ERROR("Failed to bind IPv6: " + ipv6_failed);
         if (ipv4_failed != "")
         {
           throw std::runtime_error("Failed to bind IPv4 and IPv6");
@@ -944,12 +944,12 @@ namespace net_utils
     uint32_t p_ipv6 = 0;
 
     if (port.size() && !string_tools::get_xtype_from_string(p, port)) {
-      LOG_ERROR("Failed to convert port no = " << port);
+      LOG_ERROR("Failed to convert port no = " + port);
       return false;
     }
 
     if (port_ipv6.size() && !string_tools::get_xtype_from_string(p_ipv6, port_ipv6)) {
-      LOG_ERROR("Failed to convert port no = " << port_ipv6);
+      LOG_ERROR("Failed to convert port no = " + port_ipv6);
       return false;
     }
     return this->init_server(p, address, p_ipv6, address_ipv6, use_ipv6, require_ipv4);
@@ -972,7 +972,7 @@ namespace net_utils
       }
       catch(const std::exception& ex)
       {
-        _erro("Exception at server worker thread, what=" << ex.what());
+        _erro("Exception at server worker thread, what=" + std::string(ex.what()));
       }
       catch(...)
       {
@@ -1173,12 +1173,16 @@ namespace net_utils
     }
     else
     {
-      LOG_ERROR("Error in boosted_tcp_server<t_protocol_handler>::handle_accept: " << e);
+      LOG_ERROR
+        (
+         "Error in boosted_tcp_server<t_protocol_handler>::handle_accept: "
+         + std::string(e.message())
+         );
     }
     }
     catch (const std::exception &e)
     {
-      LOG_ERROR("Exception in boosted_tcp_server<t_protocol_handler>::handle_accept: " << e.what());
+      LOG_ERROR("Exception in boosted_tcp_server<t_protocol_handler>::handle_accept: " + std::string(e.what()));
     }
 
     // error path, if e or exception
@@ -1223,7 +1227,7 @@ namespace net_utils
       sock_.bind(local_endpoint, ec);
       if (ec)
       {
-        LOG_ERROR("Error binding to " << bind_ip << ": " << ec.message());
+        LOG_ERROR("Error binding to " + bind_ip + ": " + ec.message());
         if (sock_.is_open())
           sock_.close();
         return CONNECT_FAILURE;
@@ -1497,7 +1501,7 @@ namespace net_utils
       sock_.bind(local_endpoint, ec);
       if (ec)
       {
-        LOG_ERROR("Error binding to " << bind_ip << ": " << ec.message());
+        LOG_ERROR("Error binding to " + bind_ip + ": " + ec.message());
         if (sock_.is_open())
           sock_.close();
         return false;

@@ -354,7 +354,7 @@ bool BlockchainDB::txpool_tx_matches_category(const crypto::hash& tx_hash, relay
   }
   catch (const std::exception &e)
   {
-    LOG_ERROR("Failed to get tx meta from txpool: " << e.what());
+    LOG_ERROR("Failed to get tx meta from txpool: " + std::string(e.what()));
   }
   return false;
 }

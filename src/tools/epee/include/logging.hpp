@@ -113,6 +113,7 @@ void LOG_VERBOSE(const std::string_view x);
 void LOG_FATAL(const std::string_view x);
 void LOG_WARNING(const std::string_view x);
 void LOG_INFO(const std::string_view x);
+void LOG_ERROR(const std::string_view x);
 
 constexpr auto _dbg3 = LOG_TRACE;
 

@@ -64,7 +64,7 @@ public: \
     catch(const std::exception& err) \
     { \
       (void)(err); \
-      LOG_ERROR("Exception on unserializing: " << err.what());\
+      LOG_ERROR("Exception on unserializing: " + std::string(err.what())); \
       return false; \
     }\
   }\

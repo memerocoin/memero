@@ -226,13 +226,13 @@ namespace wallet {
           return {rct::decode_ringct_commitment(*maybe_checked, hashed_secret, i)};
         }
         default:
-          LOG_ERROR("Unsupported rct type: " << rv.type);
+          LOG_ERROR("Unsupported rct type: " + std::to_string(rv.type));
           return {};
         }
     }
     catch (const std::exception &e)
     {
-      LOG_ERROR("Failed to decode input " << i);
+      LOG_ERROR("Failed to decode input " + std::to_string(i));
       return {};
     }
   }

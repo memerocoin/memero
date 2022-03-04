@@ -224,12 +224,12 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_from_
     }
     catch (const OUTPUT_DNE& e)
     {
-      LOG_ERROR_VER("Output does not exist: " << e.what());
+      LOG_ERROR_VER("Output does not exist: " + std::string(e.what()));
       return false;
     }
     catch (const TX_DNE& e)
     {
-      LOG_ERROR_VER("Transaction does not exist: " << e.what());
+      LOG_ERROR_VER("Transaction does not exist: " + std::string(e.what()));
       return false;
     }
 
@@ -440,7 +440,13 @@ void Blockchain::pop_blocks(uint64_t nblocks)
   }
   catch (const std::exception& e)
   {
-    LOG_ERROR("Error when popping blocks after processing " << i << " blocks: " << e.what());
+    LOG_ERROR
+      (
+       "Error when popping blocks after processing "
+       + std::to_string(i)
+       + " blocks: "
+       + std::string(e.what())
+       );
     if (stop_batch)
       m_db->batch_abort();
     return;
@@ -481,7 +487,7 @@ block Blockchain::pop_block_from_blockchain()
   // so we re-throw
   catch (const std::exception& e)
   {
-    LOG_ERROR("Error popping block from blockchain: " << e.what());
+    LOG_ERROR("Error popping block from blockchain: " + std::string(e.what()));
     throw;
   }
   catch (...)
@@ -665,7 +671,12 @@ bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orph
       const auto maybeBlock = maybe_block_from_blob(blob);
       if (!maybeBlock)
       {
-        LOG_ERROR("Found block " << h << " in alt chain, but failed to parse it");
+        LOG_ERROR
+          (
+           "Found block "
+           + h.to_str()
+           + " in alt chain, but failed to parse it"
+           );
         throw std::runtime_error("Found block in alt chain, but failed to parse it");
       }
       blk = *maybeBlock;
@@ -957,7 +968,11 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
       // looking into.
       const crypto::hash blkid = cryptonote::get_block_hash(bei.bl);
       add_block_as_invalid(bei, blkid);
-      LOG_ERROR("The block was inserted as invalid while connecting new alternative chain, block_id: " << blkid);
+      LOG_ERROR
+        (
+         "The block was inserted as invalid while connecting new alternative chain, block_id: "
+         + blkid.to_str()
+         );
       m_db->remove_alt_block(blkid);
       alt_ch_iter++;
 
@@ -1405,7 +1420,12 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       cache_block_template(b, miner_address, ex_nonce, diffic, height, expected_reward, pool_cookie);
     return true;
   }
-  LOG_ERROR("Failed to create_block_template with " << 10 << " tries");
+  LOG_ERROR
+    (
+     "Failed to create_block_template with "
+     + std::to_string(10)
+     + " tries"
+     );
   return false;
 }
 //------------------------------------------------------------------
@@ -1541,7 +1561,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     // (not earlier than the median of the last X blocks)
     if(!check_block_timestamp(timestamps, b))
     {
-      LOG_ERROR_VER("Block with id: " << id << std::endl << " for alternative chain, has invalid timestamp: " << b.timestamp);
+      LOG_ERROR_VER("Block with id: " + id.to_str() << std::endl << " for alternative chain, has invalid timestamp: " << b.timestamp);
       bvc.m_verifivation_failed = true;
       return false;
     }
@@ -1555,7 +1575,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     }
     if(!check_hash(proof_of_work, current_diff))
     {
-      LOG_ERROR_VER("Block with id: " << id << std::endl << " for alternative chain, does not have enough proof of work: " << proof_of_work << std::endl << " expected difficulty: " << current_diff);
+      LOG_ERROR_VER("Block with id: " + id.to_str() << std::endl << " for alternative chain, does not have enough proof of work: " << proof_of_work << std::endl << " expected difficulty: " << current_diff);
       bvc.m_verifivation_failed = true;
       bvc.m_bad_pow = true;
       return false;
@@ -1658,7 +1678,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
          << config::lol::tab_sep << "height:         " << bei.height << std::endl
          << config::lol::tab_sep << "∑ difficulty:   "
          << tools::get_human_readable_number(bei.cumulative_difficulty) << std::endl
-         << config::lol::tab_sep << "id:             " << id << std::endl
+         << config::lol::tab_sep << "id:             " + id.to_str() << std::endl
          << config::lol::tab_sep << "PoW:            " << proof_of_work << std::endl
          << config::lol::tab_sep << "difficulty:     " << current_diff << std::endl
          << config::lol::tab_sep << "new blocks:     " << alt_chain.size() << std::endl
@@ -1688,7 +1708,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
          << "ALTERNATIVE" << std::endl
          << config::lol::tab_sep << "height:         " << bei.height << std::endl
          << config::lol::tab_sep << "∑ difficulty:   " << bei.cumulative_difficulty << std::endl
-         << config::lol::tab_sep << "id:             " << id << std::endl
+         << config::lol::tab_sep << "id:             " + id.to_str() << std::endl
          << config::lol::tab_sep << "PoW:            " << proof_of_work << std::endl
          << config::lol::tab_sep << "difficulty:     " << current_diff << std::endl
          );
@@ -1710,7 +1730,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
        << std::endl
        << "ORPHANED" << std::endl
        << config::lol::tab_sep << "height:         " << block_height << std::endl
-       << config::lol::tab_sep << "id:             " << id << std::endl
+       << config::lol::tab_sep << "id:             " + id.to_str() << std::endl
        << config::lol::tab_sep << "parent:         " << b.prev_id << std::endl
        << config::lol::tab_sep << "parent in alt:  " << (bool)maybe_parent_in_alt << std::endl
        << config::lol::tab_sep << "parent in main: " << parent_in_main << std::endl
@@ -1892,7 +1912,13 @@ bool Blockchain::get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req,
     m_db->get_output_key(std::span<const uint64_t>(amounts.data(), amounts.size()), offsets, data);
     if (data.size() != req.outputs.size())
     {
-      LOG_ERROR("Unexpected output data size: expected " << req.outputs.size() << ", got " << data.size());
+      LOG_ERROR
+        (
+         "Unexpected output data size: expected "
+         + std::to_string(req.outputs.size())
+         + ", got "
+         + std::to_string(data.size())
+         );
       return false;
     }
     for (const auto &t: data)
@@ -2063,7 +2089,7 @@ bool Blockchain::get_blocks(const t_ids_container& block_ids, t_blocks_container
         const auto maybeBlock = maybe_block_from_blob(blocks.back().first);
         if (!maybeBlock)
         {
-          LOG_ERROR("Invalid block: " << block_hash);
+          LOG_ERROR("Invalid block: " + block_hash.to_str());
           blocks.pop_back();
           missed_bs.push_back(block_hash);
         }
@@ -2761,7 +2787,12 @@ void Blockchain::return_tx_to_pool(std::vector<std::pair<transaction, string_blo
     const crypto::hash tx_hash = get_transaction_hash(tx.first);
     if (!m_tx_pool.add_tx(tx.first, tx_hash, tx.second, weight, tvc, relay_method::block, true))
     {
-      LOG_ERROR("Failed to return taken transaction with hash: " << get_transaction_hash(tx.first) << " to tx_pool");
+      LOG_ERROR
+        (
+         "Failed to return taken transaction with hash: "
+         + get_transaction_hash(tx.first).to_str()
+         + " to tx_pool"
+         );
     }
   }
 }
@@ -2781,7 +2812,7 @@ bool Blockchain::flush_txes_from_pool(const std::span<const crypto::hash>txids)
     LOG_INFO("Removing txid " + txid.to_str() + " from the pool");
     if(m_tx_pool.have_tx(txid, relay_category::all) && !m_tx_pool.take_tx(txid, tx, txblob, tx_weight, fee, relayed, do_not_relay, double_spend_seen, pruned))
     {
-      LOG_ERROR("Failed to remove txid " << txid << " from the pool");
+      LOG_ERROR("Failed to remove txid " + txid.to_str() + " from the pool");
       res = false;
     }
   }
@@ -2803,7 +2834,7 @@ bool Blockchain::handle_block_to_main_chain(const block& bl, const crypto::hash&
   ++blockchain_height; // block height to chain height
   if(bl.prev_id != top_hash)
   {
-    LOG_ERROR_VER("Block with id: " << id << std::endl << "has wrong prev_id: " << bl.prev_id << std::endl << "expected: " << top_hash);
+    LOG_ERROR_VER("Block with id: " + id.to_str() << std::endl << "has wrong prev_id: " << bl.prev_id << std::endl << "expected: " << top_hash);
     bvc.m_verifivation_failed = true;
 leave:
     return false;
@@ -2813,7 +2844,7 @@ leave:
   // of a set number of the most recent blocks.
   if(!check_block_timestamp(bl))
   {
-    LOG_ERROR_VER("Block with id: " << id << std::endl << "has invalid timestamp: " << bl.timestamp);
+    LOG_ERROR_VER("Block with id: " + id.to_str() << std::endl << "has invalid timestamp: " << bl.timestamp);
     bvc.m_verifivation_failed = true;
     goto leave;
   }
@@ -2853,7 +2884,7 @@ leave:
     // validate proof_of_work versus difficulty target
     if(!check_hash(proof_of_work, current_diffic))
     {
-      LOG_ERROR_VER("Block with id: " << id << std::endl << "does not have enough proof of work: " << proof_of_work << " at height " << blockchain_height << ", unexpected difficulty: " << current_diffic);
+      LOG_ERROR_VER("Block with id: " + id.to_str() << std::endl << "does not have enough proof of work: " << proof_of_work << " at height " << blockchain_height << ", unexpected difficulty: " << current_diffic);
       bvc.m_verifivation_failed = true;
       bvc.m_bad_pow = true;
       goto leave;
@@ -2865,7 +2896,7 @@ leave:
   if (blockchain_height != 0) {
     if(!maybe_coinbase_tx)
     {
-      LOG_ERROR_VER("Block with id: " << id << " failed to pass prevalidation");
+      LOG_ERROR_VER("Block with id: " + id.to_str() << " failed to pass prevalidation");
       bvc.m_verifivation_failed = true;
       goto leave;
     }
@@ -2898,7 +2929,13 @@ leave:
 // XXX old code does not check whether tx exists
     if (m_db->tx_exists(tx_id))
     {
-      LOG_ERROR("Block with id: " << id << " attempting to add transaction already in blockchain with id: " << tx_id);
+      LOG_ERROR
+        (
+         "Block with id: "
+         + id.to_str()
+         + " attempting to add transaction already in blockchain with id: "
+         + tx_id.to_str()
+         );
       bvc.m_verifivation_failed = true;
       return_tx_to_pool(txs);
       goto leave;
@@ -2907,7 +2944,7 @@ leave:
     // get transaction with hash <tx_id> from tx_pool
     if(!m_tx_pool.take_tx(tx_id, tx_tmp, txblob, tx_weight, fee, relayed, do_not_relay, double_spend_seen, pruned))
     {
-      LOG_ERROR_VER("Block with id: " << id  << " has at least one unknown transaction with id: " << tx_id);
+      LOG_ERROR_VER("Block with id: " + id.to_str()  << " has at least one unknown transaction with id: " << tx_id);
       bvc.m_verifivation_failed = true;
       return_tx_to_pool(txs);
       goto leave;
@@ -2939,11 +2976,11 @@ leave:
       tx_verification_context tvc;
       if(!(check_ringct_inputs(tx, tvc) && check_ringct_outputs(tx, tvc)))
       {
-        LOG_ERROR_VER("Block with id: " << id  << " has at least one transaction (id: " << tx_id << ") with wrong inputs.");
+        LOG_ERROR_VER("Block with id: " + id.to_str()  << " has at least one transaction (id: " << tx_id << ") with wrong inputs.");
 
         //TODO: why is this done?  make sure that keeping invalid blocks makes sense.
         add_block_as_invalid(bl, id);
-        LOG_ERROR_VER("Block with id " << id << " added as invalid because of wrong inputs in transactions");
+        LOG_ERROR_VER("Block with id " + id.to_str() << " added as invalid because of wrong inputs in transactions");
         LOG_ERROR_VER("tx_index " << tx_index << ", m_blocks_txs_check " << m_blocks_txs_check.size() << ":");
         for (const auto &h: m_blocks_txs_check) LOG_ERROR_VER("  " << h);
         bvc.m_verifivation_failed = true;
@@ -2960,7 +2997,12 @@ leave:
   {
     if (blockchain_height >= m_blocks_hash_check.size() || m_blocks_hash_check[blockchain_height].second == 0)
     {
-      LOG_ERROR("Block at " << blockchain_height << " is pruned, but we do not have a weight for it");
+      LOG_ERROR
+        (
+         "Block at "
+         + std::to_string(blockchain_height)
+         + " is pruned, but we do not have a weight for it"
+         );
       goto leave;
     }
     cumulative_block_weight = m_blocks_hash_check[blockchain_height].second;
@@ -2989,7 +3031,7 @@ leave:
 
     if(!maybe_validated_coinbase_tx)
       {
-        LOG_ERROR_VER("Block with id: " << id << " has incorrect miner transaction");
+        LOG_ERROR_VER("Block with id: " + id.to_str() << " has incorrect miner transaction");
         bvc.m_verifivation_failed = true;
         return_tx_to_pool(txs);
         goto leave;
@@ -3026,7 +3068,7 @@ leave:
     }
     catch (const KEY_IMAGE_EXISTS& e)
     {
-      LOG_ERROR("Error adding block with hash: " << id << " to blockchain, what = " << e.what());
+      LOG_ERROR("Error adding block with hash: " + id.to_str() + " to blockchain, what = " + std::string(e.what()));
       m_batch_success = false;
       bvc.m_verifivation_failed = true;
       return_tx_to_pool(txs);
@@ -3035,7 +3077,13 @@ leave:
     catch (const std::exception& e)
     {
       //TODO: figure out the best way to deal with this failure
-      LOG_ERROR("Error adding block with hash: " << id << " to blockchain, what = " << e.what());
+      LOG_ERROR
+        (
+         "Error adding block with hash: "
+         + id.to_str()
+         + " to blockchain, what = "
+         + std::string(e.what())
+         );
       m_batch_success = false;
       bvc.m_verifivation_failed = true;
       return_tx_to_pool(txs);
@@ -3139,7 +3187,7 @@ bool Blockchain::add_new_block(const block& bl, block_verification_context& bvc)
   }
   catch (const std::exception &e)
   {
-    LOG_ERROR("Exception at [add_new_block], what=" << e.what());
+    LOG_ERROR("Exception at [add_new_block], what=" + std::string(e.what()));
     bvc.m_verifivation_failed = true;
     return false;
   }
@@ -3183,7 +3231,7 @@ bool Blockchain::cleanup_handle_incoming_blocks(bool force_sync)
   }
   catch (const std::exception &e)
   {
-    LOG_ERROR("Exception in cleanup_handle_incoming_blocks: " << e.what());
+    LOG_ERROR("Exception in cleanup_handle_incoming_blocks: " + std::string(e.what()));
   }
 
   if (success && m_sync_counter > 0)
@@ -3244,7 +3292,7 @@ void Blockchain::output_scan_worker(const uint64_t amount, const std::vector<uin
   }
   catch (const std::exception& e)
   {
-    LOG_ERROR_VER("EXCEPTION: " << e.what());
+    LOG_ERROR_VER("EXCEPTION: " + std::string(e.what()));
   }
   catch (...)
   {

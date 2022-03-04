@@ -184,12 +184,12 @@ namespace controller {
     }
     catch (const tools::error::wallet_rpc_error& e)
     {
-      LOG_ERROR("RPC error: " << e.to_string());
-      fail_msg_writer() << ("RPC error: ") << e.what();
+      LOG_ERROR("RPC error: " + e.to_string());
+      fail_msg_writer() << ("RPC error: ") + std::string(e.what());
     }
     catch (const tools::error::get_tx_outputs_error &e)
     {
-      fail_msg_writer() << ("failed to get random outputs to mix: ") << e.what();
+      fail_msg_writer() << ("failed to get random outputs to mix: ") + std::string(e.what());
     }
     catch (const tools::error::not_enough_unlocked_money& e)
     {
@@ -244,7 +244,7 @@ namespace controller {
     }
     catch (const tools::error::tx_sum_overflow& e)
     {
-      fail_msg_writer() << e.what();
+      fail_msg_writer() << std::string(e.what());
       warn_of_possible_attack = false;
     }
     catch (const tools::error::zero_destination&)
@@ -259,18 +259,18 @@ namespace controller {
     }
     catch (const tools::error::transfer_error& e)
     {
-      LOG_ERROR("unknown transfer error: " << e.to_string());
-      fail_msg_writer() << ("unknown transfer error: ") << e.what();
+      LOG_ERROR("unknown transfer error: " + e.to_string());
+      fail_msg_writer() << ("unknown transfer error: ") + std::string(e.what());
     }
     catch (const tools::error::wallet_internal_error& e)
     {
-      LOG_ERROR("internal error: " << e.to_string());
-      fail_msg_writer() << ("internal error: ") << e.what();
+      LOG_ERROR("internal error: " + e.to_string());
+      fail_msg_writer() << ("internal error: ") + std::string(e.what());
     }
     catch (const std::exception& e)
     {
-      LOG_ERROR("unexpected error: " << e.what());
-      fail_msg_writer() << ("unexpected error: ") << e.what();
+      LOG_ERROR("unexpected error: " + std::string(e.what()));
+      fail_msg_writer() << ("unexpected error: ") + std::string(e.what());
     }
 
     if (warn_of_possible_attack)

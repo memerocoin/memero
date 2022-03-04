@@ -92,7 +92,14 @@ bool rct_tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices
 
   if (rct_indices.size() < n_indices * 8 / 10)
   {
-    LOG_ERROR("amount of unique indices is too low (amount of rct indices is " << rct_indices.size() << ", out of total " << n_indices << "indices.");
+    LOG_ERROR
+      (
+       "amount of unique indices is too low (amount of rct indices is "
+       + std::to_string(rct_indices.size())
+       + ", out of total "
+       + std::to_string(n_indices)
+       + "indices."
+       );
     return false;
   }
 
@@ -100,7 +107,14 @@ bool rct_tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices
   uint64_t median = epee::misc_utils::median(offsets);
   if (median < rct_outs_available * 6 / 10)
   {
-    LOG_ERROR("median offset index is too low (median is " << median << " out of total " << rct_outs_available << "offsets). Transactions should contain a higher fraction of recent outputs.");
+    LOG_ERROR
+      (
+       "median offset index is too low (median is "
+       + std::to_string(median)
+       + " out of total "
+       + std::to_string(rct_outs_available)
+       + "offsets). Transactions should contain a higher fraction of recent outputs."
+       );
     return false;
   }
 

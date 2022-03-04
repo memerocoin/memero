@@ -249,7 +249,7 @@ namespace cryptonote
       // reset the db by removing the database file before opening it
       if (!db->remove_data_file(filename))
       {
-        LOG_ERROR("Failed to remove data file in " << filename);
+        LOG_ERROR("Failed to remove data file in " + filename);
         return false;
       }
     }
@@ -267,7 +267,7 @@ namespace cryptonote
     }
     catch (const DB_ERROR& e)
     {
-      LOG_ERROR("Error opening database: " << e.what());
+      LOG_ERROR("Error opening database: " + std::string(e.what()));
       return false;
     }
 
@@ -434,7 +434,7 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          LOG_ERROR_VER("Exception in handle_incoming_ringct_pre: " << e.what());
+          LOG_ERROR_VER("Exception in handle_incoming_ringct_pre: " + std::string(e.what()));
           tvc[i].m_verifivation_failed = true;
           results[i].res = false;
         }
@@ -466,7 +466,7 @@ namespace cryptonote
           }
           catch (const std::exception &e)
           {
-            LOG_ERROR_VER("Exception in handle_incoming_ringct_post: " << e.what());
+            LOG_ERROR_VER("Exception in handle_incoming_ringct_post: " + std::string(e.what()));
             tvc[i].m_verifivation_failed = true;
             results[i].res = false;
           }

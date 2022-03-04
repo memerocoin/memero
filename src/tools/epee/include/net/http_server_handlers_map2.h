@@ -49,7 +49,7 @@
   } \
   catch (const std::exception &e) \
   { \
-    LOG_ERROR(m_conn_context << "Exception in handle_http_request_map: " << e.what()); \
+    LOG_ERROR(m_conn_context.to_str() + "Exception in handle_http_request_map: " + std::string(e.what())); \
     response.m_response_code = 500; \
     response.m_response_comment = "Internal Server Error"; \
   } \
@@ -76,7 +76,7 @@
       LOG_VERBOSE(m_conn_context.to_str() + "calling " + s_pattern);  \
       bool res = false; \
       try { res = callback_f(static_cast<command_type::request&>(req), static_cast<command_type::response&>(resp)); } \
-      catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
+      catch (const std::exception &e) { LOG_ERROR(m_conn_context.to_str() + "Failed to " + std::string(#callback_f) + "(): " + std::string(e.what())); } \
       if (!res) \
       { \
         response_info.m_response_code = 500; \
@@ -157,7 +157,7 @@
   LOG_VERBOSE(m_conn_context.to_str() + "Calling RPC method " + method_name); \
   bool res = false; \
   try { res = callback_f(req.params, resp.result, fail_resp.error); } \
-  catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
+  catch (const std::exception &e) { LOG_ERROR(m_conn_context.to_str() + "Failed to " + std::string(#callback_f) + "(): " + std::string(e.what())); } \
   if (!res) \
   { \
     epee::serialization::store_t_to_json(static_cast<epee::json_rpc::error_response&>(fail_resp), response_info.m_body); \
@@ -176,7 +176,7 @@
     LOG_VERBOSE(m_conn_context.to_str() + "calling RPC method " + method_name); \
   bool res = false; \
   try { res = callback_f(req.params, resp.result); } \
-  catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
+  catch (const std::exception &e) { LOG_ERROR(m_conn_context.to_str() + "Failed to "  + std::string(#callback_f) + "(): " + std::string(e.what())); } \
   if (!res) \
   { \
     epee::json_rpc::error_response fail_resp = AUTO_VAL_INIT(fail_resp); \

@@ -725,14 +725,14 @@ namespace tools
 
 #define THROW_WALLET_EXCEPTION(err_type, ...)                                                               \
   do {                                                                                                      \
-    LOG_ERROR("THROW EXCEPTION: " << #err_type);                                                 \
+    LOG_ERROR("THROW EXCEPTION: " + std::string(#err_type));            \
     tools::error::throw_wallet_ex<err_type>(std::string(__FILE__ ":" STRINGIZE(__LINE__)), ## __VA_ARGS__); \
   } while(0)
 
 #define THROW_WALLET_EXCEPTION_IF(cond, err_type, ...)                                                      \
   if (cond)                                                                                                 \
   {                                                                                                         \
-    LOG_ERROR(#cond << ". THROW EXCEPTION: " << #err_type);                                                 \
+    LOG_ERROR(std::string(#cond) + ". THROW EXCEPTION: " + std::string(#err_type)); \
     tools::error::throw_wallet_ex<err_type>(std::string(__FILE__ ":" STRINGIZE(__LINE__)), ## __VA_ARGS__); \
   }
 

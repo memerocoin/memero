@@ -236,8 +236,8 @@ namespace cryptonote
             LOG_ERROR
               (
                "Target account address "
-               << command_line::get_arg(vm, arg_mining_address)
-               << " has wrong format, starting daemon canceled"
+               + command_line::get_arg(vm, arg_mining_address)
+               + " has wrong format, starting daemon canceled"
                );
             return false;
           }

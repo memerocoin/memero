@@ -450,7 +450,13 @@ namespace nodetool
       network_zone& zone = add_zone(proxy.zone);
       if (zone.m_connect != nullptr && zone.m_connect != &public_connect)
       {
-        LOG_ERROR("Listed --" << arg_proxy.name << " twice with " << epee::net_utils::zone_to_string(proxy.zone));
+        LOG_ERROR
+          (
+           "Listed --"
+           + std::string(arg_proxy.name)
+           + " twice with "
+           + epee::net_utils::zone_to_string(proxy.zone)
+           );
         return false;
       }
       zone.m_connect = &socks_connect;
@@ -478,7 +484,13 @@ namespace nodetool
     {
       if (zone.second.m_connect == nullptr)
       {
-        LOG_ERROR("Set outgoing peer for " << epee::net_utils::zone_to_string(zone.first) << " but did not set --" << arg_proxy.name);
+        LOG_ERROR
+          (
+           "Set outgoing peer for "
+           + std::string(epee::net_utils::zone_to_string(zone.first))
+           + " but did not set --"
+           + std::string(arg_proxy.name)
+           );
         return false;
       }
     }
@@ -494,13 +506,27 @@ namespace nodetool
 
       if (!zone.m_bind_ip.empty())
       {
-        LOG_ERROR("Listed --" << arg_anonymous_inbound.name << " twice with " << epee::net_utils::zone_to_string(inbound.our_address.get_zone()) << " network");
+        LOG_ERROR
+          (
+           "Listed --"
+           + std::string(arg_anonymous_inbound.name)
+           + " twice with "
+           + epee::net_utils::zone_to_string(inbound.our_address.get_zone())
+           + " network"
+           );
         return false;
       }
 
       if (zone.m_connect == nullptr && tx_relay_zones <= 1)
       {
-        LOG_ERROR("Listed --" << arg_anonymous_inbound.name << " without listing any --" << arg_proxy.name << ". The latter is necessary for sending local txes over anonymity networks");
+        LOG_ERROR
+          (
+           "Listed --"
+           + std::string(arg_anonymous_inbound.name)
+           + " without listing any --"
+           + arg_proxy.name
+           + ". The latter is necessary for sending local txes over anonymity networks"
+           );
         return false;
       }
 

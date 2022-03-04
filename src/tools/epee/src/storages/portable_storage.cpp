@@ -73,7 +73,13 @@ namespace epee
       m_root.m_entries.clear();
       if(source.size() < sizeof(storage_block_header))
       {
-        LOG_ERROR("portable_storage: wrong binary format, packet size = " << source.size() << " less than expected sizeof(storage_block_header)=" << sizeof(storage_block_header));
+        LOG_ERROR
+          (
+           "portable_storage: wrong binary format, packet size = "
+           + std::to_string(source.size())
+           + " less than expected sizeof(storage_block_header)="
+           + std::to_string(sizeof(storage_block_header))
+           );
         return false;
       }
       storage_block_header* pbuff = (storage_block_header*)source.data();
@@ -86,7 +92,11 @@ namespace epee
       }
       if(pbuff->m_ver != PORTABLE_STORAGE_FORMAT_VER)
       {
-        LOG_ERROR("portable_storage: wrong binary format - unknown format ver = " << pbuff->m_ver);
+        LOG_ERROR
+          (
+           "portable_storage: wrong binary format - unknown format ver = "
+           + std::to_string(pbuff->m_ver)
+           );
         return false;
       }
       TRY_ENTRY();
