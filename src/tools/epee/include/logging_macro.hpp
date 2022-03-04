@@ -85,8 +85,6 @@ see: etc/other-licenses/monero/LICENSE
 #define LOG_ERROR_MUTE(x)
 
 #define _info(x) LOG_INFO(x)
-// #define _erro(x) LOG_ERROR(x)
-#define _erro(x)
 
 // #define _dbg2(x) LOG_DEBUG(x)
 // #define _dbg1(x) LOG_DEBUG(x)

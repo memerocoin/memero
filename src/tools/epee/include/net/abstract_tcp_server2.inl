@@ -732,7 +732,12 @@ namespace net_utils
       LOCK_RECURSIVE_MUTEX(m_send_que_lock);
       if(m_send_que.empty())
       {
-        _erro("[sock " << socket().native_handle() << "] m_send_que.size() == 0 at handle_write!");
+        _erro
+          (
+           "[sock "
+           + std::to_string(socket().native_handle())
+           + "] m_send_que.size() == 0 at handle_write!"
+           );
         return;
       }
 
@@ -1187,7 +1192,13 @@ namespace net_utils
 
     // error path, if e or exception
     assert(m_state != nullptr); // always set in constructor
-    _erro("Some problems at accept: " << e.message() << ", connections_count = " << m_state->sock_count);
+    _erro
+      (
+       "Some problems at accept: "
+       + e.message()
+       + ", connections_count = "
+       + std::to_string(m_state->sock_count)
+       );
     epee::misc_utils::sleep_no_w(100);
     (*current_new_connection).reset(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type));
     current_acceptor->async_accept((*current_new_connection)->socket(),
@@ -1346,7 +1357,7 @@ namespace net_utils
     {
       if (!m_use_ipv6)
       {
-        _erro("Failed to resolve " << adr);
+        _erro("Failed to resolve " + adr);
         return false;
       }
       else
@@ -1368,7 +1379,7 @@ namespace net_utils
 
       if(iterator == end)
       {
-        _erro("Failed to resolve " << adr);
+        _erro("Failed to resolve " + adr);
         return false;
       }
       else
@@ -1416,7 +1427,13 @@ namespace net_utils
     else
     {
       assert(m_state != nullptr); // always set in constructor
-      _erro("[sock " << new_connection_l->socket().native_handle() << "] Failed to start connection, connections_count = " << m_state->sock_count);
+      _erro
+        (
+         "[sock "
+         + std::to_string(new_connection_l->socket().native_handle())
+         + "] Failed to start connection, connections_count = "
+         + std::to_string(m_state->sock_count)
+         );
     }
 
 	new_connection_l->save_dbg_log();
@@ -1468,7 +1485,7 @@ namespace net_utils
     {
       if (!try_ipv6)
       {
-        _erro("Failed to resolve " << adr);
+        _erro("Failed to resolve " + adr);
         return false;
       }
       else
@@ -1485,7 +1502,7 @@ namespace net_utils
 
       if(iterator == end)
       {
-        _erro("Failed to resolve " << adr);
+        _erro("Failed to resolve " + adr);
         return false;
       }
     }
