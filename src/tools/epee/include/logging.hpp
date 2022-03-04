@@ -108,3 +108,5 @@ void LOG_ERROR_AND_THROW_UNLESS
 
 
 void LOG_TRACE(const std::string_view x);
+
+constexpr auto _dbg3 = LOG_TRACE;

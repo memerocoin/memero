@@ -96,11 +96,22 @@ namespace net_utils
   {
     if(!m_was_shutdown)
     {
-      _dbg3("[sock " << socket().native_handle() << "] Socket destroyed without shutdown.");
+      _dbg3
+      (
+      "[sock "
+      + std::to_string(socket().native_handle())
+      + "] Socket destroyed without shutdown."
+      );
       shutdown();
     }
-
-    _dbg3("[sock " << socket().native_handle() << "] Socket destroyed");
+    else {
+        _dbg3
+        (
+        "[sock "
+        + std::to_string(socket().native_handle())
+        + "] Socket destroyed"
+        );
+    }
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
@@ -163,9 +174,19 @@ namespace net_utils
     auto local_ep = socket().local_endpoint(ec);
     LOG_AND_RETURN_UNLESS(LogLevel::Warning, !ec, false, "Failed to get local endpoint: " << ec.message() << ':' << ec.value());
 
-    _dbg3("[sock " << socket_.native_handle() << "] new connection from " << print_connection_context_short(context) <<
-      " to " << local_ep.address().to_string() << ':' << local_ep.port() <<
-      ", total sockets objects " << get_state().sock_count);
+    _dbg3
+      (
+       "[sock "
+       + std::to_string(socket_.native_handle())
+       + "] new connection from "
+       + print_connection_context_short(context)
+       + " to "
+       + local_ep.address().to_string()
+       + ':'
+       + std::to_string(local_ep.port())
+       + ", total sockets objects "
+       + std::to_string(get_state().sock_count)
+       );
 
     if(static_cast<shared_state&>(get_state()).pfilter && !static_cast<shared_state&>(get_state()).pfilter->is_remote_host_allowed(context.m_remote_address))
     {
@@ -333,15 +354,36 @@ namespace net_utils
       }
     }else
     {
-      _dbg3("[sock " << socket().native_handle() << "] Some not success at read: " << e.message() << ':' << e.value());
+      _dbg3
+        (
+         "[sock "
+         + std::to_string(socket().native_handle())
+         + "] Some not success at read: "
+         + e.message()
+         + ':'
+         + std::to_string(e.value())
+         );
       if(e.value() != 2)
       {
-        _dbg3("[sock " << socket().native_handle() << "] Some problems at read: " << e.message() << ':' << e.value());
+        _dbg3
+          (
+           "[sock "
+           + std::to_string(socket().native_handle())
+           + "] Some problems at read: "
+           + e.message()
+           + ':'
+           + std::to_string(e.value())
+           );
         shutdown();
       }
       else
       {
-        _dbg3("[sock " << socket().native_handle() << "] peer closed connection");
+        _dbg3
+          (
+           "[sock "
+           + std::to_string(socket().native_handle())
+           + "] peer closed connection"
+           );
         bool do_shutdown = false;
         {
           LOCK_RECURSIVE_MUTEX(m_send_que_lock);
@@ -380,11 +422,20 @@ namespace net_utils
       return;
     }
 
-    async_read_some(boost::asio::buffer(buffer_),
-                    strand_.wrap(
-                                 std::bind(&connection<t_protocol_handler>::handle_read, connection<t_protocol_handler>::shared_from_this(),
-                                           std::placeholders::_1,
-                                           std::placeholders::_2)));
+    async_read_some
+      (
+       boost::asio::buffer(buffer_)
+       , strand_.wrap
+       (
+        std::bind
+        (
+         &connection<t_protocol_handler>::handle_read
+         , connection<t_protocol_handler>::shared_from_this()
+         , std::placeholders::_1
+         , std::placeholders::_2
+         )
+        )
+       );
 
     // If an error occurs then no new asynchronous operations are started. This
     // means that all shared_ptr references to the connection object will
@@ -1174,15 +1225,15 @@ namespace net_utils
         //timeout
         sock_.close();
         _dbg3
-        (
-        "Failed to connect to "
-        + adr
-        + ":"
-        + std::to_string(port)
-        + ", because of timeout ("
-        + std::to_string(conn_timeout)
-        + ")"
-        );
+          (
+           "Failed to connect to "
+           + adr
+           + ":"
+           + port
+           + ", because of timeout ("
+           + std::to_string(conn_timeout)
+           + ")"
+           );
         return CONNECT_FAILURE;
       }
     }
@@ -1190,13 +1241,13 @@ namespace net_utils
 
     if (ec || !sock_.is_open())
     {
-      _dbg3("Some problems at connect, message: " << ec.message());
+      _dbg3("Some problems at connect, message: " + ec.message());
       if (sock_.is_open())
         sock_.close();
       return CONNECT_FAILURE;
     }
 
-    _dbg3("Connected success to " + adr + ':' + std::to_string(port));
+    _dbg3("Connected success to " + adr + ':' + port);
 
     return CONNECT_SUCCESS;
 
@@ -1409,7 +1460,16 @@ namespace net_utils
       {
           if(error != boost::asio::error::operation_aborted)
           {
-            _dbg3("Failed to connect to " << adr << ':' << port << ", because of timeout (" << conn_timeout << ")");
+            _dbg3
+              (
+               "Failed to connect to "
+               + adr
+               + ':'
+               + port
+               + ", because of timeout ("
+               + std::to_string(conn_timeout)
+               + ")"
+               );
             new_connection_l->socket().close();
           }
       });
@@ -1426,8 +1486,19 @@ namespace net_utils
             cb(conn_context, boost::asio::error::operation_aborted);//this mean that deadline timer already queued callback with cancel operation, rare situation
           }else
           {
-            _dbg3("[sock " << new_connection_l->socket().native_handle() << "] Connected success to " << adr << ':' << port <<
-              " from " << lep.address().to_string() << ':' << lep.port());
+            _dbg3
+              (
+               "[sock "
+               + std::to_string(new_connection_l->socket().native_handle())
+               + "] Connected success to "
+               + adr
+               + ':'
+               + port
+               + " from "
+               + lep.address().to_string()
+               + ':'
+               + std::to_string(lep.port())
+               );
 
             // start adds the connection to the config object's list, so we don't need to have it locally anymore
             connections_mutex.lock();
@@ -1441,14 +1512,37 @@ namespace net_utils
             }
             else
             {
-              _dbg3("[sock " << new_connection_l->socket().native_handle() << "] Failed to start connection to " << adr << ':' << port);
+              _dbg3
+                (
+                 "[sock "
+                 + std::to_string(new_connection_l->socket().native_handle())
+                 + "] Failed to start connection to "
+                 + adr
+                 + ':'
+                 + port
+                 );
               cb(conn_context, boost::asio::error::fault);
             }
           }
         }else
         {
-          _dbg3("[sock " << new_connection_l->socket().native_handle() << "] Failed to connect to " << adr << ':' << port <<
-            " from " << lep.address().to_string() << ':' << lep.port() << ": " << ec_.message() << ':' << ec_.value());
+          _dbg3
+            (
+             "[sock "
+             + std::to_string(new_connection_l->socket().native_handle())
+             + "] Failed to connect to "
+             + adr
+             + ':'
+             + port 
+             + " from "
+             + lep.address().to_string()
+             + ':'
+             + std::to_string(lep.port())
+             + ": "
+             + ec_.message()
+             + ':'
+             + std::to_string(ec_.value())
+             );
           cb(conn_context, ec_);
         }
       });
