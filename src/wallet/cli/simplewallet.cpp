@@ -581,9 +581,14 @@ bool simple_wallet::ask_wallet_create_if_needed()
       else
       {
         tools::wallet2::wallet_exists(wallet_path, keys_file_exists, wallet_file_exists);
-        LOG_PRINT_L3("wallet_path: " << wallet_path << "");
-        LOG_PRINT_L3("keys_file_exists: " << std::boolalpha << keys_file_exists << std::noboolalpha
-        << "  wallet_file_exists: " << std::boolalpha << wallet_file_exists << std::noboolalpha);
+        LOG_PRINT_L3("wallet_path: " + wallet_path);
+        LOG_PRINT_L3
+          (
+           "keys_file_exists: "
+           + std::to_string(keys_file_exists)
+           + "  wallet_file_exists: "
+           + std::to_string(wallet_file_exists)
+           );
 
         if((keys_file_exists || wallet_file_exists) && (!m_generate_new.empty() || m_restoring))
         {

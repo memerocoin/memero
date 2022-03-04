@@ -485,7 +485,15 @@ void wallet2::set_spent(size_t idx, uint64_t height)
 {
   LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
-  LOG_PRINT_L3("Setting SPENT at " << height << ": ki " << td.m_output_key_image << ", amount " << print_money(td.m_amount));
+  LOG_PRINT_L3
+    (
+     "Setting SPENT at "
+     + std::to_string(height)
+     + ": ki "
+     + td.m_output_key_image.to_str()
+     + ", amount "
+     + print_money(td.m_amount)
+     );
   td.m_spent = true;
   td.m_spent_height = height;
 }
@@ -494,7 +502,13 @@ void wallet2::set_unspent(size_t idx)
 {
   LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
-  LOG_PRINT_L3("Setting UNSPENT: ki " << td.m_output_key_image << ", amount " << print_money(td.m_amount));
+  LOG_PRINT_L3
+    (
+     "Setting UNSPENT: ki "
+     + td.m_output_key_image.to_str()
+     + ", amount "
+     + print_money(td.m_amount)
+     );
   td.m_spent = false;
   td.m_spent_height = 0;
 }

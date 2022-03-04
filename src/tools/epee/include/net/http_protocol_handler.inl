@@ -231,7 +231,7 @@ namespace net_utils
   template<class t_connection_context>
 	bool simple_http_connection_handler<t_connection_context>::analize_cached_request_header_and_invoke_state(size_t pos)
 	{
-		LOG_PRINT_L3("HTTP HEAD:\r\n" << m_cache.substr(0, pos));
+		LOG_PRINT_L3("HTTP HEAD:\r\n" + m_cache.substr(0, pos));
 
 		m_query_info.m_full_request_buf_size = pos;
     m_query_info.m_request_head.assign(m_cache.begin(), m_cache.begin()+pos);
@@ -414,7 +414,7 @@ namespace net_utils
 		std::string response_data = get_response_header(response);
 		//LOG_PRINT_L0("HTTP_SEND: << \r\n" << response_data + response.m_body);
 
-		LOG_PRINT_L3("HTTP_RESPONSE_HEAD: << \r\n" << response_data);
+		LOG_PRINT_L3("HTTP_RESPONSE_HEAD: << \r\n" + response_data);
 
 		if ((response.m_body.size() && (query_info.m_http_method != http::http_method_head)) || (query_info.m_http_method == http::http_method_options))
 			response_data += response.m_body;

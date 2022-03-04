@@ -89,9 +89,6 @@ see: etc/other-licenses/monero/LICENSE
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)
-// #define LOG_PRINT_L3(x) LOG_DEBUG(x)
-#define LOG_PRINT_L3(x)
-#define LOG_PRINT_L4(x) LOG_TRACE(x)
 
 #define _info(x) LOG_INFO(x)
 #define _warn(x) LOG_WARNING(x)

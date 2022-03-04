@@ -473,8 +473,8 @@ namespace net_utils
 #define LOG_PRINT_CC_L1(ct, message) LOG_PRINT_L1(ct << message)
 // #define LOG_PRINT_CC_L2(ct, message) LOG_PRINT_L2(ct << message)
 #define LOG_PRINT_CC_L2(ct, message)
-#define LOG_PRINT_CC_L3(ct, message) LOG_PRINT_L3(ct << message)
-#define LOG_PRINT_CC_L4(ct, message) LOG_PRINT_L4(ct << message)
+// #define LOG_PRINT_CC_L3(ct, message) LOG_PRINT_L3(ct << message)
+#define LOG_PRINT_CC_L3(ct, message)
 
 #define LOG_PRINT_CCONTEXT_L0(message) LOG_PRINT_CC_L0(context, message)
 #define LOG_PRINT_CCONTEXT_L1(message) LOG_PRINT_CC_L1(context, message)

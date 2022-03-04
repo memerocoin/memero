@@ -70,7 +70,7 @@ Blockchain::Blockchain(tx_memory_pool& tx_pool) :
   m_batch_success(true),
   m_prepare_height(0)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 }
 //------------------------------------------------------------------
 Blockchain::~Blockchain()
@@ -81,7 +81,7 @@ Blockchain::~Blockchain()
 //------------------------------------------------------------------
 bool Blockchain::have_tx(const crypto::hash &id) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
   // m_db functions which do not depend on one another (ie, no getheight + gethash(height-1), as
   // well as not accessing class members, even read only (ie, m_invalid_blocks). The caller must
@@ -91,7 +91,7 @@ bool Blockchain::have_tx(const crypto::hash &id) const
 //------------------------------------------------------------------
 bool Blockchain::have_tx_keyimg_as_spent(const crypto::key_image &key_im) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
   // m_db functions which do not depend on one another (ie, no getheight + gethash(height-1), as
   // well as not accessing class members, even read only (ie, m_invalid_blocks). The caller must
@@ -105,7 +105,7 @@ bool Blockchain::have_tx_keyimg_as_spent(const crypto::key_image &key_im) const
 template <class visitor_t>
 bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_from_key& tx_in_to_key, visitor_t &vis, const crypto::hash &tx_prefix_hash, uint64_t* pmax_related_block_height) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   // ND: Disable locking and make method private.
   //LOCK_RECURSIVE_MUTEX(m_blockchain_lock);
@@ -240,7 +240,7 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_from_
 //------------------------------------------------------------------
 uint64_t Blockchain::get_current_blockchain_height() const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
   // m_db functions which do not depend on one another (ie, no getheight + gethash(height-1), as
   // well as not accessing class members, even read only (ie, m_invalid_blocks). The caller must
@@ -252,7 +252,7 @@ uint64_t Blockchain::get_current_blockchain_height() const
 //       dereferencing a null BlockchainDB pointer
 bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline, diff_t fixed_difficulty)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   LOCK_LOCKABLE_OBJECT(m_tx_pool);
   const std::lock_guard<std::recursive_mutex> lock1(m_blockchain_lock);
@@ -346,7 +346,7 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
 //------------------------------------------------------------------
 bool Blockchain::store_blockchain()
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // lock because the rpc_thread command handler also calls this
   const std::unique_lock<std::mutex> lock(m_db->m_synchronization_lock);
 
@@ -372,7 +372,7 @@ bool Blockchain::store_blockchain()
 //------------------------------------------------------------------
 bool Blockchain::deinit()
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   LOG_TRACE("Stopping blockchain read/write activity");
 
@@ -447,7 +447,7 @@ void Blockchain::pop_blocks(uint64_t nblocks)
 // from it to the tx_pool
 block Blockchain::pop_block_from_blockchain()
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   m_timestamps_and_difficulties_height = 0;
@@ -517,7 +517,7 @@ block Blockchain::pop_block_from_blockchain()
 //------------------------------------------------------------------
 bool Blockchain::reset_and_set_genesis_block(const block& b)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   m_timestamps_and_difficulties_height = 0;
   m_reset_timestamps_and_difficulties_height = true;
@@ -535,13 +535,13 @@ bool Blockchain::reset_and_set_genesis_block(const block& b)
 //------------------------------------------------------------------
 crypto::hash Blockchain::get_tail_id(uint64_t& height) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   return m_db->top_block_hash(&height);
 }
 //------------------------------------------------------------------
 crypto::hash Blockchain::get_tail_id() const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
   // m_db functions which do not depend on one another (ie, no getheight + gethash(height-1), as
   // well as not accessing class members, even read only (ie, m_invalid_blocks). The caller must
@@ -563,7 +563,7 @@ crypto::hash Blockchain::get_tail_id() const
  */
 bool Blockchain::get_short_chain_history(std::list<crypto::hash>& ids) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   uint64_t i = 0;
   uint64_t current_multiplier = 1;
@@ -605,7 +605,7 @@ bool Blockchain::get_short_chain_history(std::list<crypto::hash>& ids) const
 //------------------------------------------------------------------
 crypto::hash Blockchain::get_block_id_by_height(uint64_t height) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
   // m_db functions which do not depend on one another (ie, no getheight + gethash(height-1), as
   // well as not accessing class members, even read only (ie, m_invalid_blocks). The caller must
@@ -637,7 +637,7 @@ crypto::hash Blockchain::get_pending_block_id_by_height(uint64_t height) const
 //------------------------------------------------------------------
 bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orphan) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   // try to find block in main chain
   try
@@ -686,7 +686,7 @@ bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orph
 // less blocks than desired if there aren't enough.
 diff_t Blockchain::get_difficulty_for_next_block()
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   std::stringstream ss;
   bool print = false;
@@ -854,7 +854,7 @@ std::vector<time_t> Blockchain::get_last_block_timestamps(unsigned int blocks) c
 // that had been removed.
 bool Blockchain::rollback_blockchain_switching(std::list<block>& original_chain, uint64_t rollback_height)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   // fail if rollback_height passed is too high
@@ -892,7 +892,7 @@ bool Blockchain::rollback_blockchain_switching(std::list<block>& original_chain,
 // boolean based on success therein.
 bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>& alt_chain, bool discard_disconnected_chain)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   m_timestamps_and_difficulties_height = 0;
@@ -1004,7 +1004,7 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
     return m_db->height() ? m_fixed_difficulty : 1;
   }
 
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   std::vector<uint64_t> timestamps;
   std::vector<diff_t> cumulative_difficulties;
 
@@ -1077,7 +1077,7 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
 //   a non-overflowing tx amount (dubious necessity on this check)
 std::optional<coinbase_tx> Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   if (height == 0) return {};
 
   const auto maybe_coinbase = maybe_coinbase_tx(b.miner_tx);
@@ -1116,7 +1116,7 @@ std::optional<coinbase_tx> Blockchain::validate_miner_transaction
  , const uint64_t fee
  ) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   if (height == 0) return {};
 
@@ -1157,7 +1157,7 @@ std::optional<coinbase_tx> Blockchain::validate_miner_transaction
 // necessary at all.
 bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& expected_reward, const string_blob& ex_nonce)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   uint64_t pool_cookie;
 
   m_tx_pool.lock();
@@ -1405,7 +1405,7 @@ bool Blockchain::create_block_template(block& b, const spend_view_public_keys& m
 // the needed number of timestamps for the BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW.
 bool Blockchain::complete_timestamps_vector(uint64_t start_top_height, std::vector<uint64_t>& timestamps) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
   if(timestamps.size() >= blockchain_timestamp_check_window)
     return true;
@@ -1487,7 +1487,7 @@ bool Blockchain::build_alt_chain(const crypto::hash &prev_id, std::list<block_ex
 // a long forked chain eventually.
 bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id, block_verification_context& bvc)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   m_timestamps_and_difficulties_height = 0;
   m_reset_timestamps_and_difficulties_height = true;
@@ -1709,7 +1709,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
 //------------------------------------------------------------------
 bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks, std::vector<cryptonote::string_blob>& txs) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   if(start_offset >= m_db->height())
     return false;
@@ -1731,7 +1731,7 @@ bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std
 //------------------------------------------------------------------
 bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   const uint64_t height = m_db->height();
   if(start_offset >= height)
@@ -1761,7 +1761,7 @@ bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std
 //       are missing.
 bool Blockchain::handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NOTIFY_RESPONSE_GET_OBJECTS::request& rsp)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   db_rtxn_guard rtxn_guard (m_db);
   rsp.current_blockchain_height = get_current_blockchain_height();
@@ -1801,7 +1801,7 @@ bool Blockchain::handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NO
 //------------------------------------------------------------------
 bool Blockchain::get_alternative_blocks(std::vector<block>& blocks) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   blocks.reserve(m_db->get_alt_block_count());
@@ -1825,7 +1825,7 @@ bool Blockchain::get_alternative_blocks(std::vector<block>& blocks) const
 //------------------------------------------------------------------
 size_t Blockchain::get_alternative_blocks_count() const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   return m_db->get_alt_block_count();
 }
@@ -1859,7 +1859,7 @@ crypto::public_key Blockchain::get_output_key(uint64_t amount, uint64_t global_i
 //------------------------------------------------------------------
 bool Blockchain::get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   res.outs.clear();
@@ -1953,7 +1953,7 @@ bool Blockchain::get_output_distribution(uint64_t amount, uint64_t from_height, 
 // This is used to see what to send another node that needs to sync.
 bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, uint64_t& starter_offset) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   // make sure the request includes at least the genesis block, otherwise
@@ -2007,7 +2007,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
 //------------------------------------------------------------------
 diff_t Blockchain::block_difficulty(uint64_t i) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
   // m_db functions which do not depend on one another (ie, no getheight + gethash(height-1), as
   // well as not accessing class members, even read only (ie, m_invalid_blocks). The caller must
@@ -2031,7 +2031,7 @@ template<typename T> void reserve_container(std::list<T> &v, size_t N) { }
 template<class t_ids_container, class t_blocks_container, class t_missed_container>
 bool Blockchain::get_blocks(const t_ids_container& block_ids, t_blocks_container& blocks, t_missed_container& missed_bs) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   reserve_container(blocks, block_ids.size());
@@ -2086,7 +2086,7 @@ static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, tx_blob_entry &t
 //       alternatively, return true only if no transactions missed
 bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::string_blob>& txs, std::vector<crypto::hash>& missed_txs) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   txs.reserve(txs_ids.size());
@@ -2110,7 +2110,7 @@ bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_
 //------------------------------------------------------------------
 bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<tx_blob_entry>& txs, std::vector<crypto::hash>& missed_txs) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   txs.reserve(txs_ids.size());
@@ -2146,7 +2146,7 @@ size_t get_transaction_version(const cryptonote::string_blob &bd)
 template<class t_ids_container, class t_tx_container, class t_missed_container>
 bool Blockchain::get_split_transactions_blobs(const t_ids_container txs_ids, t_tx_container& txs, t_missed_container& missed_txs) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   reserve_container(txs, txs_ids.size());
@@ -2173,7 +2173,7 @@ bool Blockchain::get_split_transactions_blobs(const t_ids_container txs_ids, t_t
 template<class t_ids_container, class t_tx_container, class t_missed_container>
 bool Blockchain::get_transactions(const t_ids_container txs_ids, t_tx_container& txs, t_missed_container& missed_txs) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   reserve_container(txs, txs_ids.size());
@@ -2209,7 +2209,7 @@ bool Blockchain::get_transactions(const t_ids_container txs_ids, t_tx_container&
 // BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT additional (more recent) hashes.
 bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, std::vector<crypto::hash>& hashes, std::vector<uint64_t>* weights, uint64_t& start_height, uint64_t& current_height) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   // if we can't find the split point, return false
@@ -2238,7 +2238,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
 
 bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   bool result = find_blockchain_supplement(qblock_ids, resp.m_block_ids, &resp.m_block_weights, resp.start_height, resp.total_height);
@@ -2258,7 +2258,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
 // blocks by reference.
 bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   // if a specific start height has been requested
@@ -2290,7 +2290,7 @@ bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, cons
 //------------------------------------------------------------------
 bool Blockchain::add_block_as_invalid(const block& bl, const crypto::hash& h)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   block_extended_info bei = AUTO_VAL_INIT(bei);
   bei.bl = bl;
   return add_block_as_invalid(bei, h);
@@ -2298,7 +2298,7 @@ bool Blockchain::add_block_as_invalid(const block& bl, const crypto::hash& h)
 //------------------------------------------------------------------
 bool Blockchain::add_block_as_invalid(const block_extended_info& bei, const crypto::hash& h)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   auto i_res = m_invalid_blocks.insert(std::map<crypto::hash, block_extended_info>::value_type(h, bei));
   LOG_ERROR_AND_RETURN_UNLESS(i_res.second, false, "at insertion invalid by tx returned status existed");
@@ -2308,7 +2308,7 @@ bool Blockchain::add_block_as_invalid(const block_extended_info& bei, const cryp
 //------------------------------------------------------------------
 void Blockchain::flush_invalid_blocks()
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   m_invalid_blocks.clear();
 }
@@ -2319,7 +2319,7 @@ bool Blockchain::have_block_unlocked(const crypto::hash& id, int *where) const
   // m_db functions which do not depend on one another (ie, no getheight + gethash(height-1), as
   // well as not accessing class members, even read only (ie, m_invalid_blocks). The caller must
   // lock if it is otherwise needed.
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   if(m_db->block_exists(id))
   {
@@ -2353,14 +2353,14 @@ bool Blockchain::have_block(const crypto::hash& id, int *where) const
 //------------------------------------------------------------------
 bool Blockchain::handle_block_to_main_chain(const block& bl, block_verification_context& bvc, bool notify/* = true*/)
 {
-    LOG_PRINT_L3("Blockchain::" << __func__);
+    LOG_PRINT_L3("Blockchain::" + std::string(__func__));
     crypto::hash id = get_block_hash(bl);
     return handle_block_to_main_chain(bl, id, bvc, notify);
 }
 //------------------------------------------------------------------
 size_t Blockchain::get_total_transactions() const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
   // m_db functions which do not depend on one another (ie, no getheight + gethash(height-1), as
   // well as not accessing class members, even read only (ie, m_invalid_blocks). The caller must
@@ -2376,7 +2376,7 @@ size_t Blockchain::get_total_transactions() const
 // remove them later if the block fails validation.
 bool Blockchain::check_for_double_spend(const transaction& tx, output_key_images_container& keys_this_block) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   struct add_transaction_input_visitor: public boost::static_visitor<bool>
   {
@@ -2428,7 +2428,7 @@ bool Blockchain::check_for_double_spend(const transaction& tx, output_key_images
 //------------------------------------------------------------------
 bool Blockchain::get_tx_outputs_gindexs(const crypto::hash& tx_id, size_t n_txes, std::vector<std::vector<uint64_t>>& indexs) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   uint64_t tx_index;
   if (!m_db->tx_exists(tx_id, tx_index))
@@ -2444,7 +2444,7 @@ bool Blockchain::get_tx_outputs_gindexs(const crypto::hash& tx_id, size_t n_txes
 //------------------------------------------------------------------
 bool Blockchain::get_tx_outputs_gindexs(const crypto::hash& tx_id, std::vector<uint64_t>& indexs) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   uint64_t tx_index;
   if (!m_db->tx_exists(tx_id, tx_index))
@@ -2472,7 +2472,7 @@ void Blockchain::on_new_tx_from_block(const cryptonote::transaction &tx)
 // as a return-by-reference.
 bool Blockchain::check_ringct_inputs(transaction& tx, uint64_t& max_used_block_height, crypto::hash& max_used_block_id, tx_verification_context &tvc, bool tx_from_block) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   bool res = check_ringct_inputs(tx, tvc, &max_used_block_height);
@@ -2486,7 +2486,7 @@ bool Blockchain::check_ringct_inputs(transaction& tx, uint64_t& max_used_block_h
 //------------------------------------------------------------------
 bool Blockchain::check_ringct_outputs(const transaction& tx, tx_verification_context &tvc) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   for (auto &o: tx.vout) {
@@ -2513,7 +2513,7 @@ bool Blockchain::check_ringct_outputs(const transaction& tx, tx_verification_con
 //------------------------------------------------------------------
 bool Blockchain::have_tx_keyimges_as_spent(const transaction &tx) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   for (const txin_v& in: tx.vin)
   {
     CHECKED_GET_SPECIFIC_VARIANT(in, const txin_from_key, in_to_key, true);
@@ -2594,7 +2594,7 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 // a block index or a unix time.
 bool Blockchain::is_tx_spendtime_unlocked(const uint64_t unlock_height) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   // ND: Instead of calling get_current_blockchain_height(), call m_db->height()
   //    directly as get_current_blockchain_height() locks the recursive mutex.
   if (unlock_height == 0) return true;
@@ -2614,7 +2614,7 @@ bool Blockchain::check_ringct_input
   , uint64_t* pmax_related_block_height
   ) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   // ND:
   // 1. Disable locking and make method private.
@@ -2669,7 +2669,7 @@ bool Blockchain::check_ringct_input
 //TODO: revisit, has changed a bit on upstream
 bool Blockchain::check_block_timestamp(std::vector<uint64_t>& timestamps, const block& b, uint64_t& median_ts) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   median_ts = epee::misc_utils::median(timestamps);
   size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
   if(b.timestamp < median_ts)
@@ -2690,7 +2690,7 @@ bool Blockchain::check_block_timestamp(std::vector<uint64_t>& timestamps, const 
 //   false otherwise
 bool Blockchain::check_block_timestamp(const block& b, uint64_t& median_ts) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   uint64_t cryptonote_block_future_time_limit = CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2;
   size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
@@ -2768,7 +2768,7 @@ bool Blockchain::flush_txes_from_pool(const std::span<const crypto::hash>txids)
 //      m_db->add_block()
 bool Blockchain::handle_block_to_main_chain(const block& bl, const crypto::hash& id, block_verification_context& bvc, bool notify/* = true*/)
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
@@ -3059,7 +3059,7 @@ leave:
 //------------------------------------------------------------------
 bool Blockchain::update_next_cumulative_weight_limit()
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 
   if (!m_db->is_read_only())
     m_db->add_max_block_size(consensus::get_block_size_bound(get_current_blockchain_height()));
@@ -3072,14 +3072,14 @@ bool Blockchain::add_new_block(const block& bl, block_verification_context& bvc)
   try
   {
 
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   crypto::hash id = get_block_hash(bl);
   LOCK_LOCKABLE_OBJECT(m_tx_pool);//to avoid deadlock lets lock tx_pool for whole add/reorganize process
   const std::lock_guard<std::recursive_mutex> lock1(m_blockchain_lock);
   db_rtxn_guard rtxn_guard(m_db);
   if(have_block(id))
   {
-    LOG_PRINT_L3("block with id = " << id << " already exists");
+    LOG_PRINT_L3("block with id = " + id.to_str() + " already exists");
     bvc.m_already_exists = true;
     m_blocks_txs_check.clear();
     return false;
@@ -3727,7 +3727,7 @@ void Blockchain::cache_block_template(const block &b, const cryptonote::spend_vi
 //        using threads, etc.)
 bool Blockchain::check_ringct_inputs(transaction& tx, tx_verification_context &tvc, uint64_t* pmax_used_block_height) const
 {
-  LOG_PRINT_L3("Blockchain::" << __func__);
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
   size_t sig_index = 0;
   if(pmax_used_block_height)
     *pmax_used_block_height = 0;
