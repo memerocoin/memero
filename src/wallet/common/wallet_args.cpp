@@ -146,7 +146,7 @@ namespace wallet_args
 
       epee::mlog_set_log(log_level);
 
-      LOG_INFO("Setting log level = " << log_level);
+      LOG_INFO("Setting log level = " + log_level);
     }
 
     return {std::move(vm), should_terminate};

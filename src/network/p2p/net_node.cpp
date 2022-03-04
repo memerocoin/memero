@@ -391,7 +391,7 @@ namespace nodetool
     {
       net::get_network_address_host_and_port(addr, host, port);
     }
-    LOG_INFO("Resolving node address: host=" << host << ", port=" << port);
+    LOG_INFO("Resolving node address: host=" + host + ", port=" + port);
 
     io_service io_srv;
     ip::tcp::resolver resolver(io_srv);
@@ -408,13 +408,13 @@ namespace nodetool
       {
         epee::net_utils::network_address na{epee::net_utils::ipv4_network_address{boost::asio::detail::socket_ops::host_to_network_long(endpoint.address().to_v4().to_ulong()), endpoint.port()}};
         seed_nodes.push_back(na);
-        LOG_INFO("Added node: " << na.str());
+        LOG_INFO("Added node: " + na.str());
       }
       else
       {
         epee::net_utils::network_address na{epee::net_utils::ipv6_network_address{endpoint.address().to_v6(), endpoint.port()}};
         seed_nodes.push_back(na);
-        LOG_INFO("Added node: " << na.str());
+        LOG_INFO("Added node: " + na.str());
       }
     }
     return true;

@@ -196,7 +196,14 @@ public:
         {
           if(ec == boost::asio::error::operation_aborted)
             return;
-          LOG_INFO(con.get_context_ref() << "Timeout on invoke operation happened, command: " << command << " timeout: " << timeout);
+          LOG_INFO
+            (
+             con.get_context_ref().to_str()
+             + "Timeout on invoke operation happened, command: "
+             + std::to_string(command)
+             + " timeout: "
+             + std::to_string(timeout)
+             );
           std::span<const uint8_t> fake;
           cb(LEVIN_ERROR_CONNECTION_TIMEDOUT, fake, con.get_context_ref());
           con.close();
@@ -260,7 +267,14 @@ public:
         {
           if(ec == boost::asio::error::operation_aborted)
             return;
-          LOG_INFO(con.get_context_ref() << "Timeout on invoke operation happened, command: " << command << " timeout: " << timeout);
+          LOG_INFO
+            (
+             con.get_context_ref().to_str()
+             + "Timeout on invoke operation happened, command: "
+             + std::to_string(command)
+             + " timeout: "
+             + std::to_string(timeout)
+             );
           std::span<const uint8_t> fake;
           cb(LEVIN_ERROR_CONNECTION_TIMEDOUT, fake, con.get_context_ref());
           con.close();

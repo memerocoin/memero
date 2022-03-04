@@ -51,15 +51,15 @@ namespace daemonize {
     "Lolnero daemon P2P server";
 
   void deinit_msg(const std::string_view x) {
-    LOG_INFO("Deinitializing " << x << " ...");
+    LOG_INFO("Deinitializing " + std::string(x) + " ...");
   }
 
   void deinit_done_msg(const std::string_view x) {
-    LOG_INFO(x << " deinitialized");
+    LOG_INFO(std::string(x) + " deinitialized");
   }
 
   void deinit_error_msg(const std::string_view x) {
-    LOG_ERROR("Failed to deinitialize " << x << " ...");
+    LOG_ERROR("Failed to deinitialize " + std::string(x) + " ...");
   }
 
   t_daemon::~t_daemon()
@@ -101,11 +101,11 @@ namespace daemonize {
   }
 
   void init_msg(const std::string_view x) {
-    LOG_INFO("Initializing " << x << " ...");
+    LOG_INFO("Initializing " + std::string(x) + " ...");
   }
 
   void init_done_msg(const std::string_view x) {
-    LOG_INFO(x << " initialized");
+    LOG_INFO(std::string(x) + " initialized");
   }
 
   void init_report(const bool r, const std::string_view x) {
@@ -160,7 +160,7 @@ namespace daemonize {
     try
       {
         LOG_GLOBAL
-          ("Starting " << rpc_description << " ...");
+          ("Starting " + rpc_description + " ...");
         LOG_ERROR_AND_THROW_UNLESS
           (
            rpc.run(2, false)
@@ -168,26 +168,26 @@ namespace daemonize {
            + rpc_description
            );
 
-        LOG_INFO(rpc_description << " started");
+        LOG_INFO(rpc_description + " started");
 
         tools::signal_handler_install([this](int type) {
-          LOG_INFO("Daemon interrupted with signal: " << type);
+          LOG_INFO("Daemon interrupted with signal: " + type);
 
           LOG_INFO
-            ("Stopping " << p2p_description << " ...");
+            ("Stopping " + p2p_description + " ...");
           p2p.send_stop_signal();
         });
 
         // blocks until p2p goes down
-        LOG_GLOBAL("Starting " << p2p_description << " ...");
+        LOG_GLOBAL("Starting " + p2p_description + " ...");
         p2p.run();
-        LOG_GLOBAL(p2p_description << " stopped");
+        LOG_GLOBAL(p2p_description + " stopped");
 
         // exiting
-        LOG_INFO("Stopping " << rpc_description << " ...");
+        LOG_INFO("Stopping " + rpc_description + " ...");
         rpc.send_stop_signal();
         rpc.wait_server_stop();
-        LOG_GLOBAL(rpc_description << " stopped");
+        LOG_GLOBAL(rpc_description + " stopped");
 
         protocol.stop();
         core.stop();

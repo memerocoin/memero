@@ -57,7 +57,7 @@
 #define LOG_PEER_STATE(x) \
   LOG_INFO \
   ( \
-   context << "state: " << x << " in state " << \
+   context.to_str() + "state: " + x + " in state " +  \
    cryptonote::get_protocol_state_string(context.m_state) \
     )
 
@@ -296,7 +296,15 @@ namespace cryptonote
 
     if (hshd.current_height < context.m_remote_blockchain_height)
     {
-      LOG_INFO(context << "Claims " << hshd.current_height << ", claimed " << context.m_remote_blockchain_height << " before");
+      LOG_INFO
+        (
+         context.to_str()
+         + "Claims "
+         + std::to_string(hshd.current_height)
+         + ", claimed "
+         + std::to_string(context.m_remote_blockchain_height)
+         + " before"
+         );
       hit_score(context, 1);
     }
     context.m_remote_blockchain_height = hshd.current_height;
@@ -341,7 +349,14 @@ namespace cryptonote
       }
     m_core.set_target_blockchain_height((hshd.current_height));
     }
-    LOG_INFO(context << "Remote blockchain height: " << hshd.current_height << ", id: " << hshd.top_id);
+    LOG_INFO
+      (
+       context.to_str()
+       + "Remote blockchain height: "
+       + std::to_string(hshd.current_height)
+       + ", id: "
+       + hshd.top_id.to_str()
+       );
 
     context.m_state = cryptonote_connection_context::state_synchronizing;
     //let the socket to send response to handshake, but request callback, to let send request data after response
@@ -1053,7 +1068,15 @@ namespace cryptonote
 
     if (arg.current_blockchain_height < context.m_remote_blockchain_height)
     {
-      LOG_INFO(context << "Claims " << arg.current_blockchain_height << ", claimed " << context.m_remote_blockchain_height << " before");
+      LOG_INFO
+        (
+         context.to_str()
+         + "Claims "
+         + std::to_string(arg.current_blockchain_height)
+         + ", claimed "
+         + std::to_string(context.m_remote_blockchain_height)
+         + " before"
+         );
       hit_score(context, 1);
     }
     context.m_remote_blockchain_height = arg.current_blockchain_height;
@@ -1195,7 +1218,11 @@ namespace cryptonote
       const std::unique_lock<std::mutex> sync{m_sync_lock, std::try_to_lock};
       if (!sync.owns_lock())
       {
-        LOG_INFO(context << "Failed to lock m_sync_lock, going back to download");
+        LOG_INFO
+          (
+           context.to_str()
+           + "Failed to lock m_sync_lock, going back to download"
+           );
         goto skip;
       }
       LOG_DEBUG(context.to_str() + " lock m_sync_lock, adding blocks to chain...");
@@ -1280,7 +1307,10 @@ namespace cryptonote
             }
 
             // parent was requested, so we wait for it to be retrieved
-            LOG_INFO(context << " parent was requested, we'll get back to it");
+            LOG_INFO
+              (
+               context.to_str() + " parent was requested, we'll get back to it"
+               );
             break;
           }
 
@@ -1293,7 +1323,11 @@ namespace cryptonote
             {
               const uint64_t tnow = epee::misc_utils::get_ns_count();
               const uint64_t ns = tnow - m_last_add_end_time;
-              LOG_INFO("Restarting adding block after idle for " << ns/1e9 << " seconds");
+              LOG_INFO
+                (
+                 "Restarting adding block after idle for "
+                 + std::to_string(ns/1e9)
+                 + " seconds");
             }
           }
 
@@ -1504,7 +1538,14 @@ skip:
         {
           if (context.m_score-- >= 0)
           {
-            LOG_INFO(context << " kicking idle peer, last update " << (dt.count() / 1.e6) << " seconds ago, expecting " << (int)context.m_expect_response);
+            LOG_INFO
+              (
+               context.to_str()
+               + " kicking idle peer, last update "
+               + std::to_string(dt.count() / 1.e6)
+               + " seconds ago, expecting "
+               + std::to_string((int)context.m_expect_response)
+               );
             LOG_PRINT_CCONTEXT_L2("requesting callback");
             context.m_last_request_time = std::chrono::system_clock::time_point::min();
             context.m_expect_response = 0;
@@ -1526,7 +1567,7 @@ skip:
     {
       const auto &uuid = e.first;
       m_p2p->for_connection(uuid, [&](cryptonote_connection_context& ctx, nodetool::peerid_type peer_id, uint32_t f)->bool{
-        LOG_INFO(ctx << "dropping idle peer with negative score");
+        LOG_INFO(ctx.to_str() +  "dropping idle peer with negative score");
         drop_connection_with_score(ctx, e.second, false);
         return true;
       });
@@ -1572,7 +1613,15 @@ skip:
     if (n_synced + n_syncing >= m_max_out_peers && n_syncing < P2P_DEFAULT_SYNC_SEARCH_CONNECTIONS_COUNT && last_synced_peer_id != boost::uuids::nil_uuid())
     {
       if (!m_p2p->for_connection(last_synced_peer_id, [&](cryptonote_connection_context& ctx, nodetool::peerid_type peer_id, uint32_t f)->bool{
-        LOG_INFO(ctx << "dropping synced peer, " << n_syncing << " syncing, " << n_synced << " synced");
+        LOG_INFO
+          (
+           ctx.to_str()
+           + "dropping synced peer, "
+           + std::to_string(n_syncing)
+           + " syncing, "
+           + std::to_string(n_synced)
+           + " synced"
+           );
         drop_connection(ctx, false, false);
         return true;
       }))
@@ -2001,7 +2050,14 @@ skip:
       }
       else
       {
-        LOG_INFO(context << " we've reached this peer's blockchain height (theirs " << context.m_remote_blockchain_height << ", our target " << m_core.get_target_blockchain_height());
+        LOG_INFO
+          (
+           context.to_str()
+           + " we've reached this peer's blockchain height (theirs "
+           + std::to_string(context.m_remote_blockchain_height)
+           + ", our target "
+           + std::to_string(m_core.get_target_blockchain_height())
+           );
       }
     }
     return true;
@@ -2122,7 +2178,15 @@ skip:
     }
     if (arg.total_height < context.m_remote_blockchain_height)
     {
-      LOG_INFO(context << "Claims " << arg.total_height << ", claimed " << context.m_remote_blockchain_height << " before");
+      LOG_INFO
+        (
+         context.to_str()
+         + "Claims "
+         + std::to_string(arg.total_height)
+         + ", claimed "
+         + std::to_string(context.m_remote_blockchain_height)
+         + " before"
+         );
       hit_score(context, 1);
     }
     context.m_remote_blockchain_height = arg.total_height;
@@ -2429,7 +2493,13 @@ skip:
       const uint64_t previous_target = m_core.get_target_blockchain_height();
       if (target < previous_target)
         {
-          LOG_INFO("Target height decreasing from " << previous_target << " to " << target);
+          LOG_INFO
+            (
+             "Target height decreasing from "
+             + std::to_string(previous_target)
+             + " to "
+             + std::to_string(target)
+             );
           m_core.set_target_blockchain_height(target);
           if (target == 0 && context.m_state > cryptonote_connection_context::state_before_handshake && !m_stopping)
             {

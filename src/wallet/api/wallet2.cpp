@@ -296,7 +296,7 @@ bool wallet2::set_daemon(std::string daemon_address)
     m_daemon_port = tokens.back();
 
     const std::string address = get_daemon_address();
-    LOG_INFO("setting daemon to " << address);
+    LOG_INFO("setting daemon to " + address);
 
     m_rpc_client.set_daemon(m_daemon_host, m_daemon_port);
 

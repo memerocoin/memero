@@ -135,7 +135,7 @@ namespace
       if (full_match)
       {
         *language = *it1;
-        LOG_INFO("Full match for language " << (*language)->get_english_language_name());
+        LOG_INFO("Full match for language " + (*language)->get_english_language_name());
         return true;
       }
       // Some didn't match. Clear the index array.
@@ -148,7 +148,7 @@ namespace
     if (fallback)
     {
       *language = fallback;
-      LOG_INFO("Fallback match for language " << (*language)->get_english_language_name());
+      LOG_INFO("Fallback match for language " + (*language)->get_english_language_name());
       return true;
     }
 
@@ -206,7 +206,7 @@ namespace
     epee::wipeable_string trimmed_last_word = last_word.length() > unique_prefix_length ? Language::utf8prefix(last_word, unique_prefix_length) :
       last_word;
     bool ret = Language::WordEqual()(trimmed_checksum, trimmed_last_word);
-    LOG_INFO("Checksum is " << (ret ? "valid" : "invalid"));
+    LOG_INFO(std::string("Checksum is ") + (ret ? "valid" : "invalid"));
     return ret;
   }
 }

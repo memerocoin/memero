@@ -618,7 +618,13 @@ namespace nodetool
       zone.second.m_net_server.get_config_object().m_invoke_timeout = P2P_DEFAULT_INVOKE_TIMEOUT;
 
       if (!zone.second.m_allow_inbound) {
-        LOG_INFO("Inbound disabled (IPv4) on " << zone.second.m_bind_ip << ":" << zone.second.m_port);
+        LOG_INFO
+          (
+           "Inbound disabled (IPv4) on "
+           + zone.second.m_bind_ip
+           + ":"
+           + zone.second.m_port
+           );
         continue;
       }
 
@@ -715,7 +721,7 @@ namespace nodetool
     //here you can set worker threads count
     int thrds_count = 10;
     //go to loop
-    LOG_INFO("Run net_service loop( " << thrds_count << " threads)...");
+    LOG_INFO("Run net_service loop( " + std::to_string(thrds_count) + " threads)...");
     if(!public_zone.m_net_server.run_server(thrds_count, true))
     {
       LOG_ERROR("Failed to run net tcp server!");
@@ -1327,7 +1333,13 @@ namespace nodetool
       }
       if (filtered.empty())
       {
-        LOG_INFO("No available peer in " << (use_white_list ? "white" : "gray") << " list filtered by " << next_needed_pruning_stripe);
+        LOG_INFO
+          (
+           std::string("No available peer in ")
+           + (use_white_list ? "white" : "gray")
+           + " list filtered by "
+           + std::to_string(next_needed_pruning_stripe)
+           );
         return false;
       }
       else
@@ -2155,14 +2167,23 @@ namespace nodetool
     std::vector<peerlist_entry> pl_gray;
     for (auto& zone : m_network_zones)
       zone.second.m_peerlist.get_peerlist(pl_gray, pl_white);
-    LOG_INFO(std::endl << "Peerlist white:" << std::endl << print_peerlist_to_string(pl_white) << std::endl << "Peerlist gray:" << std::endl << print_peerlist_to_string(pl_gray) );
+    LOG_INFO
+      (
+       "Peerlist white: "
+       + print_peerlist_to_string(pl_white)
+       );
+    LOG_INFO
+      (
+       "Peerlist gray:"
+       + print_peerlist_to_string(pl_gray)
+       );
     return true;
   }
   //-----------------------------------------------------------------------------------
 
   bool node_server::log_connections()
   {
-    LOG_INFO("Connections: \r\n" << print_connections_container() );
+    LOG_INFO("Connections: \r\n" + print_connections_container() );
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -2189,7 +2210,7 @@ namespace nodetool
 
   void node_server::on_connection_new(p2p_connection_context& context)
   {
-    LOG_INFO("["<< epee::net_utils::print_connection_context(context) << "] NEW CONNECTION");
+    LOG_INFO("[" + epee::net_utils::print_connection_context(context) + "] NEW CONNECTION");
     m_payload_handler.on_connection_new(context);
   }
   //-----------------------------------------------------------------------------------
@@ -2206,7 +2227,7 @@ namespace nodetool
 
     m_payload_handler.on_connection_close(context);
 
-    LOG_INFO("["<< epee::net_utils::print_connection_context(context) << "] CLOSE CONNECTION");
+    LOG_INFO("[" + epee::net_utils::print_connection_context(context) + "] CLOSE CONNECTION");
   }
 
 

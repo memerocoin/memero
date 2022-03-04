@@ -82,7 +82,7 @@ namespace epee
     bool run(size_t threads_count, bool wait = true)
     {
       //go to loop
-      LOG_INFO("Run net_service loop( " << threads_count << " threads)...");
+      LOG_INFO("Run net_service loop( " + std::to_string(threads_count) + " threads)...");
       if(!m_net_server.run_server(threads_count, wait))
       {
         LOG_ERROR("Failed to run net tcp server!");

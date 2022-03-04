@@ -297,7 +297,15 @@ namespace cryptonote
 
     ++m_cookie;
 
-    LOG_INFO("Transaction added to pool: txid " << id << " weight: " << tx_weight << " fee/byte: " << (fee / (double)(tx_weight ? tx_weight : 1)));
+    LOG_INFO
+      (
+       "Transaction added to pool: txid "
+       + id.to_str()
+       + " weight: "
+       + std::to_string(tx_weight)
+       + " fee/byte: "
+       + std::to_string(fee / (double)(tx_weight ? tx_weight : 1))
+      );
 
     prune(m_txpool_max_weight);
 
@@ -365,11 +373,27 @@ namespace cryptonote
         }
         const cryptonote::transaction_prefix tx = *maybeTxPrefix;
         // remove first, in case this throws, so key images aren't removed
-        LOG_INFO("Pruning tx " << txid << " from txpool: weight: " << meta.weight << ", fee/byte: " << it->first.first);
+        LOG_INFO
+          (
+           "Pruning tx "
+           + txid.to_str()
+           + " from txpool: weight: "
+           + std::to_string(meta.weight)
+           + ", fee/byte: "
+           + std::to_string(it->first.first)
+           );
         m_blockchain.remove_txpool_tx(txid);
         m_txpool_weight -= meta.weight;
         remove_transaction_keyimages(tx, txid);
-        LOG_INFO("Pruned tx " << txid << " from txpool: weight: " << meta.weight << ", fee/byte: " << it->first.first);
+        LOG_INFO
+          (
+           "Pruned tx "
+           + txid.to_str()
+           + " from txpool: weight: "
+           + std::to_string(meta.weight)
+           + ", fee/byte: "
+           + std::to_string(it->first.first)
+           );
         m_txs_by_fee_and_receive_time.erase(it--);
         changed = true;
       }
@@ -382,8 +406,15 @@ namespace cryptonote
     lock.commit();
     if (changed)
       ++m_cookie;
-    if (m_txpool_weight > bytes)
-      LOG_INFO("Pool weight after pruning is larger than limit: " << m_txpool_weight << "/" << bytes);
+    if (m_txpool_weight > bytes) {
+      LOG_INFO
+        (
+         "Pool weight after pruning is larger than limit: "
+         + std::to_string(m_txpool_weight)
+         + "/"
+         + std::to_string(bytes)
+         );
+    }
   }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::insert_output_key_images(const transaction_prefix &tx, const crypto::hash &id, relay_method tx_relay)

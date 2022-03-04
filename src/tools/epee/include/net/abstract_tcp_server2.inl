@@ -991,7 +991,15 @@ namespace net_utils
 		auto it = server_type_map.find(m_thread_name_prefix);
 		if (it==server_type_map.end()) throw std::runtime_error("Unknown prefix/server type:" + std::string(prefix_name));
     auto connection_type = it->second; // the value of type
-    LOG_INFO("Set server type to: " << connection_type << " from name: " << m_thread_name_prefix << ", prefix_name = " << prefix_name);
+    LOG_INFO
+      (
+       "Set server type to: "
+       + epee::net_utils::to_string(connection_type)
+       + " from name: "
+       + m_thread_name_prefix
+       + ", prefix_name = "
+       + prefix_name
+       );
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>

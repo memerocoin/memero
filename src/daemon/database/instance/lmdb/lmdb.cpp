@@ -1541,7 +1541,7 @@ void BlockchainLMDB::sync()
 
 void BlockchainLMDB::safesyncmode(const bool onoff)
 {
-  LOG_INFO("switching safe mode " << (onoff ? "on" : "off"));
+  LOG_INFO(std::string("switching safe mode ") + (onoff ? "on" : "off"));
   mdb_env_set_flags(m_env, MDB_NOSYNC|MDB_MAPASYNC, !onoff);
 }
 
@@ -3342,7 +3342,11 @@ void BlockchainLMDB::set_batch_transactions(bool batch_transactions)
     LOG_INFO("batch transaction mode already enabled, but asked to enable batch mode");
   }
   m_batch_transactions = batch_transactions;
-  LOG_INFO("batch transactions " << (m_batch_transactions ? "enabled" : "disabled"));
+  LOG_INFO
+    (
+     std::string("batch transactions ")
+     + (m_batch_transactions ? "enabled" : "disabled")
+     );
 }
 
 // return true if we started the txn, false if already started

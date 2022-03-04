@@ -316,7 +316,15 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
   // we only need 1
   m_async_pool.emplace_back(std::thread([this](){this->m_async_service.run();}));
 
-  LOG_INFO("Blockchain initialized. last block: " << m_db->height() - 1 << ", " << epee::misc_utils::get_time_interval_string(timestamp_diff) << " time ago, current difficulty: " << get_difficulty_for_next_block());
+  LOG_INFO
+    (
+     "Blockchain initialized. last block: "
+     + std::to_string(m_db->height() - 1)
+     + ", "
+     + epee::misc_utils::get_time_interval_string(timestamp_diff)
+     + " time ago, current difficulty: "
+     + boost::multiprecision::to_string(get_difficulty_for_next_block())
+     );
 
   rtxn_guard.stop();
 
@@ -880,7 +888,12 @@ bool Blockchain::rollback_blockchain_switching(std::list<block>& original_chain,
     LOG_ERROR_AND_RETURN_UNLESS(r && bvc.m_added_to_main_chain, false, "PANIC! failed to add (again) block while chain switching during the rollback!");
   }
 
-  LOG_INFO("Rollback to height " << rollback_height << " was successful.");
+  LOG_INFO
+    (
+     "Rollback to height "
+     + std::to_string(rollback_height)
+     + " was successful."
+     );
   if (!original_chain.empty())
   {
     LOG_INFO("Restoration to previous blockchain successful as well.");
@@ -2306,7 +2319,15 @@ bool Blockchain::add_block_as_invalid(const block_extended_info& bei, const cryp
   const std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   auto i_res = m_invalid_blocks.insert(std::map<crypto::hash, block_extended_info>::value_type(h, bei));
   LOG_ERROR_AND_RETURN_UNLESS(i_res.second, false, "at insertion invalid by tx returned status existed");
-  LOG_INFO("BLOCK ADDED AS INVALID: " << h << std::endl << ", prev_id=" << bei.bl.prev_id << ", m_invalid_blocks count=" << m_invalid_blocks.size());
+  LOG_INFO
+    (
+     "BLOCK ADDED AS INVALID: "
+     + h.to_str()
+     + ", prev_id="
+     + bei.bl.prev_id.to_str()
+     + ", m_invalid_blocks count="
+     + std::to_string(m_invalid_blocks.size())
+     );
   return true;
 }
 //------------------------------------------------------------------
@@ -2757,7 +2778,7 @@ bool Blockchain::flush_txes_from_pool(const std::span<const crypto::hash>txids)
     size_t tx_weight;
     uint64_t fee;
     bool relayed, do_not_relay, double_spend_seen, pruned;
-    LOG_INFO("Removing txid " << txid << " from the pool");
+    LOG_INFO("Removing txid " + txid.to_str() + " from the pool");
     if(m_tx_pool.have_tx(txid, relay_category::all) && !m_tx_pool.take_tx(txid, tx, txblob, tx_weight, fee, relayed, do_not_relay, double_spend_seen, pruned))
     {
       LOG_ERROR("Failed to remove txid " << txid << " from the pool");
@@ -3034,21 +3055,32 @@ leave:
       return false;
     }
 
+  LOG_INFO("");
+  LOG_INFO(std::string(config::lol::plus_sep) + "BLOCK ADDED");
+  LOG_INFO("");
+  LOG_INFO("id:             " + id.to_str());
+  LOG_INFO("PoW:            " + proof_of_work.to_str());
+  LOG_INFO("height:         " + std::to_string(new_height - 1));
+  LOG_INFO("difficulty:     " + tools::get_human_readable_number(current_diffic));
   LOG_INFO
     (
-     std::endl
-     << config::lol::plus_sep << "BLOCK ADDED" << std::endl
-     << std::endl
-     << "id:             " << id << std::endl
-     << "PoW:            " << proof_of_work << std::endl
-     << "height:         " << new_height - 1 << std::endl
-     << "difficulty:     " << tools::get_human_readable_number(current_diffic) << std::endl
-     << "block reward:   " << print_money(fee_summary + base_reward)
-     << config::lol::money_symbol << " ( " << print_money(base_reward)
-     << config::lol::money_symbol << " + " << print_money(fee_summary)
-     << config::lol::money_symbol << " )" << std::endl
-     << "size:           " << cumulative_block_weight << " bytes" << std::endl
-    );
+     "block reward:   "
+     + print_money(fee_summary + base_reward)
+     + std::string(config::lol::money_symbol)
+     + " ( "
+     + print_money(base_reward)
+     + std::string(config::lol::money_symbol)
+     + " + "
+     + print_money(fee_summary)
+     + std::string(config::lol::money_symbol) + " )"
+     );
+
+  LOG_INFO
+    (
+     "size:           "
+     + std::to_string(cumulative_block_weight)
+     + " bytes"
+     );
 
   bvc.m_added_to_main_chain = true;
   ++m_sync_counter;
@@ -3189,7 +3221,11 @@ bool Blockchain::cleanup_handle_incoming_blocks(bool force_sync)
   // when we're well clear of the precomputed hashes, free the memory
   if (!m_blocks_hash_check.empty() && m_db->height() > m_blocks_hash_check.size() + 4096)
   {
-    LOG_INFO("Dumping block hashes, we're now 4k past " << m_blocks_hash_check.size());
+    LOG_INFO
+      (
+       "Dumping block hashes, we're now 4k past "
+       + std::to_string(m_blocks_hash_check.size())
+       );
     m_blocks_hash_check.clear();
     m_blocks_hash_check.shrink_to_fit();
   }

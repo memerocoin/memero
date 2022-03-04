@@ -393,7 +393,15 @@ namespace cryptonote
       //    , "outSk size does not match vout"
       //    );
       const auto tx_hash = get_transaction_hash(tx);
-      LOG_INFO("transaction_created: " << tx_hash << std::endl << obj_to_json_str(tx) << std::endl);
+      LOG_INFO
+        (
+         "transaction_created: "
+         + tx_hash.to_str()
+         );
+      LOG_INFO
+        (
+         obj_to_json_str(tx)
+         );
     }
 
     return {{tx, permutation}};
