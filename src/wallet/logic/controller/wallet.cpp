@@ -582,7 +582,11 @@ namespace wallet {
        );
 
     for (uint32_t i : subaddr_indices) {
-      LOG_PRINT_L2("Candidate subaddress index for spending: " << i);
+      LOG_PRINT_L2
+        (
+         "Candidate subaddress index for spending: "
+         + std::to_string(i)
+         );
     }
 
     // determine threshold for fractional amount

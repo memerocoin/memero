@@ -185,24 +185,24 @@ void block_queue::print() const
      + std::to_string(blocks.size())
      + " spans"
      );
-  for (const auto &span: blocks) {
-    LOG_DEBUG_MUTE
-      (
-       "  "
-       + std::to_string(span.start_block_height)
-       + " - "
-       + std::to_string(span.start_block_height+span.nblocks-1)
-       + " ("
-       + std::to_string(span.nblocks)
-       + ") - "
-       + (span.blocks.empty() ? "scheduled" : "filled    ")
-       + "  "
-       + boost::uuids::to_string(span.connection_id)
-       // + " ("
-       // + std::to_string((unsigned)(span.rate*10/1024.f))/10.f))
-       // + " kB/s)"
-       );
-  }
+  // for (const auto &span: blocks) {
+  //   LOG_DEBUG_MUTE
+  //     (
+  //      "  "
+  //      + std::to_string(span.start_block_height)
+  //      + " - "
+  //      + std::to_string(span.start_block_height+span.nblocks-1)
+  //      + " ("
+  //      + std::to_string(span.nblocks)
+  //      + ") - "
+  //      + (span.blocks.empty() ? "scheduled" : "filled    ")
+  //      + "  "
+  //      + boost::uuids::to_string(span.connection_id)
+  //      // + " ("
+  //      // + std::to_string((unsigned)(span.rate*10/1024.f))/10.f))
+  //      // + " kB/s)"
+  //      );
+  // }
 }
 
 std::string block_queue::get_overview(uint64_t blockchain_height) const

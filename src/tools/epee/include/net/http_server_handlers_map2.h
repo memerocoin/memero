@@ -39,7 +39,7 @@
               epee::net_utils::http::http_response_info& response, \
               context_type& m_conn_context) \
 {\
-  LOG_VERBOSE("HTTP [" << m_conn_context.m_remote_address.host_str() << "] " << query_info.m_http_method_str << " " << query_info.m_URI); \
+  LOG_VERBOSE("HTTP [" + m_conn_context.m_remote_address.host_str() + "] " + query_info.m_http_method_str + " " + query_info.m_URI); \
   response.m_response_code = 200; \
   response.m_response_comment = "Ok"; \
   try \
@@ -73,7 +73,7 @@
       bool parse_res = epee::serialization::load_t_from_json(static_cast<command_type::request&>(req), query_info.m_body); \
       LOG_ERROR_AND_RETURN_UNLESS(parse_res, false, "Failed to parse json: \r\n" << query_info.m_body); \
       boost::value_initialized<command_type::response> resp;\
-      LOG_VERBOSE(m_conn_context << "calling " << s_pattern); \
+      LOG_VERBOSE(m_conn_context.to_str() + "calling " + s_pattern);  \
       bool res = false; \
       try { res = callback_f(static_cast<command_type::request&>(req), static_cast<command_type::response&>(resp)); } \
       catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
@@ -154,7 +154,7 @@
   epee::json_rpc::error_response fail_resp = AUTO_VAL_INIT(fail_resp); \
   fail_resp.jsonrpc = "2.0"; \
   fail_resp.id = req.id; \
-  LOG_VERBOSE(m_conn_context << "Calling RPC method " << method_name); \
+  LOG_VERBOSE(m_conn_context.to_str() + "Calling RPC method " + method_name); \
   bool res = false; \
   try { res = callback_f(req.params, resp.result, fail_resp.error); } \
   catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
@@ -173,7 +173,7 @@
     else if(callback_name == method_name) \
 { \
   PREPARE_OBJECTS_FROM_JSON(command_type) \
-  LOG_VERBOSE(m_conn_context << "calling RPC method " << method_name); \
+    LOG_VERBOSE(m_conn_context.to_str() + "calling RPC method " + method_name); \
   bool res = false; \
   try { res = callback_f(req.params, resp.result); } \
   catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
