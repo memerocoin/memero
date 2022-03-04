@@ -64,15 +64,6 @@ see: etc/other-licenses/monero/LICENSE
        , x );                                   \
   } while (0)
 
-#define LOG_COLOR(color, level, x) do {         \
-    LOG_CATEGORY_COLOR                          \
-      (                                         \
-       level                                    \
-       , DEFAULT_LOG_CATEGORY                   \
-       , color                                  \
-       , x );                                   \
-  } while (0)
-
 #define LOG_DEFAULT(level, x)                   \
   LOG_CATEGORY(level, DEFAULT_LOG_CATEGORY, x)
 

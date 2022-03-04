@@ -685,11 +685,29 @@ namespace nodetool
 
     if (public_zone.m_allow_inbound) {
     m_listening_port = public_zone.m_net_server.get_binded_port();
-    LOG_COLOR(epee::green, epee::LogLevel::Info, "Net service bound (IPv4) to " << public_zone.m_bind_ip << ":" << m_listening_port);
+    LOG_COLOR
+      (
+       epee::green
+       , epee::LogLevel::Info
+       , std::string()
+       + "Net service bound (IPv4) to "
+       + public_zone.m_bind_ip
+       + ":"
+       + std::to_string(m_listening_port)
+       );
     if (m_use_ipv6)
     {
       m_listening_port_ipv6 = public_zone.m_net_server.get_binded_port_ipv6();
-      LOG_COLOR(epee::green, epee::LogLevel::Info, "Net service bound (IPv6) to " << public_zone.m_bind_ipv6_address << ":" << m_listening_port_ipv6);
+      LOG_COLOR
+        (
+         epee::green
+         , epee::LogLevel::Info
+         , std::string()
+         + "Net service bound (IPv6) to "
+         + public_zone.m_bind_ipv6_address
+         + ":"
+         + std::to_string(m_listening_port_ipv6)
+         );
     }
     }
 

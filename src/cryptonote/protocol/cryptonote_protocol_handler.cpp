@@ -1202,8 +1202,20 @@ namespace cryptonote
     }
 
     {
-      LOG_COLOR(epee::yellow, epee::LogLevel::Debug, context << " Got NEW BLOCKS inside of " << __FUNCTION__ << ": size: " << arg.blocks.size()
-                  << ", blocks: " << start_height << " - " << (start_height + arg.blocks.size() - 1));
+      LOG_COLOR
+        (
+         epee::yellow
+         , epee::LogLevel::Debug
+         , context.to_str()
+         + " Got NEW BLOCKS inside of "
+         + std::string(__FUNCTION__)
+         + ": size: "
+         + std::to_string(arg.blocks.size())
+         + ", blocks: "
+         + std::to_string(start_height)
+         + " - "
+         + std::to_string(start_height + arg.blocks.size() - 1)
+         );
 
       // add that new span to the block queue
       const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(now - request_time);

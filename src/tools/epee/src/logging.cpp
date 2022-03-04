@@ -379,3 +379,18 @@ void LOG_GLOBAL(const std::string_view x) {
   LOG_CATEGORY(epee::LogLevel::Info, epee::GLOBAL_CATEGORY, x);
 }
 
+void LOG_COLOR
+(
+ const epee::console_colors color
+ , const epee::LogLevel level
+ , const std::string_view x
+ )
+{
+  LOG_CATEGORY_COLOR
+    (
+     level
+     , DEFAULT_LOG_CATEGORY
+     , color
+     , x
+     );
+}

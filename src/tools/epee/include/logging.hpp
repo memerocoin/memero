@@ -116,6 +116,13 @@ void LOG_INFO(const std::string_view x);
 void LOG_ERROR(const std::string_view x);
 void LOG_GLOBAL(const std::string_view x);
 
+void LOG_COLOR
+(
+ const epee::console_colors color
+ , const epee::LogLevel level
+ , const std::string_view x
+ );
+
 constexpr auto _dbg3 = LOG_TRACE;
 
 constexpr auto _note = LOG_VERBOSE;
