@@ -36,7 +36,6 @@ see: etc/other-licenses/monero/LICENSE
 
 namespace epee
 {
-
   std::atomic<int> m_log_level = 0;
 
   // maps epee style log level to new logging system
@@ -77,7 +76,11 @@ namespace epee
     return is_a_tty;
   }
 
-  void set_console_color(const epee::console_colors color, bool bright)
+  void set_console_color
+  (
+   const epee::console_colors color
+   , const bool bright
+   )
   {
     if (!is_stdout_a_tty())
       return;
@@ -145,7 +148,6 @@ namespace epee
   }
 
   std::mutex g_log_mutex;
-
   std::atomic<size_t> common_length = 1;
 
   void log_level_map
@@ -179,31 +181,32 @@ namespace epee
     const std::string cat_str = m_log_level == 0 ? "" : centered_cat;
 
     std::string log_header;
-    switch (level) {
-    case epee::LogLevel::Fatal:
-      log_header = "F";
-      break;
-    case epee::LogLevel::Error:
-      log_header = "E";
-      break;
-    case epee::LogLevel::Warning:
-      log_header = "W";
-      break;
-    case epee::LogLevel::Info:
-      log_header = "I";
-      break;
-    case epee::LogLevel::Verbose:
-      log_header = "V";
-      break;
-    case epee::LogLevel::Debug:
-      log_header = "D";
-      break;
-    case epee::LogLevel::Trace:
-      log_header = "T";
-      break;
-    default:
-      break;
-    }
+    switch (level)
+      {
+      case epee::LogLevel::Fatal:
+        log_header = "F";
+        break;
+      case epee::LogLevel::Error:
+        log_header = "E";
+        break;
+      case epee::LogLevel::Warning:
+        log_header = "W";
+        break;
+      case epee::LogLevel::Info:
+        log_header = "I";
+        break;
+      case epee::LogLevel::Verbose:
+        log_header = "V";
+        break;
+      case epee::LogLevel::Debug:
+        log_header = "D";
+        break;
+      case epee::LogLevel::Trace:
+        log_header = "T";
+        break;
+      default:
+        break;
+      }
 
     const auto now = std::chrono::system_clock::now();
     const auto in_time_t = std::chrono::system_clock::to_time_t(now);

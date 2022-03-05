@@ -77,7 +77,11 @@ namespace epee
     };
 
   bool is_stdout_a_tty();
-  void set_console_color(const console_colors color, bool bright);
+  void set_console_color
+  (
+   const epee::console_colors color
+   , const bool bright
+   );
   void reset_console_color();
 
   void log_level_cat_color
