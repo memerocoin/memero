@@ -1416,8 +1416,17 @@ namespace cryptonote
 
           if (m_core.have_block(last_block_hash))
           {
-            // const uint64_t subchain_height = start_height + blocks.size();
-            LOG_DEBUG_CC(context, "These are old blocks, ignoring: blocks " << start_height << " - " << (subchain_height-1) << ", blockchain height " << m_core.get_current_blockchain_height());
+            const uint64_t subchain_height = start_height + blocks.size();
+            LOG_DEBUG_CC
+              (
+               context
+               , "These are old blocks, ignoring: blocks "
+               + std::to_string(start_height)
+               + " - "
+               + std::to_string(subchain_height-1)
+               + ", blockchain height "
+               + std::to_string(m_core.get_current_blockchain_height())
+               );
             m_block_queue.remove_spans(span_connection_id, start_height);
             ++m_sync_old_spans_downloaded;
             continue;
@@ -2611,8 +2620,16 @@ skip:
 
   void t_cryptonote_protocol_handler::drop_connection_with_score(cryptonote_connection_context &context, unsigned score, bool flush_all_spans)
   {
-    LOG_DEBUG_CC(context, "dropping connection id " << context.m_connection_id <<
-        ", score " << score << ", flush_all_spans " << flush_all_spans);
+    LOG_DEBUG_CC
+      (
+       context
+       , "dropping connection id "
+       + boost::uuids::to_string(context.m_connection_id)
+       + ", score "
+       + std::to_string(score)
+       + ", flush_all_spans "
+       + std::to_string(flush_all_spans)
+       );
 
     m_block_queue.flush_spans(context.m_connection_id, flush_all_spans);
 

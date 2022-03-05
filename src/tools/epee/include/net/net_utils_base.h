@@ -467,7 +467,8 @@ namespace net_utils
 #define LOG_WARNING_CC(ct, message)
 // #define LOG_INFO_CC(ct, message) LOG_INFO(ct << message)
 #define LOG_INFO_CC(ct, message)
-#define LOG_DEBUG_CC(ct, message)
+#define LOG_DEBUG_CC(ct, message) \
+  LOG_DEBUG(ct.to_str() + message)
 
 #define LOG_PRINT_CCONTEXT_L0(message) \
   LOG_PRINT_L0(context.to_str() + message)
