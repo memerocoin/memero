@@ -1356,7 +1356,14 @@ namespace cryptonote
 
     uint64_t max_total_weight = consensus::get_block_size_bound(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> output_key_images;
-    LOG_VERBOSE_MUTE("Filling block template, max weight " << max_total_weight << ", " << m_txs_by_fee_and_receive_time.size() << " txes in the pool");
+    LOG_VERBOSE
+      (
+       "Filling block template, max weight "
+       + std::to_string(max_total_weight)
+       + ", "
+       + std::to_string(m_txs_by_fee_and_receive_time.size())
+       + " txes in the pool"
+       );
 
     LockedTXN lock(m_blockchain.get_db());
 
@@ -1369,7 +1376,19 @@ namespace cryptonote
         LOG_DEBUG("  failed to find tx meta");
         continue;
       }
-      LOG_VERBOSE_MUTE("Considering " << sorted_it->second << ", weight " << meta.weight << ", current block weight " << total_weight << "/" << max_total_weight << ", current coinbase " << print_money(best_coinbase));
+      LOG_VERBOSE
+        (
+         "Considering "
+         + sorted_it->second.to_str()
+         + ", weight "
+         + std::to_string(meta.weight)
+         + ", current block weight "
+         + std::to_string(total_weight)
+         + "/"
+         + std::to_string(max_total_weight)
+         + ", current coinbase "
+         + print_money(best_coinbase)
+         );
 
       if (meta.pruned)
       {
@@ -1462,9 +1481,20 @@ namespace cryptonote
     lock.commit();
 
     expected_reward = best_coinbase;
-    LOG_VERBOSE_MUTE("Block template filled with " << bl.tx_hashes.size() << " txes, weight "
-        << total_weight << "/" << max_total_weight << ", coinbase " << print_money(best_coinbase)
-        << " (including " << print_money(fee) << " in fees)");
+    LOG_VERBOSE
+      (
+       "Block template filled with "
+       + std::to_string(bl.tx_hashes.size())
+       + " txes, weight "
+       + std::to_string(total_weight)
+       + "/"
+       + std::to_string(max_total_weight)
+       + ", coinbase "
+       + print_money(best_coinbase)
+       + " (including "
+       + print_money(fee)
+       + " in fees)"
+       );
     return true;
   }
   //---------------------------------------------------------------------------------

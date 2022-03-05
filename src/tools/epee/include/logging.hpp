@@ -158,6 +158,5 @@ constexpr auto LOG_PRINT_L3 = LOG_DEBUG;
 
 
 #define LOG_DEBUG_MUTE(x)
-#define LOG_VERBOSE_MUTE(x)
 #define LOG_WARNING_MUTE(x)
 #define LOG_ERROR_MUTE(x)

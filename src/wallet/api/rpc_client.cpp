@@ -443,7 +443,21 @@ void RPC_Client::get_tx_outputs
       for (size_t o = 0; o < requested_outputs_count && outs.back().size() < fake_outputs_count + 1; ++o)
       {
         size_t i = base + order[o];
-        LOG_VERBOSE_MUTE("Index " << i << "/" << requested_outputs_count << ": idx " << req.outputs[i].index << " (real " << td.m_global_output_index << "), unlocked " << resp_outputs[i].unlocked << ", key " << resp_outputs[i].key);
+        LOG_VERBOSE
+          (
+           "Index "
+           + std::to_string(i)
+           + "/"
+           + std::to_string(requested_outputs_count)
+           + ": idx "
+           + std::to_string(req.outputs[i].index)
+           + " (real "
+           + std::to_string(td.m_global_output_index)
+           + "), unlocked "
+           + std::to_string(resp_outputs[i].unlocked)
+           + ", key "
+           + resp_outputs[i].key.to_str()
+           );
         tx_add_fake_output(outs, req.outputs[i].index, resp_outputs[i].key, resp_outputs[i].mask, td.m_global_output_index, resp_outputs[i].unlocked);
       }
       if (outs.back().size() < fake_outputs_count + 1)

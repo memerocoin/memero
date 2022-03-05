@@ -1764,9 +1764,12 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
   {
     //block orphaned
     bvc.m_marked_as_orphaned = true;
-    LOG_VERBOSE_MUTE
+    LOG_CATEGORY_COLOR_LEGACY
       (
-       std::endl
+       epee::LogLevel::Verbose
+       , epee::GLOBAL_CATEGORY
+       , epee::magenta
+       , std::endl
        << config::lol::x_sep << "BLOCK ORPHANED" << std::endl
        << std::endl
        << "CURRENT" << std::endl
