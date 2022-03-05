@@ -55,7 +55,7 @@ namespace epee
     Trace,
   };
 
-  void mlog_set_log_level(const int level);
+  void set_log_level(const int level);
   void set_log_level_from_string(const std::string x);
   void log_level_cat
   (

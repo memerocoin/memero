@@ -657,7 +657,7 @@ namespace rpc
     else
     {
       res.status = Message::STATUS_OK;
-      epee::mlog_set_log_level(req.level);
+      epee::set_log_level(req.level);
     }
   }
 

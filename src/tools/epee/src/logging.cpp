@@ -40,7 +40,7 @@ namespace epee
   std::atomic<int> m_log_level = 0;
 
   // maps epee style log level to new logging system
-  void mlog_set_log_level(const int level)
+  void set_log_level(const int level)
   {
     m_log_level = level;
   }
@@ -55,7 +55,7 @@ namespace epee
 
     if (level >= 0 && level <= 4)
       {
-        epee::mlog_set_log_level(level);
+        epee::set_log_level(level);
       }
     else
       {
