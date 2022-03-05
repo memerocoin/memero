@@ -171,5 +171,25 @@ namespace epee { namespace net_utils
       + epee::net_utils::print_connection_context_short(*this)
       + "] ";
   }
+
+  void LOG_WARNING_CC
+  (
+   const connection_context_base& ctx
+   , const std::string_view x
+   )
+  {
+    LOG_WARNING(ctx.to_str() + std::string(x));
+  }
+
+  void LOG_DEBUG_CC
+  (
+   const connection_context_base& ctx
+   , const std::string_view x
+   )
+  {
+    LOG_DEBUG(ctx.to_str() + std::string(x));
+  }
+
 }}
+
 

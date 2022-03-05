@@ -463,11 +463,19 @@ namespace net_utils
 
 // #define LOG_ERROR_CC(ct, message) LOG_ERROR(ct << message)
 #define LOG_ERROR_CC(ct, message)
-// #define LOG_WARNING_CC(ct, message) LOG_WARNING(ct << message)
-#define LOG_WARNING_CC(ct, message)
 
-#define LOG_DEBUG_CC(ct, message) \
-  LOG_DEBUG(ct.to_str() + message)
+void LOG_WARNING_CC
+(
+ const connection_context_base& ctx
+ , const std::string_view x
+ );
+
+void LOG_DEBUG_CC
+(
+ const connection_context_base& ctx
+ , const std::string_view x
+ );
+
 
 #define LOG_PRINT_CCONTEXT_L0(message) \
   LOG_PRINT_L0(context.to_str() + message)

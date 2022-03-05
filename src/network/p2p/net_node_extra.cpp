@@ -908,7 +908,15 @@ namespace nodetool
 
       if(code < 0)
       {
-        LOG_WARNING_CC(context, "COMMAND_HANDSHAKE invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
+        LOG_WARNING_CC
+          (
+           context
+           , "COMMAND_HANDSHAKE invoke failed. ("
+           + std::to_string(code)
+           + ", "
+           + epee::levin::get_err_descr(code)
+           + ")"
+           );
         if (code == epee::levin::LEVIN_ERROR_CONNECTION_TIMEDOUT || code == epee::levin::LEVIN_ERROR_CONNECTION_DESTROYED)
           timeout = true;
         return;
@@ -916,7 +924,13 @@ namespace nodetool
 
       if(rsp.node_data.network_id != m_network_id)
       {
-        LOG_WARNING_CC(context, "COMMAND_HANDSHAKE Failed, wrong network!  (" << rsp.node_data.network_id << "), closing connection.");
+        LOG_WARNING_CC
+          (
+           context
+           , "COMMAND_HANDSHAKE Failed, wrong network!  ("
+           + boost::uuids::to_string(rsp.node_data.network_id)
+           + "), closing connection."
+           );
         return;
       }
 
@@ -992,7 +1006,15 @@ namespace nodetool
       context.m_in_timedsync = false;
       if(code < 0)
       {
-        LOG_WARNING_CC(context, "COMMAND_TIMED_SYNC invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
+        LOG_WARNING_CC
+          (
+           context
+           , "COMMAND_TIMED_SYNC invoke failed. ("
+           + std::to_string(code)
+           + ", "
+           + epee::levin::get_err_descr(code)
+           + ")"
+           );
         return;
       }
 
@@ -2117,7 +2139,15 @@ namespace nodetool
       {
         if(code < 0)
         {
-          LOG_WARNING_CC(context_, "COMMAND_SUPPORT_FLAGS invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
+          LOG_WARNING_CC
+            (
+             context_
+             , "COMMAND_SUPPORT_FLAGS invoke failed. ("
+             + std::to_string(code)
+             + ", "
+             + epee::levin::get_err_descr(code)
+             + ")"
+             );
           return;
         }
 
@@ -2226,7 +2256,11 @@ namespace nodetool
 
     if(!m_payload_handler.process_payload_sync_data(arg.payload_data, context, true))
     {
-      LOG_WARNING_CC(context, "COMMAND_HANDSHAKE came, but process_payload_sync_data returned false, dropping connection.");
+      LOG_WARNING_CC
+        (
+         context
+         , "COMMAND_HANDSHAKE came, but process_payload_sync_data returned false, dropping connection."
+         );
       drop_connection(context);
       return 1;
     }
@@ -2662,7 +2696,12 @@ namespace nodetool
     {
       if(ec)
       {
-        LOG_WARNING_CC(ping_context, "back ping connect failed to " << address.str());
+        LOG_WARNING_CC
+          (
+           ping_context
+           , "back ping connect failed to "
+           + address.str()
+           );
         return false;
       }
       COMMAND_PING::request req;
@@ -2674,14 +2713,36 @@ namespace nodetool
       {
         if(code <= 0)
         {
-          LOG_WARNING_CC(ping_context, "Failed to invoke COMMAND_PING to " << address.str() << "(" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
+          LOG_WARNING_CC
+            (
+             ping_context
+             , "Failed to invoke COMMAND_PING to "
+             + address.str()
+             + "("
+             + std::to_string(code)
+             + ", "
+             + epee::levin::get_err_descr(code)
+             + ")"
+             );
           return;
         }
 
         network_zone& zone = m_network_zones.at(address.get_zone());
         if(rsp.status != PING_OK_RESPONSE_STATUS_TEXT || pr != rsp.peer_id)
         {
-          LOG_WARNING_CC(ping_context, "back ping invoke wrong response \"" << rsp.status << "\" from" << address.str() << ", hsh_peer_id=" << pr << ", rsp.peer_id=" << peerid_to_string(rsp.peer_id));
+          LOG_WARNING_CC
+            (
+             ping_context
+             , std::string()
+             + "back ping invoke wrong response \""
+             + rsp.status
+             + "\" from"
+             + address.str()
+             + ", hsh_peer_id="
+             + peerid_to_string(pr)
+             + ", rsp.peer_id="
+             + peerid_to_string(rsp.peer_id)
+             );
           zone.m_net_server.get_config_object().close(ping_context.m_connection_id);
           return;
         }
@@ -2691,7 +2752,12 @@ namespace nodetool
 
       if(!inv_call_res)
       {
-        LOG_WARNING_CC(ping_context, "back ping invoke failed to " << address.str());
+        LOG_WARNING_CC
+          (
+           ping_context
+           , "back ping invoke failed to "
+           + address.str()
+           );
         zone.m_net_server.get_config_object().close(ping_context.m_connection_id);
         return false;
       }
