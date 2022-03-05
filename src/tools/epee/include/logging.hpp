@@ -53,7 +53,6 @@ namespace epee
     Verbose,
     Debug,
     Trace,
-    Unknown,
   };
 
   void mlog_set_log_level(const int level);

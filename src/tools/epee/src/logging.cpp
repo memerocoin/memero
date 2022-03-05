@@ -117,6 +117,9 @@ namespace epee
       case epee::console_colors::white:
         color_str = "37";
         break;
+
+      default:
+        break;
       }
 
     const std::string bright_str =
@@ -198,9 +201,6 @@ namespace epee
     case epee::LogLevel::Trace:
       log_header = "T";
       break;
-    case epee::LogLevel::Unknown:
-      log_header = "U";
-      break;
     default:
       break;
     }
@@ -244,7 +244,6 @@ namespace epee
       case 3:
         switch(level)
           {
-          case epee::LogLevel::Unknown:
           case epee::LogLevel::Trace:
             break;
           default:
@@ -255,7 +254,6 @@ namespace epee
       case 2:
         switch(level)
           {
-          case epee::LogLevel::Unknown:
           case epee::LogLevel::Trace:
           case epee::LogLevel::Debug:
             break;
@@ -267,7 +265,6 @@ namespace epee
       case 1:
         switch(level)
           {
-          case epee::LogLevel::Unknown:
           case epee::LogLevel::Trace:
           case epee::LogLevel::Debug:
           case epee::LogLevel::Verbose:
@@ -280,7 +277,6 @@ namespace epee
       case 0:
         switch(level)
           {
-          case epee::LogLevel::Unknown:
           case epee::LogLevel::Trace:
           case epee::LogLevel::Debug:
           case epee::LogLevel::Verbose:
