@@ -30,12 +30,12 @@
 #include "levin_base.h"
 
 #include "tools/epee/include/misc_os_dependent.h"
+#include "tools/epee/include/net/net_utils_base.h"
 
 #include <random>
 
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/functional/hash.hpp>
-
 
 
 
@@ -50,6 +50,8 @@ namespace epee
 {
 namespace levin
 {
+
+  constexpr auto LOG_ERROR_CC = epee::net_utils::LOG_ERROR_CC;
 
 /************************************************************************/
 /*                                                                      */
@@ -639,15 +641,28 @@ public:
           const size_t max_bytes = m_connection_context.get_max_bytes(m_current_head.m_command);
           if(m_current_head.m_cb > std::min<size_t>(max_packet_size, max_bytes))
           {
-            LOG_ERROR_CC(m_connection_context, "Maximum packet size exceed!, m_max_packet_size = " << std::min<size_t>(max_packet_size, max_bytes)
-              << ", packet header received " << m_current_head.m_cb << ", command " << m_current_head.m_command
-              << ", connection will be closed.");
+            LOG_ERROR_CC
+              (
+               m_connection_context
+               , "Maximum packet size exceed!, m_max_packet_size = "
+               + std::to_string(std::min<size_t>(max_packet_size, max_bytes))
+               + ", packet header received "
+               + std::to_string(m_current_head.m_cb)
+               + ", command "
+               + std::to_string(m_current_head.m_command)
+               + ", connection will be closed."
+               );
             return false;
           }
         }
         break;
       default:
-        LOG_ERROR_CC(m_connection_context, "Undefined state in levin_server_impl::connection_handler, m_state=" << m_state);
+        LOG_ERROR_CC
+          (
+           m_connection_context
+           , "Undefined state in levin_server_impl::connection_handler, m_state="
+           + std::to_string(m_state)
+           );
         return false;
       }
     }

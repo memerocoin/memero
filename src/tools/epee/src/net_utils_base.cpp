@@ -190,6 +190,15 @@ namespace epee { namespace net_utils
     LOG_DEBUG(ctx.to_str() + std::string(x));
   }
 
+  void LOG_ERROR_CC
+  (
+   const connection_context_base& ctx
+   , const std::string_view x
+   )
+  {
+    LOG_ERROR(ctx.to_str() + std::string(x));
+  }
+
 }}
 
 

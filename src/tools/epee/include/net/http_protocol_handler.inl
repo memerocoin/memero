@@ -160,10 +160,19 @@ namespace net_utils
 			case http_state_connection_close:
 				return false;
 			default:
-				LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler::handle_char_out: Wrong state: " << m_state);
+				LOG_ERROR_CC
+          (
+           m_conn_context
+           , "simple_http_connection_handler::handle_char_out: Wrong state: "
+           + std::to_string(m_state)
+           );
 				return false;
 			case http_state_error:
-				LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler::handle_char_out: Error state!!!");
+				LOG_ERROR_CC
+          (
+           m_conn_context
+           , "simple_http_connection_handler::handle_char_out: Error state!!!"
+           );
 				return false;
 			}
 
@@ -207,7 +216,12 @@ namespace net_utils
 		}else
 		{
 			m_state = http_state_error;
-			LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler<t_connection_context>::handle_invoke_query_line(): Failed to match first line: " << m_cache);
+			LOG_ERROR_CC
+        (
+         m_conn_context
+         , "simple_http_connection_handler<t_connection_context>::handle_invoke_query_line(): Failed to match first line: "
+         + m_cache
+         );
 			return false;
 		}
 
@@ -238,7 +252,12 @@ namespace net_utils
 
 		if(!parse_cached_header(m_query_info.m_header_info, m_cache, pos))
 		{
-			LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler<t_connection_context>::analize_cached_request_header_and_invoke_state(): failed to anilize request header: " << m_cache);
+			LOG_ERROR_CC
+        (
+         m_conn_context
+         , "simple_http_connection_handler<t_connection_context>::analize_cached_request_header_and_invoke_state(): failed to anilize request header: "
+         + m_cache
+         );
 			m_state = http_state_error;
 			return false;
 		}
@@ -254,7 +273,12 @@ namespace net_utils
 			m_body_transfer_type = http_body_transfer_measure;
 			if(!get_len_from_content_lenght(m_query_info.m_header_info.m_content_length, m_len_summary))
 			{
-				LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler<t_connection_context>::analize_cached_request_header_and_invoke_state(): Failed to get_len_from_content_lenght();, m_query_info.m_content_length="<<m_query_info.m_header_info.m_content_length);
+				LOG_ERROR_CC
+          (
+           m_conn_context
+           , "simple_http_connection_handler<t_connection_context>::analize_cached_request_header_and_invoke_state(): Failed to get_len_from_content_lenght();, m_query_info.m_content_length="
+           + m_query_info.m_header_info.m_content_length
+           );
 				m_state = http_state_error;
 				return false;
 			}
@@ -287,7 +311,12 @@ namespace net_utils
 		case http_body_transfer_multipart:
 		case http_body_transfer_undefined:
 		default:
-			LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler<t_connection_context>::handle_retriving_query_body(): Unexpected m_body_query_type state:" << m_body_transfer_type);
+			LOG_ERROR_CC
+        (
+         m_conn_context
+         , "simple_http_connection_handler<t_connection_context>::handle_retriving_query_body(): Unexpected m_body_query_type state:"
+         + std::to_string(m_body_transfer_type)
+         );
 			m_state = http_state_error;
 			return false;
 		}
@@ -368,7 +397,12 @@ namespace net_utils
 				body_info.m_etc_fields.push_back(std::pair<std::string, std::string>(result[field_etc_name], result[field_val]));
 			else
 			{
-				LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler<t_connection_context>::parse_cached_header() not matched last entry in:" << m_cache_to_process);
+				LOG_ERROR_CC
+          (
+           m_conn_context
+           , "simple_http_connection_handler<t_connection_context>::parse_cached_header() not matched last entry in:"
+           + m_cache_to_process
+           );
 			}
 
 			it_current_bound = result[(int)result.size()-1]. first;

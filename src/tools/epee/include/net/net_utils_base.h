@@ -461,20 +461,23 @@ namespace net_utils
 
   std::ostream& operator<<(std::ostream& os, const connection_context_base& ct);
 
-// #define LOG_ERROR_CC(ct, message) LOG_ERROR(ct << message)
-#define LOG_ERROR_CC(ct, message)
+  void LOG_WARNING_CC
+  (
+   const connection_context_base& ctx
+   , const std::string_view x
+   );
 
-void LOG_WARNING_CC
-(
- const connection_context_base& ctx
- , const std::string_view x
- );
+  void LOG_DEBUG_CC
+  (
+   const connection_context_base& ctx
+   , const std::string_view x
+   );
 
-void LOG_DEBUG_CC
-(
- const connection_context_base& ctx
- , const std::string_view x
- );
+  void LOG_ERROR_CC
+  (
+   const connection_context_base& ctx
+   , const std::string_view x
+   );
 
 
 #define LOG_PRINT_CCONTEXT_L0(message) \
