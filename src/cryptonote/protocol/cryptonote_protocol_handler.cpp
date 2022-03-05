@@ -2121,7 +2121,15 @@ skip:
           uint64_t skip = span.first - first_context_block_height;
           if (skip > context.m_needed_objects.size())
           {
-            LOG_ERROR_MUTE("ERROR: skip " << skip << ", m_needed_objects " << context.m_needed_objects.size() << ", first_context_block_height" << first_context_block_height);
+            LOG_ERROR
+              (
+               "ERROR: skip "
+               + std::to_string(skip)
+               + ", m_needed_objects "
+               + std::to_string(context.m_needed_objects.size())
+               + ", first_context_block_height"
+               + std::to_string(first_context_block_height)
+               );
             return false;
           }
           if (skip > 0)
@@ -2129,7 +2137,15 @@ skip:
               (std::next(context.m_needed_objects.begin(), skip), context.m_needed_objects.end());
           if (context.m_needed_objects.size() < span.second)
           {
-            LOG_ERROR_MUTE("ERROR: span " << span.first << "/" << span.second << ", m_needed_objects " << context.m_needed_objects.size());
+            LOG_ERROR
+              (
+               "ERROR: span "
+               + std::to_string(span.first)
+               + "/"
+               + std::to_string(span.second)
+               + ", m_needed_objects "
+               + std::to_string(context.m_needed_objects.size())
+               );
             return false;
           }
 
