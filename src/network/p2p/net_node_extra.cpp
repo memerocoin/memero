@@ -1716,10 +1716,10 @@ namespace nodetool
       if(zone.m_net_server.is_stop_signal_sent())
         return false;
 
-      LOG_DEBUG_MUTE
+      LOG_DEBUG
         (
          "Making expected connection, type "
-         + peer_type
+         + std::to_string(peer_type)
          + ", "
          + std::to_string(conn_count)
          + "/"
