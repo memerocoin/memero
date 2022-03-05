@@ -45,7 +45,7 @@ namespace epee
     m_log_level = level;
   }
 
-  void mlog_set_log(const std::string x)
+  void set_log_level_from_string(const std::string x)
   {
     int level = -1;
     try {

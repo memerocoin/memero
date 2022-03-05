@@ -144,7 +144,7 @@ namespace wallet_args
       const auto log_level = 
         (command_line::get_arg(vm, daemon_common::arg_log_level));
 
-      epee::mlog_set_log(log_level);
+      epee::set_log_level_from_string(log_level);
 
       LOG_INFO("Setting log level = " + log_level);
     }

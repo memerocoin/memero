@@ -122,7 +122,7 @@ int main(int argc, char const * argv[])
       )
      )
     {
-      epee::mlog_set_log
+      epee::set_log_level_from_string
         (command_line::get_arg(vm, daemon_common::arg_log_level));
     }
 
