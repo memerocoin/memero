@@ -595,9 +595,10 @@ namespace cryptonote
           {
             LOG_PRINT_CCONTEXT_L1
             (
-                "NOTIFY_NEW_FLUFFY_BLOCK: get_transaction_hash failed"
-                << ", exception thrown"
-                << ", dropping connection"
+             std::string()
+             + "NOTIFY_NEW_FLUFFY_BLOCK: get_transaction_hash failed"
+             + ", exception thrown"
+             + ", dropping connection"
             );
 
             drop_connection(context, false, false);

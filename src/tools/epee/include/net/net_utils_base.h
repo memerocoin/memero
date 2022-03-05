@@ -472,19 +472,15 @@ namespace net_utils
 // #define LOG_TRACE_CC(ct, message) LOG_TRACE(ct + message)
 #define LOG_TRACE_CC(ct, message)
 
-// #define LOG_PRINT_CC_L0(ct, message) LOG_PRINT_L0(ct << message)
-#define LOG_PRINT_CC_L0(ct, message)
-// #define LOG_PRINT_CC_L1(ct, message) LOG_PRINT_L1(ct << message)
-#define LOG_PRINT_CC_L1(ct, message)
-// #define LOG_PRINT_CC_L2(ct, message) LOG_PRINT_L2(ct << message)
-#define LOG_PRINT_CC_L2(ct, message)
-// #define LOG_PRINT_CC_L3(ct, message) LOG_PRINT_L3(ct << message)
-#define LOG_PRINT_CC_L3(ct, message)
+#define LOG_PRINT_CCONTEXT_L0(message) \
+  LOG_PRINT_L0(context.to_str() + message)
 
-#define LOG_PRINT_CCONTEXT_L0(message) LOG_PRINT_CC_L0(context, message)
-#define LOG_PRINT_CCONTEXT_L1(message) LOG_PRINT_CC_L1(context, message)
-#define LOG_PRINT_CCONTEXT_L2(message) LOG_PRINT_CC_L2(context, message)
-#define LOG_PRINT_CCONTEXT_L3(message) LOG_PRINT_CC_L3(context, message)
+#define LOG_PRINT_CCONTEXT_L1(message) \
+  LOG_PRINT_L1(context.to_str() + message)
+
+#define LOG_PRINT_CCONTEXT_L2(message) \
+  LOG_PRINT_L2(context.to_str() + message)
+
 #define LOG_ERROR_CCONTEXT(message)    LOG_ERROR_CC(context, message)
 
 }
