@@ -948,7 +948,7 @@ namespace nodetool
           hsh_result = false;
           return;
         }
-        LOG_INFO_CC(context, "New connection handshaked.");
+        LOG_INFO(context.to_str() + "New connection handshaked.");
         LOG_DEBUG_CC(context, " COMMAND_HANDSHAKE INVOKED OK");
       }else
       {
@@ -1090,14 +1090,18 @@ namespace nodetool
     return connected;
   }
 
-#define LOG_PRINT_CC_PRIORITY_NODE(priority, con, msg) \
-  do { \
-    if (priority) {\
-      LOG_INFO_CC(con, "[priority]" << msg); \
-    } else {\
-      LOG_INFO_CC(con, msg); \
-    } \
-  } while(0)
+  void LOG_PRINT_CC_PRIORITY_NODE
+  (
+   const bool priority
+   , const std::string msg
+   )
+  {
+    if (priority) {
+      LOG_INFO("[priority]" + msg);  
+    } else {
+      LOG_INFO(msg);            
+    } 
+  }
 
 
   bool node_server::try_to_connect_and_handshake_with_new_peer(const epee::net_utils::network_address& na, bool just_take_peerlist, uint64_t last_seen_stamp, PeerType peer_type, uint64_t first_seen_stamp)
@@ -1142,8 +1146,12 @@ namespace nodetool
     if(!con)
     {
       bool is_priority = is_priority_node(na);
-      LOG_PRINT_CC_PRIORITY_NODE(is_priority, bool(con), "Connect failed to " << na.str()
-        /*<< ", try " << try_count*/);
+      LOG_PRINT_CC_PRIORITY_NODE
+        (
+         is_priority
+         , "Connect failed to "
+         + na.str()
+         );
       record_addr_failed(na);
       return false;
     }
@@ -1155,9 +1163,13 @@ namespace nodetool
     if(!res)
     {
       bool is_priority = is_priority_node(na);
-      LOG_PRINT_CC_PRIORITY_NODE(is_priority, *con, "Failed to HANDSHAKE with peer "
-        << na.str()
-        /*<< ", try " << try_count*/);
+      LOG_PRINT_CC_PRIORITY_NODE
+        (
+         is_priority
+         , con->to_str()
+         + "Failed to HANDSHAKE with peer "
+         + na.str()
+         );
       record_addr_failed(na);
       return false;
     }
@@ -1209,7 +1221,13 @@ namespace nodetool
     if (!con) {
       bool is_priority = is_priority_node(na);
 
-      LOG_PRINT_CC_PRIORITY_NODE(is_priority, p2p_connection_context{}, "Connect failed to " << na.str());
+      LOG_PRINT_CC_PRIORITY_NODE
+        (
+         is_priority
+         , p2p_connection_context{}.to_str()
+         + "Connect failed to "
+         + na.str()
+         );
       record_addr_failed(na);
 
       return false;
@@ -1221,7 +1239,13 @@ namespace nodetool
     if (!res) {
       bool is_priority = is_priority_node(na);
 
-      LOG_PRINT_CC_PRIORITY_NODE(is_priority, *con, "Failed to HANDSHAKE with peer " << na.str());
+      LOG_PRINT_CC_PRIORITY_NODE
+        (
+         is_priority
+         , con->to_str()
+         + "Failed to HANDSHAKE with peer "
+         + na.str()
+         );
       record_addr_failed(na);
       return false;
     }
@@ -1232,8 +1256,6 @@ namespace nodetool
 
     return true;
   }
-
-#undef LOG_PRINT_CC_PRIORITY_NODE
 
   //-----------------------------------------------------------------------------------
 
@@ -2157,7 +2179,12 @@ namespace nodetool
 
     if(arg.node_data.network_id != m_network_id)
     {
-      LOG_INFO_CC(context, "WRONG NETWORK AGENT CONNECTED! id=" << arg.node_data.network_id);
+      LOG_INFO
+        (
+         context.to_str()
+         + "WRONG NETWORK AGENT CONNECTED! id="
+         + boost::uuids::to_string(arg.node_data.network_id)
+         );
       drop_connection(context);
       add_host_fail(remote_address);
       return 1;
