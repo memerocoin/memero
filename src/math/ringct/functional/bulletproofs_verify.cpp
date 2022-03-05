@@ -29,6 +29,7 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #include "math/ringct/functional/innerProductArgument_verify.hpp"
 
 #include "tools/epee/include/logging.hpp"
+#include "tools/epee/include/logging_macro.hpp"
 
 namespace rct
 {

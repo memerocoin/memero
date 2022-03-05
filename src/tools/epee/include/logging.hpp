@@ -31,8 +31,6 @@ see: etc/other-licenses/monero/LICENSE
 #include <memory>
 #include <mutex>
 
-#include "logging_macro.hpp"
-
 #undef DEFAULT_LOG_CATEGORY
 
 #ifdef __FILE_NAME__
@@ -157,3 +155,9 @@ constexpr auto LOG_PRINT_L0 = LOG_WARNING;
 constexpr auto LOG_PRINT_L1 = LOG_INFO;
 constexpr auto LOG_PRINT_L2 = LOG_VERBOSE;
 constexpr auto LOG_PRINT_L3 = LOG_DEBUG;
+
+
+#define LOG_DEBUG_MUTE(x)
+#define LOG_VERBOSE_MUTE(x)
+#define LOG_WARNING_MUTE(x)
+#define LOG_ERROR_MUTE(x)

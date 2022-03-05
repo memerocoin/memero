@@ -27,6 +27,7 @@
 #pragma once
 
 #include "tools/epee/include/logging.hpp"
+#include "tools/epee/include/logging_macro.hpp"
 
 #include <set>
 #include <list>

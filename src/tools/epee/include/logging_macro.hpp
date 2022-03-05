@@ -55,11 +55,6 @@ see: etc/other-licenses/monero/LICENSE
     epee::log_level_cat_color(level, cat, s, color);          \
   } while (0)
 
-#define LOG_DEBUG_MUTE(x)
-#define LOG_VERBOSE_MUTE(x)
-#define LOG_WARNING_MUTE(x)
-#define LOG_ERROR_MUTE(x)
-
 #define TRY_ENTRY()   try {
 
 #define CATCH_ENTRY(location, return_val) }     \

@@ -32,6 +32,7 @@
 
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/logging_macro.hpp"
 
 #include <boost/mpl/contains.hpp>
 

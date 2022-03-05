@@ -40,7 +40,7 @@
 
 #include "config/cryptonote.hpp"
 
-
+#include "tools/epee/include/logging_macro.hpp"
 
 
 

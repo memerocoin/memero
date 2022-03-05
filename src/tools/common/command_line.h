@@ -37,6 +37,8 @@
 
 #include <iostream>
 
+#include "tools/epee/include/logging_macro.hpp"
+
 namespace command_line
 {
 
