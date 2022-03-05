@@ -300,7 +300,13 @@ namespace net_utils
   {
     TRY_ENTRY();
     std::shared_ptr<connection<t_protocol_handler> >  back_connection_copy;
-    LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] release");
+    LOG_TRACE
+      (
+       context.to_str()
+       + "[sock "
+       + std::to_string(socket().native_handle())
+       + "] release"
+       );
     {
       LOCK_RECURSIVE_MUTEX(m_self_refs_lock);
       LOG_ERROR_AND_RETURN_UNLESS
@@ -566,7 +572,14 @@ namespace net_utils
            );
         //do_send_handler_delayed( ptr , size_now ); // (((H))) // empty function
 
-      LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] Async send requested " << m_send_que.front().size());
+      LOG_TRACE
+        (
+         context.to_str()
+         + "[sock "
+         + std::to_string(socket().native_handle())
+         + "] Async send requested "
+         + std::to_string(m_send_que.front().size())
+         );
     }
     else
     { // no active operation
@@ -759,7 +772,14 @@ namespace net_utils
   void connection<t_protocol_handler>::handle_write(const boost::system::error_code& e, size_t cb)
   {
     TRY_ENTRY();
-    LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] Async send calledback " << cb);
+    LOG_TRACE
+    (
+     context.to_str()
+    + "[sock "
+    + std::to_string(socket().native_handle())
+    + "] Async send calledback "
+    + std::to_string(cb)
+    );
 
     if (e)
     {
