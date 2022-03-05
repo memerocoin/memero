@@ -44,7 +44,8 @@ namespace epee
 {
   constexpr std::string_view GLOBAL_CATEGORY = "global";
 
-  enum class LogLevel : unsigned int {
+  enum LogLevel
+    {
     Fatal,
     Error,
     Warning,
@@ -55,7 +56,7 @@ namespace epee
     Unknown,
   };
 
-  void mlog_set_log_level(int level);
+  void mlog_set_log_level(const int level);
   void mlog_set_log(const std::string x);
   void log_level_cat
   (
@@ -77,7 +78,7 @@ namespace epee
     };
 
   bool is_stdout_a_tty();
-  void set_console_color(int color, bool bright);
+  void set_console_color(const console_colors color, bool bright);
   void reset_console_color();
 
   void log_level_cat_color

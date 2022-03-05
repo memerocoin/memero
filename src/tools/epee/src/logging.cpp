@@ -40,7 +40,7 @@ namespace epee
   std::atomic<int> m_log_level = 0;
 
   // maps epee style log level to new logging system
-  void mlog_set_log_level(int level)
+  void mlog_set_log_level(const int level)
   {
     m_log_level = level;
   }
@@ -77,7 +77,7 @@ namespace epee
     return is_a_tty;
   }
 
-  void set_console_color(int color, bool bright)
+  void set_console_color(const epee::console_colors color, bool bright)
   {
     if (!is_stdout_a_tty())
       return;
@@ -236,61 +236,66 @@ namespace epee
       return;
     }
 
-    switch (m_log_level) {
-    case 4:
-      log_level_map(level, cat, x);
-      break;
-    case 3:
-      switch(level) {
-      case epee::LogLevel::Unknown:
-      case epee::LogLevel::Trace:
-        break;
-      default:
+    switch (m_log_level)
+      {
+      case 4:
         log_level_map(level, cat, x);
         break;
-      }
-      break;
-    case 2:
-      switch(level) {
-      case epee::LogLevel::Unknown:
-      case epee::LogLevel::Trace:
-      case epee::LogLevel::Debug:
+      case 3:
+        switch(level)
+          {
+          case epee::LogLevel::Unknown:
+          case epee::LogLevel::Trace:
+            break;
+          default:
+            log_level_map(level, cat, x);
+            break;
+          }
+        break;
+      case 2:
+        switch(level)
+          {
+          case epee::LogLevel::Unknown:
+          case epee::LogLevel::Trace:
+          case epee::LogLevel::Debug:
+            break;
+          default:
+            log_level_map(level, cat, x);
+            break;
+          }
+        break;
+      case 1:
+        switch(level)
+          {
+          case epee::LogLevel::Unknown:
+          case epee::LogLevel::Trace:
+          case epee::LogLevel::Debug:
+          case epee::LogLevel::Verbose:
+            break;
+          default:
+            log_level_map(level, cat, x);
+            break;
+          }
+        break;
+      case 0:
+        switch(level)
+          {
+          case epee::LogLevel::Unknown:
+          case epee::LogLevel::Trace:
+          case epee::LogLevel::Debug:
+          case epee::LogLevel::Verbose:
+            break;
+          default:
+            if (cat != GLOBAL_CATEGORY) {
+              return;
+            }
+            log_level_map(level, cat, x);
+            break;
+          }
         break;
       default:
-        log_level_map(level, cat, x);
         break;
       }
-      break;
-    case 1:
-      switch(level) {
-      case epee::LogLevel::Unknown:
-      case epee::LogLevel::Trace:
-      case epee::LogLevel::Debug:
-      case epee::LogLevel::Verbose:
-        break;
-      default:
-        log_level_map(level, cat, x);
-        break;
-      }
-      break;
-    case 0:
-      switch(level) {
-      case epee::LogLevel::Unknown:
-      case epee::LogLevel::Trace:
-      case epee::LogLevel::Debug:
-      case epee::LogLevel::Verbose:
-        break;
-      default:
-        if (cat != GLOBAL_CATEGORY) {
-          return;
-        }
-        log_level_map(level, cat, x);
-        break;
-      }
-      break;
-    default:
-      break;
-    }
   }
 
   void log_level_cat_color
