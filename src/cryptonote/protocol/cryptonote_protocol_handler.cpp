@@ -43,19 +43,12 @@
 #include <boost/uuid/uuid_io.hpp>
 
 
-
-// #define LOG_P2P_MESSAGE(x) \
-//   LOG_CATEGORY(epee::LogLevel::Verbose, "net.p2p.msg"\
-//                , context.to_str() + x)
-
-#define LOG_P2P_MESSAGE(x) 
-
-#define LOG_P2P_MESSAGE_IF(init, test, x) \
-  do { \
-      init; \
-      if (test) \
-        LOG_P2P_MESSAGE(x); \
-  } while(0)
+#define LOG_P2P_MESSAGE(x)                      \
+  LOG_CATEGORY                                  \
+  (                                             \
+   epee::LogLevel::Verbose, "net.p2p.msg"       \
+   , context.to_str()                           \
+   + x)
 
 #define LOG_PEER_STATE(x) \
   LOG_INFO \
@@ -151,7 +144,11 @@ namespace cryptonote
       m_core.get_short_chain_history(r.block_ids);
       context.m_last_request_time = std::chrono::system_clock::now();
       context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
-      LOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
+      LOG_P2P_MESSAGE
+        (
+         "-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()="
+         + std::to_string(r.block_ids.size())
+         );
       post_notify<NOTIFY_REQUEST_CHAIN>(r, context);
       LOG_PEER_STATE("requesting chain");
     }
@@ -432,14 +429,13 @@ namespace cryptonote
       const auto& [block, hash] = *r;
       LOG_P2P_MESSAGE
         (
-         context
-         << "Received NOTIFY_NEW_BLOCK "
-         << hash
-         << " (height "
-         << arg.current_blockchain_height
-         << ", "
-         << arg.b.txs.size()
-         << " txes)"
+          "Received NOTIFY_NEW_BLOCK "
+          + hash.to_str()
+          + " (height "
+          + std::to_string(arg.current_blockchain_height)
+          + ", "
+          + std::to_string(arg.b.txs.size())
+          + " txes)"
          );
     }
     if(context.m_state != cryptonote_connection_context::state_normal)
@@ -502,7 +498,11 @@ namespace cryptonote
       m_core.get_short_chain_history(r.block_ids);
       context.m_last_request_time = std::chrono::system_clock::now();
       context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
-      LOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
+      LOG_P2P_MESSAGE
+        (
+         "-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()="
+         + std::to_string(r.block_ids.size())
+         );
       post_notify<NOTIFY_REQUEST_CHAIN>(r, context);
       LOG_PEER_STATE("requesting chain");
     }
@@ -518,14 +518,13 @@ namespace cryptonote
       const auto& [block, hash] = *r;
       LOG_P2P_MESSAGE
         (
-         context
-         << "Received NOTIFY_NEW_FLUFFY_BLOCK "
-         << hash
-         << " (height "
-         << arg.current_blockchain_height
-         << ", "
-         << arg.b.txs.size()
-         << " txes)"
+         "Received NOTIFY_NEW_FLUFFY_BLOCK "
+         + hash.to_str()
+         + " (height "
+         + std::to_string(arg.current_blockchain_height)
+         + ", "
+         + std::to_string(arg.b.txs.size())
+         + " txes)"
          );
     }
 
@@ -1013,7 +1012,7 @@ namespace cryptonote
     LOG_P2P_MESSAGE
       (
        "Received NOTIFY_NEW_TRANSACTIONS (" 
-       + std::to_string(arg.hashes.size())
+       + std::to_string(arg.txs.size())
        + " txes)"
        );
     for (const auto &blob: arg.txs) {
@@ -1097,9 +1096,15 @@ namespace cryptonote
       return 1;
     }
     context.m_last_request_time = std::chrono::system_clock::now();
-    LOG_P2P_MESSAGE("-->>NOTIFY_RESPONSE_GET_OBJECTS: blocks.size()="
-                     << rsp.blocks.size() << ", rsp.m_current_blockchain_height=" << rsp.current_blockchain_height
-                     << ", missed_ids.size()=" << rsp.missed_ids.size());
+    LOG_P2P_MESSAGE
+      (
+       "-->>NOTIFY_RESPONSE_GET_OBJECTS: blocks.size()="
+       + std::to_string(rsp.blocks.size())
+       + ", rsp.m_current_blockchain_height="
+       + std::to_string(rsp.current_blockchain_height)
+       + ", missed_ids.size()="
+       + std::to_string(rsp.missed_ids.size())
+       );
     post_notify<NOTIFY_RESPONSE_GET_OBJECTS>(rsp, context);
     return 1;
   }
@@ -1109,7 +1114,12 @@ namespace cryptonote
 
   int t_cryptonote_protocol_handler::handle_response_get_objects(int command, NOTIFY_RESPONSE_GET_OBJECTS::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE("Received NOTIFY_RESPONSE_GET_OBJECTS (" << arg.blocks.size() << " blocks)");
+    LOG_P2P_MESSAGE
+      (
+       "Received NOTIFY_RESPONSE_GET_OBJECTS ("
+       + std::to_string(arg.blocks.size())
+       + " blocks)"
+       );
     LOG_PEER_STATE("received objects");
 
     std::chrono::time_point<std::chrono::system_clock> request_time = context.m_last_request_time;
@@ -1808,7 +1818,12 @@ skip:
 
   int t_cryptonote_protocol_handler::handle_request_chain(int command, NOTIFY_REQUEST_CHAIN::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE("Received NOTIFY_REQUEST_CHAIN (" << arg.block_ids.size() << " blocks");
+    LOG_P2P_MESSAGE
+      (
+       "Received NOTIFY_REQUEST_CHAIN ("
+       + std::to_string(arg.block_ids.size())
+       + " blocks"
+       );
     if (context.m_state == cryptonote_connection_context::state_before_handshake)
     {
       LOG_ERROR_CCONTEXT("Requested chain before handshake, dropping connection");
@@ -1821,7 +1836,15 @@ skip:
       LOG_ERROR_CCONTEXT("Failed to handle NOTIFY_REQUEST_CHAIN.");
       return 1;
     }
-    LOG_P2P_MESSAGE("-->>NOTIFY_RESPONSE_CHAIN_ENTRY: m_start_height=" << r.start_height << ", m_total_height=" << r.total_height << ", m_block_ids.size()=" << r.m_block_ids.size());
+    LOG_P2P_MESSAGE
+      (
+       "-->>NOTIFY_RESPONSE_CHAIN_ENTRY: m_start_height="
+       + std::to_string(r.start_height)
+       + ", m_total_height="
+       + std::to_string(r.total_height)
+       + ", m_block_ids.size()="
+       + std::to_string(r.m_block_ids.size())
+       );
     post_notify<NOTIFY_RESPONSE_CHAIN_ENTRY>(r, context);
     return 1;
   }
@@ -2124,8 +2147,19 @@ skip:
         context.m_last_request_time = std::chrono::system_clock::now();
         context.m_expect_height = span.first;
         context.m_expect_response = NOTIFY_RESPONSE_GET_OBJECTS::ID;
-        LOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_GET_OBJECTS: blocks.size()=" << req.blocks.size()
-            << "requested blocks count=" << count << " / " << count_limit << " from " << span.first << ", first hash " << req.blocks.front());
+        LOG_P2P_MESSAGE
+          (
+           "-->>NOTIFY_REQUEST_GET_OBJECTS: blocks.size()="
+           + std::to_string(req.blocks.size())
+           + "requested blocks count="
+           + std::to_string(count)
+           + " / "
+           + std::to_string(count_limit)
+           + " from "
+           + std::to_string(span.first)
+           + ", first hash "
+           + req.blocks.front().to_str()
+           );
 
         post_notify<NOTIFY_REQUEST_GET_OBJECTS>(req, context);
         LOG_PEER_STATE("requesting objects");
@@ -2184,7 +2218,13 @@ skip:
 
       context.m_last_request_time = std::chrono::system_clock::now();
       context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
-      LOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() << ", start_from_current_chain " << start_from_current_chain);
+      LOG_P2P_MESSAGE
+        (
+         "-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()="
+         + std::to_string(r.block_ids.size())
+         + ", start_from_current_chain "
+         + std::to_string(start_from_current_chain)
+         );
       post_notify<NOTIFY_REQUEST_CHAIN>(r, context);
       LOG_PEER_STATE("requesting chain");
     }else
@@ -2312,8 +2352,15 @@ skip:
 
   int t_cryptonote_protocol_handler::handle_response_chain_entry(int command, NOTIFY_RESPONSE_CHAIN_ENTRY::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE("Received NOTIFY_RESPONSE_CHAIN_ENTRY: m_block_ids.size()=" << arg.m_block_ids.size()
-      << ", m_start_height=" << arg.start_height << ", m_total_height=" << arg.total_height);
+    LOG_P2P_MESSAGE
+      (
+       "Received NOTIFY_RESPONSE_CHAIN_ENTRY: m_block_ids.size()="
+       + std::to_string(arg.m_block_ids.size())
+       + ", m_start_height="
+       + std::to_string(arg.start_height)
+       + ", m_total_height="
+       + std::to_string(arg.total_height)
+       );
     LOG_PEER_STATE("received chain");
 
     if (context.m_expect_response != NOTIFY_RESPONSE_CHAIN_ENTRY::ID)
@@ -2555,7 +2602,11 @@ skip:
       LOG_ERROR("Failed to get txpool hashes");
       return false;
     }
-    LOG_P2P_MESSAGE("-->>NOTIFY_GET_TXPOOL_COMPLEMENT: hashes.size()=" << r.hashes.size() );
+    LOG_P2P_MESSAGE
+      (
+       "-->>NOTIFY_GET_TXPOOL_COMPLEMENT: hashes.size()="
+       + std::to_string(r.hashes.size())
+       );
     post_notify<NOTIFY_GET_TXPOOL_COMPLEMENT>(r, context);
     LOG_PEER_STATE("requesting txpool complement");
     return true;
