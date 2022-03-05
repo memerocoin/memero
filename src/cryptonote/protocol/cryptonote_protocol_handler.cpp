@@ -554,10 +554,13 @@ namespace cryptonote
           LOG_ERROR_CCONTEXT
           (
             "NOTIFY_NEW_FLUFFY_BLOCK -> request/response mismatch, "
-            << "block = " << epee::string_tools::pod_to_hex(get_blob_hash(arg.b.block))
-            << ", requested = " << context.m_requested_objects.size()
-            << ", received = " << new_block.tx_hashes.size()
-            << ", dropping connection"
+            + "block = "
+            + epee::string_tools::pod_to_hex(get_blob_hash(arg.b.block))
+            + ", requested = "
+            + std::to_string(context.m_requested_objects.size())
+            + ", received = "
+            + std::to_string(new_block.tx_hashes.size())
+            + ", dropping connection"
           );
 
           drop_connection(context, false, false);
@@ -619,11 +622,14 @@ namespace cryptonote
             if(req_tx_it == context.m_requested_objects.end())
             {
               LOG_ERROR_CCONTEXT
-              (
-                "Peer sent wrong transaction (NOTIFY_NEW_FLUFFY_BLOCK): "
-                << "transaction with id = " << tx_hash << " wasn't requested, "
-                << "dropping connection"
-              );
+                (
+                 std::string()
+                 + "Peer sent wrong transaction (NOTIFY_NEW_FLUFFY_BLOCK): "
+                 + "transaction with id = "
+                 + tx_hash.to_str()
+                 + " wasn't requested, "
+                 + "dropping connection"
+                 );
 
               drop_connection(context, false, false);
               m_core.resume_mine();
@@ -665,8 +671,8 @@ namespace cryptonote
           LOG_ERROR_CCONTEXT
           (
             "sent wrong tx: failed to parse and validate transaction: "
-            << epee::string_tools::buff_to_hex_nodelimer(tx_blob.blob)
-            << ", dropping connection"
+            + epee::string_tools::buff_to_hex_nodelimer(tx_blob.blob)
+            + ", dropping connection"
           );
 
           drop_connection(context, false, false);
@@ -756,7 +762,11 @@ namespace cryptonote
         missing_tx_req.missing_tx_indices = std::move(need_tx_indices);
 
         m_core.resume_mine();
-        LOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_FLUFFY_MISSING_TX: missing_tx_indices.size()=" << missing_tx_req.missing_tx_indices.size() );
+        LOG_P2P_MESSAGE
+          (
+           "-->>NOTIFY_REQUEST_FLUFFY_MISSING_TX: missing_tx_indices.size()="
+           + std::to_string(missing_tx_req.missing_tx_indices.size())
+           );
         post_notify<NOTIFY_REQUEST_FLUFFY_MISSING_TX>(missing_tx_req, context);
       }
       else // whoo-hoo we've got em all ..
@@ -810,7 +820,11 @@ namespace cryptonote
           m_core.get_short_chain_history(r.block_ids);
           context.m_last_request_time = std::chrono::system_clock::now();
           context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
-          LOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
+          LOG_P2P_MESSAGE
+            (
+             "-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()="
+             + std::to_string(r.block_ids.size())
+             );
           post_notify<NOTIFY_REQUEST_CHAIN>(r, context);
           LOG_PEER_STATE("requesting chain");
         }
@@ -821,8 +835,8 @@ namespace cryptonote
       LOG_ERROR_CCONTEXT
       (
         "sent wrong block: failed to parse and validate block: "
-        << epee::string_tools::buff_to_hex_nodelimer(arg.b.block)
-        << ", dropping connection"
+        + epee::string_tools::buff_to_hex_nodelimer(arg.b.block)
+        + ", dropping connection"
       );
 
       m_core.resume_mine();
@@ -837,7 +851,13 @@ namespace cryptonote
 
   int t_cryptonote_protocol_handler::handle_request_fluffy_missing_tx(int command, NOTIFY_REQUEST_FLUFFY_MISSING_TX::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE("Received NOTIFY_REQUEST_FLUFFY_MISSING_TX (" << arg.missing_tx_indices.size() << " txes), block hash " << arg.block_hash);
+    LOG_P2P_MESSAGE
+      (
+       "Received NOTIFY_REQUEST_FLUFFY_MISSING_TX ("
+       + std::to_string(arg.missing_tx_indices.size())
+       + " txes), block hash "
+       + arg.block_hash.to_str()
+       );
     if (context.m_state == cryptonote_connection_context::state_before_handshake)
     {
       LOG_ERROR_CCONTEXT("Requested fluffy tx before handshake, dropping connection");
@@ -851,7 +871,12 @@ namespace cryptonote
     block b;
     if (!m_core.get_block_by_hash(arg.block_hash, b))
     {
-      LOG_ERROR_CCONTEXT("failed to find block: " << arg.block_hash << ", dropping connection");
+      LOG_ERROR_CCONTEXT
+        (
+         "failed to find block: "
+         + arg.block_hash.to_str()
+         + ", dropping connection"
+         );
       drop_connection(context, false, false);
       return 1;
     }
@@ -872,10 +897,14 @@ namespace cryptonote
           LOG_ERROR_CCONTEXT
           (
             "Failed to handle request NOTIFY_REQUEST_FLUFFY_MISSING_TX"
-            << ", request is asking for duplicate tx "
-            << ", tx index = " << tx_idx << ", block tx count " << b.tx_hashes.size()
-            << ", block_height = " << arg.current_blockchain_height
-            << ", dropping connection"
+            + ", request is asking for duplicate tx "
+            + ", tx index = "
+            + std::to_string(tx_idx)
+            + ", block tx count "
+            + std::to_string(b.tx_hashes.size())
+            + ", block_height = "
+            + std::to_string(arg.current_blockchain_height)
+            + ", dropping connection"
           );
           drop_connection(context, true, false);
           return 1;
@@ -886,13 +915,17 @@ namespace cryptonote
       else
       {
         LOG_ERROR_CCONTEXT
-        (
-          "Failed to handle request NOTIFY_REQUEST_FLUFFY_MISSING_TX"
-          << ", request is asking for a tx whose index is out of bounds "
-          << ", tx index = " << tx_idx << ", block tx count " << b.tx_hashes.size()
-          << ", block_height = " << arg.current_blockchain_height
-          << ", dropping connection"
-        );
+          (
+           "Failed to handle request NOTIFY_REQUEST_FLUFFY_MISSING_TX"
+           + ", request is asking for a tx whose index is out of bounds "
+           + ", tx index = "
+           + std::to_string(tx_idx)
+           + ", block tx count "
+           + std::to_string(b.tx_hashes.size())
+           + ", block_height = "
+           + std::to_string(arg.current_blockchain_height)
+           + ", dropping connection"
+           );
 
         drop_connection(context, false, false);
         return 1;
@@ -904,14 +937,18 @@ namespace cryptonote
     if (!m_core.get_transactions(txids, txs, missed))
     {
       LOG_ERROR_CCONTEXT("Failed to handle request NOTIFY_REQUEST_FLUFFY_MISSING_TX, "
-        << "failed to get requested transactions");
+        + "failed to get requested transactions");
       drop_connection(context, false, false);
       return 1;
     }
     if (!missed.empty() || txs.size() != txids.size())
     {
-      LOG_ERROR_CCONTEXT("Failed to handle request NOTIFY_REQUEST_FLUFFY_MISSING_TX, "
-        << missed.size() << " requested transactions not found" << ", dropping connection");
+      LOG_ERROR_CCONTEXT
+        (
+         "Failed to handle request NOTIFY_REQUEST_FLUFFY_MISSING_TX, "
+         + std::to_string(missed.size())
+         + " requested transactions not found"
+         + ", dropping connection");
       drop_connection(context, false, false);
       return 1;
     }
@@ -922,11 +959,13 @@ namespace cryptonote
     }
 
     LOG_P2P_MESSAGE
-    (
-        "-->>NOTIFY_RESPONSE_FLUFFY_MISSING_TX: "
-        << ", txs.size()=" << fluffy_response.b.txs.size()
-        << ", rsp.current_blockchain_height=" << fluffy_response.current_blockchain_height
-    );
+      (
+       "-->>NOTIFY_RESPONSE_FLUFFY_MISSING_TX: "
+       + ", txs.size()="
+       + std::to_string(fluffy_response.b.txs.size())
+       + ", rsp.current_blockchain_height="
+       + std::to_string(fluffy_response.current_blockchain_height)
+       );
 
     post_notify<NOTIFY_NEW_FLUFFY_BLOCK>(fluffy_response, context);
     return 1;
@@ -935,7 +974,12 @@ namespace cryptonote
 
   int t_cryptonote_protocol_handler::handle_notify_get_txpool_complement(int command, NOTIFY_GET_TXPOOL_COMPLEMENT::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE("Received NOTIFY_GET_TXPOOL_COMPLEMENT (" << arg.hashes.size() << " txes)");
+    LOG_P2P_MESSAGE
+      (
+       "Received NOTIFY_GET_TXPOOL_COMPLEMENT ("
+       + std::to_string(arg.hashes.size())
+       + " txes)"
+       );
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
 
@@ -953,10 +997,11 @@ namespace cryptonote
     new_txes.txs = std::move(txes);
 
     LOG_P2P_MESSAGE
-    (
-        "-->>NOTIFY_NEW_TRANSACTIONS: "
-        << ", txs.size()=" << new_txes.txs.size()
-    );
+      (
+       "-->>NOTIFY_NEW_TRANSACTIONS: "
+       + ", txs.size()="
+       + std::to_string(new_txes.txs.size())
+       );
 
     post_notify<NOTIFY_NEW_TRANSACTIONS>(new_txes, context);
     return 1;
@@ -965,12 +1010,17 @@ namespace cryptonote
 
   int t_cryptonote_protocol_handler::handle_notify_new_transactions(int command, NOTIFY_NEW_TRANSACTIONS::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE("Received NOTIFY_NEW_TRANSACTIONS (" << arg.txs.size() << " txes)");
+    LOG_P2P_MESSAGE
+      (
+       "Received NOTIFY_NEW_TRANSACTIONS (" 
+       + std::to_string(arg.hashes.size())
+       + " txes)"
+       );
     for (const auto &blob: arg.txs) {
       const auto r = cryptonote::maybe_tx_and_hash_from_blob(blob);
       if (r) {
         const auto& [tx, hash] = *r;
-        LOG_P2P_MESSAGE("Including transaction " << hash);
+        LOG_P2P_MESSAGE("Including transaction " + hash.to_str());
       }
     }
     if(context.m_state != cryptonote_connection_context::state_normal)
@@ -1020,13 +1070,21 @@ namespace cryptonote
       drop_connection(context, false, false);
       return 1;
     }
-    LOG_P2P_MESSAGE("Received NOTIFY_REQUEST_GET_OBJECTS (" << arg.blocks.size() << " blocks)");
+    LOG_P2P_MESSAGE
+      (
+       "Received NOTIFY_REQUEST_GET_OBJECTS ("
+       + std::to_string(arg.blocks.size())
+       + " blocks)"
+       );
     if (arg.blocks.size() > CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT)
       {
-        LOG_ERROR_CCONTEXT(
+        LOG_ERROR_CCONTEXT
+          (
             "Requested objects count is too big ("
-            << arg.blocks.size() << ") expected not more then "
-            << CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT);
+            + std::to_string(arg.blocks.size())
+            + ") expected not more then "
+            + std::to_string(CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT)
+           );
         drop_connection(context, false, false);
         return 1;
       }
@@ -1103,8 +1161,14 @@ namespace cryptonote
     }
     if(context.m_last_response_height > arg.current_blockchain_height)
     {
-      LOG_ERROR_CCONTEXT("sent wrong NOTIFY_HAVE_OBJECTS: arg.m_current_blockchain_height=" << arg.current_blockchain_height
-        << " < m_last_response_height=" << context.m_last_response_height << ", dropping connection");
+      LOG_ERROR_CCONTEXT
+        (
+         "sent wrong NOTIFY_HAVE_OBJECTS: arg.m_current_blockchain_height="
+         + std::to_string(arg.current_blockchain_height)
+         + " < m_last_response_height="
+         + std::to_string(context.m_last_response_height)
+         + ", dropping connection"
+         );
       drop_connection(context, false, false);
       ++m_sync_bad_spans_downloaded;
       return 1;
@@ -1142,8 +1206,12 @@ namespace cryptonote
       const auto r = maybe_block_and_hash_from_blob(block_entry.block);
       if(!r)
       {
-        LOG_ERROR_CCONTEXT("sent wrong block: failed to parse and validate block: "
-                            << epee::string_tools::buff_to_hex_nodelimer(block_entry.block) << ", dropping connection");
+        LOG_ERROR_CCONTEXT
+          (
+           "sent wrong block: failed to parse and validate block: "
+           + epee::string_tools::buff_to_hex_nodelimer(block_entry.block)
+           + ", dropping connection"
+           );
         drop_connection(context, false, false);
         ++m_sync_bad_spans_downloaded;
         return 1;
@@ -1151,8 +1219,12 @@ namespace cryptonote
       const auto& [b, block_hash] = *r;
       if (!(is_coinbase(b.miner_tx)))
       {
-        LOG_ERROR_CCONTEXT("sent wrong block: block: miner tx does not have exactly one txin_gen input"
-          << epee::string_tools::buff_to_hex_nodelimer(block_entry.block) << ", dropping connection");
+        LOG_ERROR_CCONTEXT
+          (
+           "sent wrong block: block: miner tx does not have exactly one txin_gen input"
+          + epee::string_tools::buff_to_hex_nodelimer(block_entry.block)
+           + ", dropping connection"
+           );
         drop_connection(context, false, false);
         ++m_sync_bad_spans_downloaded;
         return 1;
@@ -1172,16 +1244,28 @@ namespace cryptonote
       auto req_it = context.m_requested_objects.find(block_hash);
       if(req_it == context.m_requested_objects.end())
       {
-        LOG_ERROR_CCONTEXT("sent wrong NOTIFY_RESPONSE_GET_OBJECTS: block with id=" << epee::string_tools::pod_to_hex(get_blob_hash(block_entry.block))
-          << " wasn't requested, dropping connection");
+        LOG_ERROR_CCONTEXT
+          (
+           "sent wrong NOTIFY_RESPONSE_GET_OBJECTS: block with id="
+           + epee::string_tools::pod_to_hex(get_blob_hash(block_entry.block))
+           + " wasn't requested, dropping connection"
+           );
         drop_connection(context, false, false);
         ++m_sync_bad_spans_downloaded;
         return 1;
       }
       if(b.tx_hashes.size() != block_entry.txs.size())
       {
-        LOG_ERROR_CCONTEXT("sent wrong NOTIFY_RESPONSE_GET_OBJECTS: block with id=" << epee::string_tools::pod_to_hex(get_blob_hash(block_entry.block))
-          << ", tx_hashes.size()=" << b.tx_hashes.size() << " mismatch with block_complete_entry.m_txs.size()=" << block_entry.txs.size() << ", dropping connection");
+        LOG_ERROR_CCONTEXT
+          (
+           "sent wrong NOTIFY_RESPONSE_GET_OBJECTS: block with id="
+           + epee::string_tools::pod_to_hex(get_blob_hash(block_entry.block))
+           + ", tx_hashes.size()="
+           + std::to_string(b.tx_hashes.size())
+           + " mismatch with block_complete_entry.m_txs.size()="
+           + std::to_string(block_entry.txs.size())
+           + ", dropping connection"
+           );
         drop_connection(context, false, false);
         ++m_sync_bad_spans_downloaded;
         return 1;
@@ -1438,8 +1522,12 @@ namespace cryptonote
                   const auto r = cryptonote::maybe_tx_and_hash_from_blob(it->blob);
                   if (r) {
                     const auto& [tx, txid] = *r;
-                    LOG_ERROR_CCONTEXT("transaction verification failed on NOTIFY_RESPONSE_GET_OBJECTS, tx_id = "
-                                       << epee::string_tools::pod_to_hex(txid) << ", dropping connection");
+                    LOG_ERROR_CCONTEXT
+                      (
+                       "transaction verification failed on NOTIFY_RESPONSE_GET_OBJECTS, tx_id = "
+                       + epee::string_tools::pod_to_hex(txid)
+                       + ", dropping connection"
+                       );
                   }
                   drop_connection(context, false, true);
                   return 1;
@@ -2266,7 +2354,13 @@ skip:
 
     if (arg.total_height >= CRYPTONOTE_MAX_BLOCK_NUMBER || arg.m_block_ids.size() > BLOCKS_IDS_SYNCHRONIZING_MAX_COUNT)
     {
-      LOG_ERROR_CCONTEXT("sent wrong NOTIFY_RESPONSE_CHAIN_ENTRY, with total_height=" << arg.total_height << " and block_ids=" << arg.m_block_ids.size());
+      LOG_ERROR_CCONTEXT
+        (
+         "sent wrong NOTIFY_RESPONSE_CHAIN_ENTRY, with total_height="
+         + std::to_string(arg.total_height)
+         + ", m_block_ids.size()="
+         + std::to_string(arg.m_block_ids.size())
+         );
       drop_connection(context, false, false);
       return 1;
     }
@@ -2287,9 +2381,15 @@ skip:
     context.m_last_response_height = arg.start_height + arg.m_block_ids.size()-1;
     if(context.m_last_response_height > context.m_remote_blockchain_height)
     {
-      LOG_ERROR_CCONTEXT("sent wrong NOTIFY_RESPONSE_CHAIN_ENTRY, with m_total_height=" << arg.total_height
-                                                                         << ", m_start_height=" << arg.start_height
-                                                                         << ", m_block_ids.size()=" << arg.m_block_ids.size());
+      LOG_ERROR_CCONTEXT
+        (
+         "sent wrong NOTIFY_RESPONSE_CHAIN_ENTRY, with m_total_height="
+         + std::to_string(arg.total_height)
+         + ", m_start_height="
+         + std::to_string(arg.start_height)
+         + ", m_block_ids.size()="
+         + std::to_string(arg.m_block_ids.size())
+         );
       drop_connection(context, false, false);
       return 1;
     }

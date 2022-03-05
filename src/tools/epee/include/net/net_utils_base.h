@@ -481,7 +481,8 @@ namespace net_utils
 #define LOG_PRINT_CCONTEXT_L2(message) \
   LOG_PRINT_L2(context.to_str() + message)
 
-#define LOG_ERROR_CCONTEXT(message)    LOG_ERROR_CC(context, message)
+#define LOG_ERROR_CCONTEXT(message) \
+  LOG_ERROR(context.to_str() + message)
 
 }
 }
