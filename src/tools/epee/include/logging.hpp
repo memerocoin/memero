@@ -36,7 +36,7 @@ see: etc/other-licenses/monero/LICENSE
 
 namespace epee
 {
-  constexpr std::string_view GLOBAL_CATEGORY = "global";
+  constexpr std::string_view GLOBAL_CATEGORY = "+";
 
   enum LogLevel
     {
