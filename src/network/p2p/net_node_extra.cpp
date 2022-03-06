@@ -2488,6 +2488,11 @@ namespace nodetool
     const size_t max_connections = ::config::lol::max_connections_per_address;
     size_t count = 0;
 
+    if (address.is_loopback()) {
+      return false;
+    }
+
+
     m_network_zones.at(epee::net_utils::zone::public_).m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
     {
       if (cntxt.m_is_income && cntxt.m_remote_address.is_same_host(address)) {
