@@ -32,7 +32,7 @@ see: etc/other-licenses/monero/LICENSE
       LOG_CATEGORY                                      \
         (                                               \
          level                                          \
-         , DEFAULT_LOG_CATEGORY                         \
+         , DEFAULT_CAT                                  \
          , x );                                         \
       return fail_ret_val;                              \
     };                                                  \

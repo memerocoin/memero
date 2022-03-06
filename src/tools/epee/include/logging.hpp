@@ -31,12 +31,17 @@ see: etc/other-licenses/monero/LICENSE
 #include <memory>
 #include <mutex>
 
-#undef DEFAULT_LOG_CATEGORY
-#define DEFAULT_LOG_CATEGORY ""
+#undef DEFAULT_CAT
+#ifdef __FILE_NAME__
+#define DEFAULT_CAT __FILE_NAME__
+
+#else
+#define DEFAULT_CAT __FILE__
+#endif
 
 namespace epee
 {
-  constexpr std::string_view GLOBAL_CATEGORY = "  -  ";
+  constexpr std::string_view GLOBAL_CATEGORY = "global";
 
   enum LogLevel
     {
@@ -88,42 +93,70 @@ namespace epee
 
 } // epee
 
-void LOG_ERROR_AND_THROW(const std::string_view x);
+void log_error_and_throw
+(
+ const std::string_view cat
+ , const std::string_view x
+ );
 
-void LOG_ERROR_AND_THROW_IF
+void log_error_and_throw_if
 (
  const bool expr
+ , const std::string_view cat
  , const std::string_view x
  );
 
-void LOG_ERROR_AND_THROW_UNLESS
+void log_error_and_throw_unless
 (
  const bool expr
+ , const std::string_view cat
  , const std::string_view x
  );
 
 
-void LOG_DEFAULT
+void log_trace
 (
- const epee::LogLevel level
+ const std::string_view cat
  , const std::string_view x
  );
 
-void LOG_TRACE(const std::string_view x);
-void LOG_DEBUG(const std::string_view x);
-void LOG_VERBOSE(const std::string_view x);
-void LOG_FATAL(const std::string_view x);
-void LOG_WARNING(const std::string_view x);
-void LOG_INFO(const std::string_view x);
-void LOG_ERROR(const std::string_view x);
+void log_debug
+(
+ const std::string_view cat
+ , const std::string_view x
+ );
+
+void log_verbose
+(
+ const std::string_view cat
+ , const std::string_view x
+ );
+
+void log_fatal
+(
+ const std::string_view cat
+ , const std::string_view x
+ );
+
+void log_info
+(
+ const std::string_view cat
+ , const std::string_view x
+ );
+
+void log_error
+(
+ const std::string_view cat
+ , const std::string_view x
+ );
+
+void log_warning
+(
+ const std::string_view cat
+ , const std::string_view x
+ );
+
 void LOG_GLOBAL(const std::string_view x);
-
-void LOG_COLOR
-(
- const epee::console_colors color
- , const epee::LogLevel level
- , const std::string_view x
- );
 
 void LOG_CATEGORY
 (
@@ -140,18 +173,42 @@ void LOG_CATEGORY_COLOR
  , const std::string_view x
  );
 
-constexpr auto _dbg3 = LOG_TRACE;
 
-constexpr auto _note = LOG_VERBOSE;
-constexpr auto _erro = LOG_ERROR;
-constexpr auto _info = LOG_INFO;
-constexpr auto _fact = LOG_DEBUG;
-constexpr auto _dbg1 = LOG_DEBUG;
-constexpr auto _dbg2 = LOG_DEBUG;
+#define LOG_COLOR(color, level, x)                          \
+  do { LOG_CATEGORY_COLOR(level, DEFAULT_CAT, color, x); }  \
+  while (0)
 
-constexpr auto LOG_PRINT_L0 = LOG_WARNING;
-constexpr auto LOG_PRINT_L1 = LOG_INFO;
-constexpr auto LOG_PRINT_L2 = LOG_VERBOSE;
-constexpr auto LOG_PRINT_L3 = LOG_DEBUG;
+#define LOG_ERROR_AND_THROW(x)                          \
+  do { log_error_and_throw(DEFAULT_CAT, x); } while (0)
+
+#define LOG_ERROR_AND_THROW_IF(expr, x)                           \
+  do { log_error_and_throw_if(expr, DEFAULT_CAT, x); } while (0)
+
+#define LOG_ERROR_AND_THROW_UNLESS(expr, x)                 \
+  do { log_error_and_throw_unless(expr, DEFAULT_CAT, x); }  \
+  while (0)
+
+#define LOG_WARNING(x) do { log_warning(DEFAULT_CAT, x); } while(0)
+#define LOG_FATAL(x) do { log_fatal(DEFAULT_CAT, x); } while(0)
+#define LOG_ERROR(x) do { log_error(DEFAULT_CAT, x); } while(0)
+#define LOG_INFO(x) do { log_info(DEFAULT_CAT, x); } while(0)
+#define LOG_VERBOSE(x) do { log_verbose(DEFAULT_CAT, x); } while(0)
+#define LOG_DEBUG(x) do { log_debug(DEFAULT_CAT, x); } while(0)
+#define LOG_TRACE(x) do { log_trace(DEFAULT_CAT, x); } while(0)
 
 #define LOG_DEBUG_MUTE(x)
+
+#define _note LOG_VERBOSE
+#define _erro LOG_ERROR
+#define _info LOG_INFO
+#define _fact LOG_DEBUG
+#define _dbg1 LOG_DEBUG
+#define _dbg2 LOG_DEBUG
+#define _dbg3 LOG_TRACE
+
+#define LOG_PRINT_L0 LOG_WARNING
+#define LOG_PRINT_L1 LOG_INFO
+#define LOG_PRINT_L2 LOG_VERBOSE
+#define LOG_PRINT_L3 LOG_DEBUG
+
+

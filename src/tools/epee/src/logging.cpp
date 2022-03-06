@@ -316,95 +316,107 @@ namespace epee
 void LOG_AND_THROW
 (
  const epee::LogLevel level
+ , const std::string_view cat
  , const std::string_view x
  )
 {
   LOG_CATEGORY
     (
      level
-     , DEFAULT_LOG_CATEGORY
+     , cat
      , x ) ;
 
   throw std::runtime_error(std::string(x));
 }
 
-void LOG_ERROR_AND_THROW(const std::string_view x) {
-  LOG_AND_THROW(epee::LogLevel::Error, x);
+void log_error_and_throw
+(
+ const std::string_view cat
+ , const std::string_view x
+ )
+{
+  LOG_AND_THROW(epee::LogLevel::Error, cat, x);
 }
 
-void LOG_ERROR_AND_THROW_IF
+void log_error_and_throw_if
 (
  const bool expr
+ , const std::string_view cat
  , const std::string_view x
  )
 {
   if(expr) {
-    LOG_ERROR_AND_THROW(x);
+    log_error_and_throw(cat, x);
   }
 }
 
-void LOG_ERROR_AND_THROW_UNLESS
+void log_error_and_throw_unless
 (
  const bool expr
+ , const std::string_view cat
  , const std::string_view x
  ) {
-  LOG_ERROR_AND_THROW_IF(!(expr), x);
+  log_error_and_throw_if(!(expr), cat, x);
 }
 
-void LOG_DEFAULT
+void log_fatal
 (
- const epee::LogLevel level
+ const std::string_view cat
  , const std::string_view x
  ) {
-  LOG_CATEGORY(level, DEFAULT_LOG_CATEGORY, x);
+  LOG_CATEGORY(epee::LogLevel::Fatal, cat, x);
 }
 
-void LOG_TRACE(const std::string_view x) {
-  LOG_DEFAULT(epee::LogLevel::Trace, x);
+void log_error
+(
+ const std::string_view cat
+ , const std::string_view x
+ ) {
+  LOG_CATEGORY(epee::LogLevel::Error , cat, x);
 }
 
-void LOG_DEBUG(const std::string_view x) {
-  LOG_DEFAULT(epee::LogLevel::Debug, x);
+void log_warning
+(
+ const std::string_view cat
+ , const std::string_view x
+ ) {
+  LOG_CATEGORY(epee::LogLevel::Warning, cat, x);
 }
 
-void LOG_VERBOSE(const std::string_view x) {
-  LOG_DEFAULT(epee::LogLevel::Verbose, x);
+void log_info
+(
+ const std::string_view cat
+ , const std::string_view x
+ ) {
+  LOG_CATEGORY(epee::LogLevel::Info, cat, x);
 }
 
-void LOG_FATAL(const std::string_view x) {
-  LOG_DEFAULT(epee::LogLevel::Fatal, x);
+void log_verbose
+(
+ const std::string_view cat
+ , const std::string_view x
+ ) {
+  LOG_CATEGORY(epee::LogLevel::Verbose, cat, x);
 }
 
-void LOG_WARNING(const std::string_view x) {
-  LOG_DEFAULT(epee::LogLevel::Warning, x);
+void log_debug
+(
+ const std::string_view cat
+ , const std::string_view x
+ ) {
+  LOG_CATEGORY(epee::LogLevel::Debug, cat, x);
 }
 
-void LOG_INFO(const std::string_view x) {
-  LOG_DEFAULT(epee::LogLevel::Info, x);
-}
-
-void LOG_ERROR(const std::string_view x) {
-  LOG_DEFAULT(epee::LogLevel::Error, x);
+void log_trace
+(
+ const std::string_view cat
+ , const std::string_view x
+ ) {
+  LOG_CATEGORY(epee::LogLevel::Trace, cat, x);
 }
 
 void LOG_GLOBAL(const std::string_view x) {
   LOG_CATEGORY(epee::LogLevel::Info, epee::GLOBAL_CATEGORY, x);
-}
-
-void LOG_COLOR
-(
- const epee::console_colors color
- , const epee::LogLevel level
- , const std::string_view x
- )
-{
-  LOG_CATEGORY_COLOR
-    (
-     level
-     , DEFAULT_LOG_CATEGORY
-     , color
-     , x
-     );
 }
 
 void LOG_CATEGORY
