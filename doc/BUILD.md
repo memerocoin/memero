@@ -1,13 +1,17 @@
 # Supported
 
-## [Nix flakes](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html)
+## [Nix](https://nixos.org/download.html)
 
-### [Install nix flakes](https://nixos.wiki/wiki/Flakes#Installing_flakes)
+### Install Nix
+
+```
+sh <(curl -L https://nixos.org/nix/install) --no-daemon
+```
 
 ### Build lolnero
 
 ```
-nix build gitlab:lolnero/lolnero
+nix --extra-experimental-features 'nix-command flakes' build gitlab:lolnero/lolnero
 ```
 
 Generated binaries will be in `./result/bin/`.
