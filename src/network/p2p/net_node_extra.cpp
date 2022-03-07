@@ -78,7 +78,6 @@ namespace nodetool
     command_line::add_arg(desc, arg_p2p_add_peer);
     command_line::add_arg(desc, arg_p2p_add_priority_node);
     command_line::add_arg(desc, arg_p2p_add_exclusive_node);
-    command_line::add_arg(desc, arg_p2p_seed_node);
     command_line::add_arg(desc, arg_proxy);
     command_line::add_arg(desc, arg_anonymous_inbound);
     command_line::add_arg(desc, arg_p2p_hide_my_port);
@@ -447,14 +446,6 @@ namespace nodetool
         return false;
     }
 
-    if (command_line::has_arg(vm, arg_p2p_seed_node))
-    {
-      const std::unique_lock<std::shared_mutex> lock(public_zone.m_seed_nodes_lock);
-
-      if (!parse_peers_and_add_to_container(vm, arg_p2p_seed_node, public_zone.m_seed_nodes))
-        return false;
-    }
-
     if(command_line::has_arg(vm, arg_p2p_hide_my_port))
       m_hide_my_port = true;
 
@@ -566,39 +557,6 @@ namespace nodetool
     }
 
     return true;
-  }
-  //-----------------------------------------------------------------------------------
-
-  std::set<std::string> node_server::get_ip_seed_nodes() const
-  {
-    return {};
-  }
-  //-----------------------------------------------------------------------------------
-
-  std::set<std::string> node_server::get_seed_nodes(epee::net_utils::zone zone)
-  {
-    switch (zone)
-    {
-    case epee::net_utils::zone::public_:
-      return get_ip_seed_nodes();
-    case epee::net_utils::zone::tor:
-      if (m_nettype == cryptonote::MAINNET)
-      {
-        return {
-        };
-      }
-      return {};
-    case epee::net_utils::zone::i2p:
-      if (m_nettype == cryptonote::MAINNET)
-      {
-        return {
-        };
-      }
-      return {};
-    default:
-      break;
-    }
-    throw std::logic_error{"Bad zone given to get_seed_nodes"};
   }
   //-----------------------------------------------------------------------------------
 
@@ -1554,23 +1512,6 @@ namespace nodetool
   {
       network_zone& server = m_network_zones.at(zone);
 
-      if (!server.m_seed_nodes_initialized)
-      {
-        const std::uint16_t default_port = cryptonote::get_config(m_nettype).P2P_DEFAULT_PORT;
-        server.m_seed_nodes_initialized = true;
-        for (const auto& full_addr : get_seed_nodes(zone))
-        {
-          // seeds should have hostname converted to IP already
-          LOG_DEBUG("Seed node: " + full_addr);
-          server.m_seed_nodes.push_back(TOOLS_EXPECT_UNWRAP(net::get_network_address(full_addr, default_port)));
-        }
-        LOG_DEBUG
-          (
-           "Number of seed nodes: "
-           + std::to_string(server.m_seed_nodes.size())
-           );
-      }
-
       if (server.m_seed_nodes.empty() || m_offline || !m_exclusive_peers.empty())
         return true;
 
@@ -1591,25 +1532,6 @@ namespace nodetool
         if(++try_count > server.m_seed_nodes.size())
         {
           // only IP zone has fallback (to direct IP) seeds
-          if (zone == epee::net_utils::zone::public_ && !m_fallback_seed_nodes_added.test_and_set())
-          {
-            LOG_WARNING("Failed to connect to any of seed peers, trying fallback seeds");
-            current_index = server.m_seed_nodes.size() - 1;
-            {
-              for (const auto &peer: get_ip_seed_nodes())
-              {
-                LOG_DEBUG_MUTE("Fallback seed node: " + std::to_string(peer));
-                append_net_address(server.m_seed_nodes, peer, cryptonote::get_config(m_nettype).P2P_DEFAULT_PORT);
-              }
-            }
-            if (current_index == server.m_seed_nodes.size() - 1)
-            {
-              LOG_WARNING("No fallback seeds, continuing without seeds");
-              break;
-            }
-            // continue for another few cycles
-          }
-          else
           {
             if (!is_connected_to_at_least_one_seed_node) {
               LOG_WARNING("Failed to connect to any of seed peers, continuing without seeds");
