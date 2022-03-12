@@ -1,5 +1,4 @@
-Lolnero is a code fork of the cryptocurreny [Wownero][2], but with a
-linear emission and an ASIC friendly proof of work.
+Lolnero is a private and ASIC friendly cryptocurrency.
 
 There is no premine and no dev tax.
 
