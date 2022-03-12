@@ -1,4 +1,4 @@
-Lolnero is a private and ASIC friendly cryptocurrency.
+Lolnero is a private and ASIC friendly cryptocurrency with a linear emission.
 
 There is no premine and no dev tax.
 
