@@ -43,7 +43,7 @@
                           [
                             
                             opencl-headers
-                            opencl-icd
+                            ocl-icd
                             opencl-clhpp
                           ]
                       )
@@ -118,7 +118,7 @@
                     ; buildInputs = [
                         boost17x libsodium rapidjson
                         opencl-headers
-                        opencl-icd
+                        ocl-icd
                         opencl-clhpp
                         gmock
                       ]
@@ -272,7 +272,7 @@
                           ccache
 
                           opencl-headers
-                          opencl-icd
+                          ocl-icd
                           opencl-clhpp
                         ]
                       )
