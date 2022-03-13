@@ -34,9 +34,6 @@ Specifications
 lolnerod-rpc --add-peer SOME_SEED_NODE_IP
 ```
 
-[1]: https://en.wikipedia.org/wiki/Cryptocurrency
-[2]: https://wownero.org/
-[3]: https://en.wikipedia.org/wiki/Proof_of_work
 [4]: https://en.wikipedia.org/wiki/SHA-3
 [5]: https://eprint.iacr.org/2017/1066.pdf
 [6]: https://eprint.iacr.org/2019/654.pdf
