@@ -7,17 +7,17 @@
 * Colored output for logging 
 
 ### Removed
-`set-log-level`
+* command `set-log-level`
 
 #### `lolnerod-rpc`
-* `--seed-node`, use `--add-peer` instead
-* `--tos-flag`
+* arg `--seed-node`, use `--add-peer` instead
+* arg `--tos-flag`
 
 #### `lolnero`
-* `get-output-ecdh-secret-keys` / `verify-output-ecdh-secret-keys`
-* `sign` / `verify`
-* `info`
-* `welcome`
+* command `get-output-ecdh-secret-keys` / `verify-output-ecdh-secret-keys`
+* command `sign` / `verify`
+* command `info`
+* command `welcome`
 
 
 ## [0.9.10.26] - 2022-02-18
