@@ -1,6 +1,14 @@
 # ChangeLog
 
 
+## [0.9.10.54] - 2022-03-15
+
+### Removed
+* command `pool-statss`
+* command `peer-list-stats`
+* command `blockchain-stats`
+* command `blockchain`
+
 ## [0.9.10.52] - 2022-03-14
 
 ### Added
