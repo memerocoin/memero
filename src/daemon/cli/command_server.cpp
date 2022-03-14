@@ -110,11 +110,6 @@ t_command_server::t_command_server(
     , "Print transaction pool using a short format."
     );
   m_command_lookup.set_handler(
-      "save"
-    , std::bind(&t_command_parser_executor::save_blockchain, &m_parser, p::_1)
-    , "Save the blockchain."
-    );
-  m_command_lookup.set_handler(
       "diff"
     , std::bind(&t_command_parser_executor::show_difficulty, &m_parser, p::_1)
     , "Show the current difficulty."

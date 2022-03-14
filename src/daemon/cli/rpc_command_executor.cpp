@@ -163,25 +163,6 @@ bool t_rpc_command_executor::print_peer_list(bool white, bool gray, size_t limit
   return true;
 }
 
-bool t_rpc_command_executor::save_blockchain() {
-  cryptonote::COMMAND_RPC_SAVE_BC::request req;
-  cryptonote::COMMAND_RPC_SAVE_BC::response res;
-
-  std::string fail_message = "Couldn't save blockchain";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(req, res, "/save_bc", fail_message.c_str()))
-    {
-      return true;
-    }
-  }
-
-  tools::success_msg_writer() << "Blockchain saved";
-
-  return true;
-}
-
 bool t_rpc_command_executor::show_difficulty() {
   cryptonote::COMMAND_RPC_GET_INFO::request req;
   cryptonote::COMMAND_RPC_GET_INFO::response res;

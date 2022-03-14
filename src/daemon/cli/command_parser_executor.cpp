@@ -73,15 +73,6 @@ bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& 
   return m_executor.print_peer_list(white | print_both, gray | print_both, limit);
 }
 
-bool t_command_parser_executor::save_blockchain(const std::vector<std::string>& args)
-{
-  if (!args.empty()) {
-    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
-    return true;
-  }
-  return m_executor.save_blockchain();
-}
-
 bool t_command_parser_executor::show_difficulty(const std::vector<std::string>& args)
 {
   if (!args.empty()) {
