@@ -172,12 +172,6 @@ t_command_server::t_command_server(
     , "Print the sum of coinbase transactions."
     );
     m_command_lookup.set_handler(
-      "alt-chain-info"
-    , std::bind(&t_command_parser_executor::alt_chain_info, &m_parser, p::_1)
-    , "alt-chain-info [blockhash]"
-    , "Print the information about alternative chains."
-    );
-    m_command_lookup.set_handler(
       "relay-tx"
     , std::bind(&t_command_parser_executor::relay_tx, &m_parser, p::_1)
     , "relay-tx <txid>"

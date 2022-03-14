@@ -103,8 +103,6 @@ public:
 
   bool print_coinbase_tx_sum(uint64_t height, uint64_t count);
 
-  bool alt_chain_info(const std::string &tip, size_t above, uint64_t last_blocks);
-
   bool update(const std::string &command);
 
   bool relay_tx(const std::string &txid);

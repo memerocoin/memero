@@ -441,44 +441,6 @@ bool t_command_parser_executor::print_coinbase_tx_sum(const std::vector<std::str
   return m_executor.print_coinbase_tx_sum(height, count);
 }
 
-bool t_command_parser_executor::alt_chain_info(const std::vector<std::string>& args)
-{
-  if(args.size() > 1)
-  {
-    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
-    return true;
-  }
-
-  std::string tip;
-  size_t above = 0;
-  uint64_t last_blocks = 0;
-  if (args.size() == 1)
-  {
-    if (args[0].size() > 0 && args[0][0] == '>')
-    {
-      if (!epee::string_tools::get_xtype_from_string(above, args[0].c_str() + 1))
-      {
-        std::cout << "Invalid syntax: Invalid above parameter. For more details, use the help command." << std::endl;
-        return true;
-      }
-    }
-    else if (args[0].size() > 0 && args[0][0] == '-')
-    {
-      if (!epee::string_tools::get_xtype_from_string(last_blocks, args[0].c_str() + 1))
-      {
-        std::cout << "Invalid syntax: Invalid last_blocks parameter. For more details, use the help command." << std::endl;
-        return true;
-      }
-    }
-    else
-    {
-      tip = args[0];
-    }
-  }
-
-  return m_executor.alt_chain_info(tip, above, last_blocks);
-}
-
 bool t_command_parser_executor::relay_tx(const std::vector<std::string>& args)
 {
   if (args.size() != 1)

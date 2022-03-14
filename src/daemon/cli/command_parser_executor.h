@@ -86,8 +86,6 @@ public:
 
   bool print_coinbase_tx_sum(const std::vector<std::string>& args);
 
-  bool alt_chain_info(const std::vector<std::string>& args);
-
   bool relay_tx(const std::vector<std::string>& args);
 
   bool sync_info(const std::vector<std::string>& args);

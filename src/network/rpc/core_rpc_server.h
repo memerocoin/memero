@@ -104,7 +104,6 @@ namespace cryptonote
             MAP_JON_RPC_WE("flush_txpool", on_flush_txpool, COMMAND_RPC_FLUSH_TRANSACTION_POOL)
             MAP_JON_RPC_WE("get_version", on_get_version, COMMAND_RPC_GET_VERSION)
             MAP_JON_RPC_WE("get_coinbase_tx_sum", on_get_coinbase_tx_sum, COMMAND_RPC_GET_COINBASE_TX_SUM)
-            MAP_JON_RPC_WE("get_alternate_chains",on_get_alternate_chains, COMMAND_RPC_GET_ALTERNATE_CHAINS)
             MAP_JON_RPC_WE("relay_tx", on_relay_tx, COMMAND_RPC_RELAY_TX)
             MAP_JON_RPC_WE("sync_info", on_sync_info, COMMAND_RPC_SYNC_INFO)
             MAP_JON_RPC_WE("get_output_distribution", on_get_output_distribution, COMMAND_RPC_GET_OUTPUT_DISTRIBUTION)
@@ -145,7 +144,6 @@ namespace cryptonote
     bool on_flush_txpool(const COMMAND_RPC_FLUSH_TRANSACTION_POOL::request& req, COMMAND_RPC_FLUSH_TRANSACTION_POOL::response& res, epee::json_rpc::error& error_resp);
     bool on_get_version(const COMMAND_RPC_GET_VERSION::request& req, COMMAND_RPC_GET_VERSION::response& res, epee::json_rpc::error& error_resp);
     bool on_get_coinbase_tx_sum(const COMMAND_RPC_GET_COINBASE_TX_SUM::request& req, COMMAND_RPC_GET_COINBASE_TX_SUM::response& res, epee::json_rpc::error& error_resp);
-    bool on_get_alternate_chains(const COMMAND_RPC_GET_ALTERNATE_CHAINS::request& req, COMMAND_RPC_GET_ALTERNATE_CHAINS::response& res, epee::json_rpc::error& error_resp);
     bool on_relay_tx(const COMMAND_RPC_RELAY_TX::request& req, COMMAND_RPC_RELAY_TX::response& res, epee::json_rpc::error& error_resp);
     bool on_sync_info(const COMMAND_RPC_SYNC_INFO::request& req, COMMAND_RPC_SYNC_INFO::response& res, epee::json_rpc::error& error_resp);
     bool on_get_output_distribution(const COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request& req, COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response& res, epee::json_rpc::error& error_resp);

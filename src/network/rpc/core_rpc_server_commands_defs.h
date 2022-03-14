@@ -1214,51 +1214,6 @@ namespace cryptonote
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_GET_ALTERNATE_CHAINS
-  {
-    struct request_t: public rpc_request_base
-    {
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_request_base)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct chain_info
-    {
-      std::string block_hash;
-      uint64_t height;
-      uint64_t length;
-      uint64_t difficulty;
-      std::string wide_difficulty;
-      uint64_t difficulty_top64;
-      std::vector<std::string> block_hashes;
-      std::string main_chain_parent_block;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(block_hash)
-        KV_SERIALIZE(height)
-        KV_SERIALIZE(length)
-        KV_SERIALIZE(difficulty)
-        KV_SERIALIZE(wide_difficulty)
-        KV_SERIALIZE(difficulty_top64)
-        KV_SERIALIZE(block_hashes)
-        KV_SERIALIZE(main_chain_parent_block)
-      END_KV_SERIALIZE_MAP()
-    };
-
-    struct response_t: public rpc_response_base
-    {
-      std::vector<chain_info> chains;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_response_base)
-        KV_SERIALIZE(chains)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_RELAY_TX
   {
     struct request_t: public rpc_access_request_base
