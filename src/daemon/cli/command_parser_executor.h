@@ -66,8 +66,6 @@ public:
 
   bool print_transaction_pool_short(const std::vector<std::string>& args);
 
-  bool print_transaction_pool_stats(const std::vector<std::string>& args);
-
   bool start_mining(const std::vector<std::string>& args);
 
   bool stop_mining(const std::vector<std::string>& args);

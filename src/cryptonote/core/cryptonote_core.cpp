@@ -1114,12 +1114,6 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_pool_transaction_stats(struct txpool_stats& stats, bool include_sensitive_data) const
-  {
-    m_mempool.get_transaction_stats(stats, include_sensitive_data);
-    return true;
-  }
-  //-----------------------------------------------------------------------------------------------
   bool core::get_pool_transaction(const crypto::hash &id, cryptonote::string_blob& tx, relay_category tx_category) const
   {
     return m_mempool.get_transaction(id, tx, tx_category);

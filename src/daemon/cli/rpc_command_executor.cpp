@@ -109,19 +109,6 @@ namespace {
       s = boost::lexical_cast<std::string>(dt/(3600*24)) + " days";
     return s + " " + (t > now ? "in the future" : "ago");
   }
-
-  std::string get_time_hms(time_t t)
-  {
-    unsigned int hours, minutes, seconds;
-    char buffer[24];
-    hours = t / 3600;
-    t %= 3600;
-    minutes = t / 60;
-    t %= 60;
-    seconds = t;
-    snprintf(buffer, sizeof(buffer), "%02u:%02u:%02u", hours, minutes, seconds);
-    return std::string(buffer);
-  }
 }
 
 t_rpc_command_executor::t_rpc_command_executor(
@@ -758,77 +745,6 @@ bool t_rpc_command_executor::print_transaction_pool_short() {
                           << "last_failed_id: " << tx_info.last_failed_id_hash << std::endl;
     }
   }
-
-  return true;
-}
-
-bool t_rpc_command_executor::print_transaction_pool_stats() {
-  cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_STATS::request req;
-  cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_STATS::response res;
-  cryptonote::COMMAND_RPC_GET_INFO::request ireq;
-  cryptonote::COMMAND_RPC_GET_INFO::response ires;
-
-  std::string fail_message = "Problem fetching transaction pool stats";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(req, res, "/get_transaction_pool_stats", fail_message.c_str()))
-    {
-      return true;
-    }
-    if (!m_rpc_client->rpc_request(ireq, ires, "/get_info", fail_message.c_str()))
-    {
-      return true;
-    }
-  }
-
-  size_t n_transactions = res.pool_stats.txs_total;
-  const uint64_t now = time(NULL);
-  size_t avg_bytes = n_transactions ? res.pool_stats.bytes_total / n_transactions : 0;
-
-  std::string backlog_message;
-  const uint64_t full_reward_zone = consensus::get_block_size_bound(ires.height) / 2;
-  if (res.pool_stats.bytes_total <= full_reward_zone)
-  {
-    backlog_message = "no backlog";
-  }
-  else
-  {
-    uint64_t backlog = (res.pool_stats.bytes_total + full_reward_zone - 1) / full_reward_zone;
-    backlog_message = (boost::format("estimated %u block (%u minutes) backlog") % backlog % (backlog * DIFFICULTY_TARGET_IN_SECONDS / 60)).str();
-  }
-
-  tools::msg_writer() << n_transactions << " tx(es), " << res.pool_stats.bytes_total << " bytes total (min " << res.pool_stats.bytes_min << ", max " << res.pool_stats.bytes_max << ", avg " << avg_bytes << ", median " << res.pool_stats.bytes_med << ")" << std::endl
-      << "fees " << cryptonote::print_money(res.pool_stats.fee_total) << " (avg " << cryptonote::print_money(n_transactions ? res.pool_stats.fee_total / n_transactions : 0) << " per tx" << ", " << cryptonote::print_money(res.pool_stats.bytes_total ? res.pool_stats.fee_total / res.pool_stats.bytes_total : 0) << " per byte)" << std::endl
-      << res.pool_stats.num_double_spends << " double spends, " << res.pool_stats.num_not_relayed << " not relayed, " << res.pool_stats.num_failing << " failing, " << res.pool_stats.num_10m << " older than 10 minutes (oldest " << (res.pool_stats.oldest == 0 ? "-" : get_human_time_ago(res.pool_stats.oldest, now)) << "), " << backlog_message;
-
-  if (n_transactions > 1 && res.pool_stats.histo.size())
-  {
-    std::vector<uint64_t> times;
-    uint64_t numer;
-    size_t i, n = res.pool_stats.histo.size(), denom;
-    times.resize(n);
-    if (res.pool_stats.histo_98pc)
-    {
-      numer = res.pool_stats.histo_98pc;
-      denom = n-1;
-      for (i=0; i<denom; i++)
-        times[i] = i * numer / denom;
-      times[i] = now - res.pool_stats.oldest;
-    } else
-    {
-      numer = now - res.pool_stats.oldest;
-      denom = n;
-      for (i=0; i<denom; i++)
-        times[i] = i * numer / denom;
-    }
-    tools::msg_writer() << "   Age      Txes       Bytes";
-    for (i=0; i<n; i++)
-    {
-      tools::msg_writer() << get_time_hms(times[i]) << std::setw(8) << res.pool_stats.histo[i].txs << std::setw(12) << res.pool_stats.histo[i].bytes;
-    }
-  }
-  tools::msg_writer();
 
   return true;
 }

@@ -83,8 +83,6 @@ public:
 
   bool print_transaction_pool_short();
 
-  bool print_transaction_pool_stats();
-
   bool start_mining(cryptonote::spend_view_public_keys address, uint64_t num_threads, cryptonote::network_type nettype);
 
   bool stop_mining();

@@ -115,11 +115,6 @@ t_command_server::t_command_server(
     , "Print transaction pool using a short format."
     );
   m_command_lookup.set_handler(
-      "pool-stats"
-    , std::bind(&t_command_parser_executor::print_transaction_pool_stats, &m_parser, p::_1)
-    , "Print the transaction pool's statistics."
-    );
-  m_command_lookup.set_handler(
       "save"
     , std::bind(&t_command_parser_executor::save_blockchain, &m_parser, p::_1)
     , "Save the blockchain."

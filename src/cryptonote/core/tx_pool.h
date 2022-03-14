@@ -242,15 +242,6 @@ namespace cryptonote
     void get_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive = false) const;
 
     /**
-     * @brief get a summary statistics of all transaction hashes in the pool
-     *
-     * @param stats return-by-reference the pool statistics
-     * @param include_sensitive return stempool, anonymity-pool, and unrelayed txes
-     *
-     */
-    void get_transaction_stats(struct txpool_stats& stats, bool include_sensitive = false) const;
-
-    /**
      * @brief get information about all transactions and key images in the pool
      *
      * see documentation on tx_info and spent_output_key_image_info for more details
