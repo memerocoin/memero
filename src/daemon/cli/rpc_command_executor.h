@@ -59,8 +59,6 @@ public:
 
   bool print_peer_list(bool white = true, bool gray = true, size_t limit = 0);
 
-  bool print_peer_list_stats();
-
   bool save_blockchain();
 
   bool show_difficulty();
