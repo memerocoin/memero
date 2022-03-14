@@ -122,39 +122,6 @@ bool t_command_parser_executor::print_connections(const std::vector<std::string>
   return m_executor.print_connections();
 }
 
-bool t_command_parser_executor::print_blockchain_info(const std::vector<std::string>& args)
-{
-  if(!args.size())
-  {
-    std::cout << "Invalid syntax: At least one parameter expected. For more details, use the help command." << std::endl;
-    return true;
-  }
-  uint64_t start_index = 0;
-  uint64_t end_index = 0;
-  if (args[0][0] == '-')
-  {
-    int64_t nblocks;
-    if(!epee::string_tools::get_xtype_from_string(nblocks, args[0]))
-    {
-      std::cout << "Invalid syntax: Wrong number of blocks. For more details, use the help command." << std::endl;
-      return true;
-    }
-    return m_executor.print_blockchain_info(nblocks, (uint64_t)-nblocks);
-  }
-  if(!epee::string_tools::get_xtype_from_string(start_index, args[0]))
-  {
-    std::cout << "Invalid syntax: Wrong starter block index parameter. For more details, use the help command." << std::endl;
-    return true;
-  }
-  if(args.size() >1 && !epee::string_tools::get_xtype_from_string(end_index, args[1]))
-  {
-    std::cout << "Invalid syntax: Wrong end block index parameter. For more details, use the help command." << std::endl;
-    return true;
-  }
-
-  return m_executor.print_blockchain_info(start_index, end_index);
-}
-
 bool t_command_parser_executor::print_block(const std::vector<std::string>& args)
 {
   bool include_hex = false;

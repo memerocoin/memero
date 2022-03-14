@@ -71,12 +71,6 @@ t_command_server::t_command_server(
     , "Print the current connections."
     );
   m_command_lookup.set_handler(
-      "blockchain"
-    , std::bind(&t_command_parser_executor::print_blockchain_info, &m_parser, p::_1)
-    , "blockchain <begin height> [<end height>]"
-    , "Print the blockchain info in a given blocks range."
-    );
-  m_command_lookup.set_handler(
       "block"
     , std::bind(&t_command_parser_executor::print_block, &m_parser, p::_1)
     , "block <block hash> | <block height>"
