@@ -386,26 +386,6 @@ bool t_rpc_command_executor::print_connections() {
   return true;
 }
 
-bool t_rpc_command_executor::set_log_level(int8_t level) {
-  cryptonote::COMMAND_RPC_SET_LOG_LEVEL::request req;
-  cryptonote::COMMAND_RPC_SET_LOG_LEVEL::response res;
-  req.level = level;
-
-  std::string fail_message = "Unsuccessful";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(req, res, "/set_log_level", fail_message.c_str()))
-    {
-      return true;
-    }
-  }
-
-  tools::success_msg_writer() << "Log level is now " << std::to_string(level);
-
-  return true;
-}
-
 bool t_rpc_command_executor::print_block_by_hash(crypto::hash block_hash, bool include_hex) {
   cryptonote::COMMAND_RPC_GET_BLOCK::request req;
   cryptonote::COMMAND_RPC_GET_BLOCK::response res;
