@@ -1049,35 +1049,6 @@ namespace cryptonote
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_GET_BLOCK_HEADERS_RANGE
-  {
-    struct request_t: public rpc_access_request_base
-    {
-      uint64_t start_height;
-      uint64_t end_height;
-      bool fill_pow_hash;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_access_request_base)
-        KV_SERIALIZE(start_height)
-        KV_SERIALIZE(end_height)
-        KV_SERIALIZE_OPT(fill_pow_hash, false);
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t: public rpc_access_response_base
-    {
-      std::vector<block_header_response> headers;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_access_response_base)
-        KV_SERIALIZE(headers)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_OUT_PEERS
   {
     struct request_t: public rpc_request_base
