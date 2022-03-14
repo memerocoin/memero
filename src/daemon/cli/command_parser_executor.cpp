@@ -499,24 +499,6 @@ bool t_command_parser_executor::alt_chain_info(const std::vector<std::string>& a
   return m_executor.alt_chain_info(tip, above, last_blocks);
 }
 
-bool t_command_parser_executor::print_blockchain_dynamic_stats(const std::vector<std::string>& args)
-{
-  if(args.size() != 1)
-  {
-    std::cout << "Invalid syntax: One parameter expected. For more details, use the help command." << std::endl;
-    return true;
-  }
-
-  uint64_t nblocks = 0;
-  if(!epee::string_tools::get_xtype_from_string(nblocks, args[0]) || nblocks == 0)
-  {
-    std::cout << "Invalid syntax: Wrong number of blocks. For more details, use the help command." << std::endl;
-    return true;
-  }
-
-  return m_executor.print_blockchain_dynamic_stats(nblocks);
-}
-
 bool t_command_parser_executor::relay_tx(const std::vector<std::string>& args)
 {
   if (args.size() != 1)

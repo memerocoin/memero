@@ -188,12 +188,6 @@ t_command_server::t_command_server(
     , "Print the information about alternative chains."
     );
     m_command_lookup.set_handler(
-      "blockchain-dynamic-stats"
-    , std::bind(&t_command_parser_executor::print_blockchain_dynamic_stats, &m_parser, p::_1)
-    , "blockchain-dynamic-stats <last block count>"
-    , "Print the information about current blockchain dynamic state."
-    );
-    m_command_lookup.set_handler(
       "relay-tx"
     , std::bind(&t_command_parser_executor::relay_tx, &m_parser, p::_1)
     , "relay-tx <txid>"

@@ -109,8 +109,6 @@ public:
 
   bool alt_chain_info(const std::string &tip, size_t above, uint64_t last_blocks);
 
-  bool print_blockchain_dynamic_stats(uint64_t nblocks);
-
   bool update(const std::string &command);
 
   bool relay_tx(const std::string &txid);
