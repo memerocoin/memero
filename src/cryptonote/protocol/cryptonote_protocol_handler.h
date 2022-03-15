@@ -125,7 +125,7 @@ namespace cryptonote
     bool should_download_next_span(cryptonote_connection_context& context, bool standby);
     void drop_connection(cryptonote_connection_context &context, bool add_fail, bool flush_all_spans);
     void drop_connection_with_score(cryptonote_connection_context &context, unsigned int score, bool flush_all_spans);
-    void drop_connections(const epee::net_utils::network_address address);
+    void drop_bad_connections(const epee::net_utils::network_address address);
     bool kick_idle_peers();
     bool check_standby_peers();
     bool update_sync_search();

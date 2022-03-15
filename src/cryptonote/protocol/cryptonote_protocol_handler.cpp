@@ -1499,7 +1499,7 @@ namespace cryptonote
           if (!m_core.prepare_handle_incoming_blocks(blocks, pblocks))
           {
             LOG_ERROR_CCONTEXT("Failure in prepare_handle_incoming_blocks");
-            drop_connections(span_origin);
+            drop_bad_connections(span_origin);
             return 1;
           }
           if (!pblocks.empty() && pblocks.size() != blocks.size())
@@ -1536,7 +1536,7 @@ namespace cryptonote
             {
               if(tvc[i].m_verifivation_failed)
               {
-                drop_connections(span_origin);
+                drop_bad_connections(span_origin);
                 if (!m_p2p->for_connection(span_connection_id, [&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t f)->bool{
                   const auto r = cryptonote::maybe_tx_and_hash_from_blob(it->blob);
                   if (r) {
@@ -1572,7 +1572,7 @@ namespace cryptonote
 
             if(bvc.m_verifivation_failed)
             {
-              drop_connections(span_origin);
+              drop_bad_connections(span_origin);
               if (!m_p2p->for_connection(span_connection_id, [&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t f)->bool{
                 LOG_PRINT_CCONTEXT_L1("Block verification failed, dropping connection");
                 drop_connection_with_score(context, bvc.m_bad_pow ? P2P_IP_FAILS_BEFORE_BLOCK : 1, true);
@@ -1592,7 +1592,7 @@ namespace cryptonote
             }
             if(bvc.m_marked_as_orphaned)
             {
-              drop_connections(span_origin);
+              drop_bad_connections(span_origin);
               if (!m_p2p->for_connection(span_connection_id, [&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t f)->bool{
                 LOG_PRINT_CCONTEXT_L1("Block received at sync phase was marked as orphaned, dropping connection");
                 drop_connection(context, true, true);
@@ -2716,9 +2716,9 @@ skip:
   }
   //------------------------------------------------------------------------------------------------------------------------
 
-  void t_cryptonote_protocol_handler::drop_connections(const epee::net_utils::network_address address)
+  void t_cryptonote_protocol_handler::drop_bad_connections(const epee::net_utils::network_address address)
   {
-    LOG_WARNING("dropping connections to " + address.str());
+    LOG_WARNING("dropping bad connections to " + address.str());
 
     m_p2p->add_host_fail(address, 5);
 

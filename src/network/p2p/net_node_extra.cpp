@@ -347,23 +347,37 @@ namespace nodetool
     if(!address.is_blockable())
       return false;
 
-    std::lock_guard<std::mutex> guard(m_host_fails_score_lock);
-
-    uint64_t fails = m_host_fails_score[address.host_str()] += score;
-    LOG_DEBUG
-      (
-       "Host "
-       + address.host_str()
-       + " fail score="
-       + std::to_string(fails)
-       );
-    if(fails > P2P_IP_FAILS_BEFORE_BLOCK)
     {
-      auto it = m_host_fails_score.find(address.host_str());
-      LOG_ERROR_AND_RETURN_UNLESS(it != m_host_fails_score.end(), false, "internal error");
-      it->second = P2P_IP_FAILS_BEFORE_BLOCK/2;
-      block_host(address);
+      const std::lock_guard<std::mutex> guard(m_host_fails_score_lock);
+      const auto host = address.host_str();
+
+      if (m_host_fails_score.contains(host))
+        {
+          m_host_fails_score[host] += score;
+        }
+      else
+        {
+          m_host_fails_score[host] = score;
+        }
+
+      const uint64_t current_score = m_host_fails_score[host];
+
+      LOG_DEBUG
+        (
+         "Host "
+         + host
+         + " current score="
+         + std::to_string(current_score)
+         );
+
+      if(current_score <= P2P_IP_FAILS_BEFORE_BLOCK) {
+        return true;
+      }
+      
+      m_host_fails_score[host] = P2P_IP_FAILS_BEFORE_BLOCK/2;
     }
+
+    block_host(address);
     return true;
   }
   //-----------------------------------------------------------------------------------
