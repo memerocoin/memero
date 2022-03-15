@@ -456,7 +456,7 @@ namespace nodetool
     std::map<std::string, time_t> m_blocked_hosts;
     std::map<epee::net_utils::ipv4_network_subnet, time_t> m_blocked_subnets;
 
-    std::recursive_mutex m_host_fails_score_lock;
+    std::mutex m_host_fails_score_lock;
     std::map<std::string, uint64_t> m_host_fails_score;
 
     boost::uuids::uuid m_network_id;

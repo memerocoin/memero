@@ -159,7 +159,6 @@ namespace cryptonote
 
     core& m_core;
     nodetool::node_server& m_p2p;
-    std::recursive_mutex m_host_fails_score_lock;
     std::map<std::string, uint64_t> m_host_fails_score;
   };
 }

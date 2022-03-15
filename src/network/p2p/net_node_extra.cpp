@@ -347,7 +347,8 @@ namespace nodetool
     if(!address.is_blockable())
       return false;
 
-    LOCK_RECURSIVE_MUTEX(m_host_fails_score_lock);
+    std::lock_guard<std::mutex> guard(m_host_fails_score_lock);
+
     uint64_t fails = m_host_fails_score[address.host_str()] += score;
     LOG_DEBUG
       (
