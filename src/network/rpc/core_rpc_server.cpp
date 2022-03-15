@@ -108,7 +108,7 @@ namespace cryptonote
     );
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::check_core_ready()
+  bool core_rpc_server::is_synchronized()
   {
     if(!m_p2p.get_payload_object().is_synchronized())
     {
@@ -676,7 +676,7 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_start_mining(const COMMAND_RPC_START_MINING::request& req, COMMAND_RPC_START_MINING::response& res)
   {
-    if (!check_core_ready())                
+    if (!is_synchronized())                
       {                                     
         res.status = CORE_RPC_STATUS_BUSY;  
         return true;                        

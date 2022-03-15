@@ -143,7 +143,7 @@ namespace cryptonote
     //-----------------------
 
   private:
-    bool check_core_ready();
+    bool is_synchronized();
 
     //utils
     uint64_t get_block_reward(const block& blk);
