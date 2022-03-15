@@ -70,17 +70,6 @@ namespace
 
 namespace cryptonote
 {
-
-#define CHECK_CORE_READY() do                   \
-    {                                           \
-      if (!check_core_ready())                  \
-        {                                       \
-          res.status = CORE_RPC_STATUS_BUSY;    \
-          return true;                          \
-        }                                       \
-    } while(0)
-
-
   //-----------------------------------------------------------------------------------
   void core_rpc_server::init_options(boost::program_options::options_description& desc)
   {
@@ -604,8 +593,6 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_send_raw_tx(const COMMAND_RPC_SEND_RAW_TX::request& req, COMMAND_RPC_SEND_RAW_TX::response& res)
   {
-    CHECK_CORE_READY();
-
     std::string tx_blob;
     if(!epee::string_tools::parse_hexstr_to_binbuff(req.tx_as_hex, tx_blob))
     {
@@ -689,7 +676,12 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_start_mining(const COMMAND_RPC_START_MINING::request& req, COMMAND_RPC_START_MINING::response& res)
   {
-    CHECK_CORE_READY();
+    if (!check_core_ready())                
+      {                                     
+        res.status = CORE_RPC_STATUS_BUSY;  
+        return true;                        
+      }                                     
+
     cryptonote::address_parse_info info;
     if(!get_account_address_from_str(info, nettype(), req.miner_address))
     {

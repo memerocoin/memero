@@ -143,7 +143,6 @@ namespace cryptonote
     //-----------------------
 
   private:
-    bool check_core_busy();
     bool check_core_ready();
 
     //utils
