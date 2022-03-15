@@ -1243,24 +1243,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_out_peers(const COMMAND_RPC_OUT_PEERS::request& req, COMMAND_RPC_OUT_PEERS::response& res)
-  {
-    if (req.set)
-      m_p2p.change_max_out_public_peers(req.out_peers);
-    res.out_peers = m_p2p.get_max_out_public_peers();
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_in_peers(const COMMAND_RPC_IN_PEERS::request& req, COMMAND_RPC_IN_PEERS::response& res)
-  {
-    if (req.set)
-      m_p2p.change_max_in_public_peers(req.in_peers);
-    res.in_peers = m_p2p.get_max_in_public_peers();
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_pop_blocks(const COMMAND_RPC_POP_BLOCKS::request& req, COMMAND_RPC_POP_BLOCKS::response& res)
   {
     m_core.get_blockchain_storage().pop_blocks(req.nblocks);

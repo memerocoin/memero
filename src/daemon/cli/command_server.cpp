@@ -120,18 +120,6 @@ t_command_server::t_command_server(
     , "Show the current status."
     );
     m_command_lookup.set_handler(
-      "set-out-peers"
-    , std::bind(&t_command_parser_executor::out_peers, &m_parser, p::_1)
-    , "set-out-peers <max number>"
-    , "Set the <max_number> of out peers."
-    );
-    m_command_lookup.set_handler(
-      "set-in-peers"
-    , std::bind(&t_command_parser_executor::in_peers, &m_parser, p::_1)
-    , "set-in-peers <max number>"
-    , "Set the <max_number> of in peers."
-    );
-    m_command_lookup.set_handler(
       "banned"
     , std::bind(&t_command_parser_executor::show_bans, &m_parser, p::_1)
     , "Show the currently banned IPs."

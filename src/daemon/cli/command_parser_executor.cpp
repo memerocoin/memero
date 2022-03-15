@@ -291,48 +291,6 @@ bool t_command_parser_executor::mining_status(const std::vector<std::string>& ar
   return m_executor.mining_status();
 }
 
-bool t_command_parser_executor::out_peers(const std::vector<std::string>& args)
-{
-	bool set = false;
-	uint32_t limit = 0;
-	try {
-		if (!args.empty())
-		{
-			limit = std::stoi(args[0]);
-			set = true;
-		}
-	}
-
-	catch(const std::exception& ex) {
-		_erro("stoi exception");
-		std::cout << "Invalid syntax: Failed to parse number. For more details, use the help command." << std::endl;
-		return true;
-	}
-
-	return m_executor.out_peers(set, limit);
-}
-
-bool t_command_parser_executor::in_peers(const std::vector<std::string>& args)
-{
-	bool set = false;
-	uint32_t limit = 0;
-	try {
-		if (!args.empty())
-		{
-			limit = std::stoi(args[0]);
-			set = true;
-		}
-	}
-
-	catch(const std::exception& ex) {
-		_erro("stoi exception");
-		std::cout << "Invalid syntax: Failed to parse number." << std::endl;
-		return true;
-	}
-
-	return m_executor.in_peers(set, limit);
-}
-
 bool t_command_parser_executor::show_bans(const std::vector<std::string>& args)
 {
   if (!args.empty()) {
