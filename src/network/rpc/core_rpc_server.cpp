@@ -108,15 +108,6 @@ namespace cryptonote
     );
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::is_synchronized()
-  {
-    if(!m_p2p.get_payload_object().is_synchronized())
-    {
-      return false;
-    }
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_info(const COMMAND_RPC_GET_INFO::request& req, COMMAND_RPC_GET_INFO::response& res)
   {
     crypto::hash top_hash;
@@ -676,7 +667,7 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_start_mining(const COMMAND_RPC_START_MINING::request& req, COMMAND_RPC_START_MINING::response& res)
   {
-    if (!is_synchronized())                
+    if(!m_p2p.get_payload_object().is_synchronized())
       {                                     
         res.status = CORE_RPC_STATUS_BUSY;  
         return true;                        

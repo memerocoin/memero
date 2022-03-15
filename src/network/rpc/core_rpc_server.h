@@ -143,8 +143,6 @@ namespace cryptonote
     //-----------------------
 
   private:
-    bool is_synchronized();
-
     //utils
     uint64_t get_block_reward(const block& blk);
     bool fill_block_header_response(const block& blk, bool orphan_status, uint64_t height, const crypto::hash& hash, block_header_response& response, bool fill_pow_hash);
