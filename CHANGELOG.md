@@ -1,5 +1,12 @@
 # ChangeLog
 
+## [0.9.10.55] - 2022-03-15
+
+### Removed
+* command `set-in-peers`
+* command `set-out-peers`
+* command `save`
+* command `alt-chain-info`
 
 ## [0.9.10.54] - 2022-03-15
 
