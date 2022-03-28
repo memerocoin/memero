@@ -158,23 +158,23 @@ namespace rct
     const auto y = challenges.V_A_S;
 
     const auto delta_1 = (z - (z * z)) *
-      sum_of_scalar_exponents(y, total_bit_width);
+      sum_of_scalar_powers(y, total_bit_width);
 
-    const scalarV z_exponents = scalar_exponents
+    const scalarV z_powers = scalar_powers
       (z, padded_number_of_inputs + 3);
 
     const crypto::ec_scalar z_sum_skip_3 = vector_sum
-      (std::span(z_exponents).subspan(3, padded_number_of_inputs));
+      (std::span(z_powers).subspan(3, padded_number_of_inputs));
 
     const crypto::ec_scalar delta_2 =
-      z_sum_skip_3 * sum_of_scalar_exponents(crypto::s_2, bit_width);
+      z_sum_skip_3 * sum_of_scalar_powers(crypto::s_2, bit_width);
 
     const auto delta = delta_1 - delta_2;
 
     const auto coefficient_T_0 = H_(delta)
       + vector_commit
       (
-       std::span(z_exponents).subspan(2, commits.size())
+       std::span(z_powers).subspan(2, commits.size())
        , commits
        );
 
@@ -204,23 +204,23 @@ namespace rct
     const auto challenge_z = challenges.V_A_S_rehash;
     const auto challenge_y = challenges.V_A_S;
 
-    const auto y_exponents =
-      scalar_exponents(challenge_y, total_bit_width);
+    const auto y_powers =
+      scalar_powers(challenge_y, total_bit_width);
 
     const crypto::ec_scalar y_inv =
       crypto::multiplicative_inverse(challenge_y);
 
-    const auto y_inv_exponents =
-      scalar_exponents(y_inv, total_bit_width);
+    const auto y_inv_powers =
+      scalar_powers(y_inv, total_bit_width);
 
-    const scalarV two_exponents =
-      scalar_exponents(rct::s_two, bit_width);
+    const scalarV two_powers =
+      scalar_powers(rct::s_two, bit_width);
 
     const std::vector<scalarV> z_exp_mult_two_exp_monadic =
       vector_mult_V_monadic
       (
-       std::span(z_exponents).subspan(2, padded_number_of_inputs)
-       , two_exponents
+       std::span(z_powers).subspan(2, padded_number_of_inputs)
+       , two_powers
        );
 
     const scalarV z_exp_mult_two_exp_flatten =
@@ -234,14 +234,14 @@ namespace rct
        );
 
     // I = H'
-    const auto I_V = vector_multP_V(y_inv_exponents, H_V);
+    const auto I_V = vector_multP_V(y_inv_powers, H_V);
 
     const auto P_I_scalars =
       vector_add_V
       (
        z_exp_mult_two_exp_flatten
        , vector_mult
-       ( y_exponents
+       ( y_powers
          , challenge_z
          )
        );

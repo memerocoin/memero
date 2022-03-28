@@ -273,20 +273,20 @@ namespace rct
     const scalarV l0 = vector_subtract(aL, challenge_z);
     const scalarS l1 = sL;
 
-    const auto y_exponents =
-      scalar_exponents(challenge_y, total_bit_width);
+    const auto y_powers =
+      scalar_powers(challenge_y, total_bit_width);
 
-    const scalarV z_exponents = scalar_exponents
+    const scalarV z_powers = scalar_powers
       (challenge_z, padded_number_of_inputs + 2);
 
-    const scalarV two_exponents =
-      scalar_exponents(rct::s_two, bit_width);
+    const scalarV two_powers =
+      scalar_powers(rct::s_two, bit_width);
 
     const std::vector<scalarV> z_exp_mult_two_exp_monadic =
       vector_mult_V_monadic
       (
-       std::span(z_exponents).subspan(2, padded_number_of_inputs)
-       , two_exponents
+       std::span(z_powers).subspan(2, padded_number_of_inputs)
+       , two_powers
        );
 
     const scalarV z_exp_mult_two_exp_flatten =
@@ -296,13 +296,13 @@ namespace rct
       (
        hadamard_product
        (
-        y_exponents
+        y_powers
         , vector_add(aR, challenge_z)
         )
        , z_exp_mult_two_exp_flatten
        );
 
-    const scalarV r1 = hadamard_product(y_exponents, sR);
+    const scalarV r1 = hadamard_product(y_powers, sR);
 
     const crypto::ec_scalar t1 =
       inner_product(l0, r1) + inner_product(l1, r0);
@@ -346,7 +346,7 @@ namespace rct
       inner_product
       (
        blinding_factors
-       , std::span(z_exponents).subspan(2)
+       , std::span(z_powers).subspan(2)
        );
 
     const auto x = challenge_x;

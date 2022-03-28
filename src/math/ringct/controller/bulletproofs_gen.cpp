@@ -94,8 +94,8 @@ namespace rct
       const crypto::ec_scalar challenge_y_inv =
         crypto::multiplicative_inverse(challenge_y);
 
-      const scalarV challenge_y_inv_exponents =
-        scalar_exponents(challenge_y_inv, total_bit_width);
+      const scalarV challenge_y_inv_powers =
+        scalar_powers(challenge_y_inv, total_bit_width);
 
       const auto G_V = get_bp_generator_G_V(total_bit_width);
       const auto H_V = get_bp_generator_H_V(total_bit_width);
@@ -104,7 +104,7 @@ namespace rct
         make_recursive_inner_product_argument
         (
          G_V
-         , vector_multP_V(challenge_y_inv_exponents, H_V)
+         , vector_multP_V(challenge_y_inv_powers, H_V)
          , bp_vector_l
          , bp_vector_r
          , H_(inner_product_challenge)

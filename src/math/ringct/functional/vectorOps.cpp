@@ -28,7 +28,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 namespace rct
 {
 
-  rct::scalarV scalar_exponents
+  rct::scalarV scalar_powers
   (const crypto::ec_scalar x, const size_t n)
   {
     scalarV res(n);
@@ -67,13 +67,13 @@ namespace rct
        );
   }
 
-  crypto::ec_scalar sum_of_scalar_exponents
+  crypto::ec_scalar sum_of_scalar_powers
   (
    const crypto::ec_scalar x
    , const size_t n
    )
   {
-    return vector_sum(scalar_exponents(x, n));
+    return vector_sum(scalar_powers(x, n));
   }
 
   rct::scalarV hadamard_product(const scalarS a, const scalarS b)
@@ -274,7 +274,7 @@ namespace rct
     return inner_product
       (
        a
-       , scalar_exponents(X, a.size())
+       , scalar_powers(X, a.size())
        );
   }
 
@@ -282,7 +282,7 @@ namespace rct
   (const pointS a, crypto::ec_scalar X) {
     return vector_commit
       (
-       scalar_exponents(X, a.size())
+       scalar_powers(X, a.size())
        , a
        );
   }
@@ -332,7 +332,7 @@ namespace rct
 
   rct::scalarV scalar_repeat
   (const crypto::ec_scalar x, const size_t n) {
-    return vector_mult(scalar_exponents(crypto::s_1, n), x);
+    return vector_mult(scalar_powers(crypto::s_1, n), x);
   }
 
   crypto::ec_point homomorphic_hash
