@@ -80,7 +80,8 @@ namespace epee
       beast::flat_buffer buffer;
 
       // Declare a container to hold the response
-      http::response<http::dynamic_body> res;
+      http::response_parser<http::dynamic_body> res;
+      res.body_limit((std::numeric_limits<std::uint64_t>::max)());
 
       // Receive the HTTP response
       http::read(stream, buffer, res);
@@ -104,7 +105,7 @@ namespace epee
         return {};
       }
 
-      const std::string m_body = boost::beast::buffers_to_string(res.body().data());
+      const std::string m_body = boost::beast::buffers_to_string(res.get().body().data());
       return m_body;
     }
 
