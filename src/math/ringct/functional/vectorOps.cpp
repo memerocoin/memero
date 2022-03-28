@@ -269,7 +269,7 @@ namespace rct
   }
 
 
-  crypto::ec_scalar substitute_polynomial
+  crypto::ec_scalar evaluate_polynomial
   (const scalarS a, crypto::ec_scalar X) {
     return inner_product
       (
@@ -278,7 +278,7 @@ namespace rct
        );
   }
 
-  crypto::ec_point substitute_polynomial
+  crypto::ec_point evaluate_polynomial
   (const pointS a, crypto::ec_scalar X) {
     return vector_commit
       (

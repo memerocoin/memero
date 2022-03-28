@@ -350,7 +350,7 @@ namespace rct
        );
 
     const auto x = challenge_x;
-    const crypto::ec_scalar tau = substitute_polynomial
+    const crypto::ec_scalar tau = evaluate_polynomial
       (scalarV{tau0, tau1, tau2}, x);
 
     const crypto::ec_scalar mu = x * rho + alpha;

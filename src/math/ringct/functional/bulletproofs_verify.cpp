@@ -181,7 +181,7 @@ namespace rct
     const auto challenge_x = challenges.V_A_S_T1_T2;
 
     const crypto::ec_point blinding_terms_commit_R =
-      substitute_polynomial
+      evaluate_polynomial
       (
        pointV
        {

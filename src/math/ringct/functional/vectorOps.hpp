@@ -70,10 +70,10 @@ namespace rct
   std::vector<crypto::ec_point> scalar_multP_V
   (const crypto::ec_scalar a, const pointS p);
 
-  crypto::ec_scalar substitute_polynomial
+  crypto::ec_scalar evaluate_polynomial
   (const scalarS a, crypto::ec_scalar X);
 
-  crypto::ec_point substitute_polynomial
+  crypto::ec_point evaluate_polynomial
   (const pointS a, crypto::ec_scalar X);
 
   crypto::ec_point vector_commit(const scalarS a, const pointS p);
