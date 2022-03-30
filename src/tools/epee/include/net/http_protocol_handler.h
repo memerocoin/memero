@@ -137,7 +137,8 @@ namespace net_utils
 			std::string m_cache;
 			machine_state m_state;
 			body_transfer_type m_body_transfer_type;
-			bool m_is_stop_handling;
+		
+	bool m_is_stop_handling;
 			http::http_request_info m_query_info;
 			size_t m_len_summary, m_len_remain;
 			config_type& m_config;
@@ -148,7 +149,7 @@ namespace net_utils
 			t_connection_context& m_conn_context;
 		};
 
-		template<class t_connection_context>
+		using t_connection_context = epee::net_utils::connection_context_base;
 		struct i_http_server_handler
 		{
 			virtual ~i_http_server_handler(){}
@@ -159,21 +160,19 @@ namespace net_utils
 			virtual bool deinit_server_thread(){return true;}
 		};
 
-		template<class t_connection_context>
 		struct custum_handler_config: public http_server_config
 		{
-			i_http_server_handler<t_connection_context>* m_phandler;
+			i_http_server_handler* m_phandler;
 		};
 
 		/************************************************************************/
 		/*                                                                      */
 		/************************************************************************/
 
-		template<class t_connection_context = epee::net_utils::connection_context_base>
 		class http_custom_handler: public simple_http_connection_handler<t_connection_context>
 		{
 		public:
-			typedef custum_handler_config<t_connection_context> config_type;
+			typedef custum_handler_config config_type;
 
 			http_custom_handler(i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context)
 				: simple_http_connection_handler<t_connection_context>(psnd_hndlr, config, conn_context),

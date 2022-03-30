@@ -40,16 +40,12 @@ namespace epee
 {
 
   template<class t_child_class, class t_connection_context = epee::net_utils::connection_context_base>
-  class http_server_impl_base: public epee::net_utils::http::i_http_server_handler<t_connection_context>
+  class http_server_impl_base: public epee::net_utils::http::i_http_server_handler
   {
 
   public:
     http_server_impl_base()
         : m_net_server(epee::net_utils::e_connection_type_RPC)
-    {}
-
-    explicit http_server_impl_base(boost::asio::io_service& external_io_service)
-        : m_net_server(external_io_service)
     {}
 
     bool init(const std::string& bind_port = "0", const std::string& bind_ip = "0.0.0.0",
@@ -132,6 +128,6 @@ namespace epee
     }
 
   protected:
-    epee::net_utils::boosted_tcp_server<net_utils::http::http_custom_handler<t_connection_context> > m_net_server;
+    epee::net_utils::boosted_tcp_server<net_utils::http::http_custom_handler> m_net_server;
   };
 }
