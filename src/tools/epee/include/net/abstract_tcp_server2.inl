@@ -81,7 +81,6 @@ namespace net_utils
 	:
 		connection_basic(std::move(sock), state),
 		m_protocol_handler(this, check_and_get(state), context),
-		buffer_ssl_init_fill(0),
 		m_connection_type( connection_type ),
 		m_timer(GET_IO_SERVICE(socket_)),
 		m_local(false),
@@ -234,7 +233,6 @@ namespace net_utils
     reset_timer(std::chrono::milliseconds(m_local ? NEW_CONNECTION_TIMEOUT_LOCAL : NEW_CONNECTION_TIMEOUT_REMOTE));
 
     // first read on the raw socket to detect SSL for the server
-    buffer_ssl_init_fill = 0;
       async_read_some(boost::asio::buffer(buffer_),
                       strand_.wrap(
                                    std::bind(&connection<t_protocol_handler>::handle_read, self,

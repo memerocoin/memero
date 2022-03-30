@@ -141,7 +141,6 @@ namespace net_utils
 
     /// Buffer for incoming data.
     std::array<char, 8192> buffer_;
-    size_t buffer_ssl_init_fill;
 
     t_connection_context context;
 
