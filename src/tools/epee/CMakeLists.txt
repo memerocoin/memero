@@ -8,6 +8,7 @@
 #
 # 1. Redistributions of source code must retain the above copyright notice, this list of
 #    conditions and the following disclaimer.
+
 #
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list
 #    of conditions and the following disclaimer in the documentation and/or other
@@ -32,7 +33,7 @@ add_library( epee_log
 )
 
 add_library( epee_basic
-  src/hex.cpp
+  functional/hex.cpp
   src/string_tools.cpp
 )
 

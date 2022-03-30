@@ -23,7 +23,7 @@ see: etc/other-licenses/monero/LICENSE
 
 */
 
-#include "tools/epee/include/hex.h"
+#include "hex.hpp"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/storages/parserse_base_utils.h"
 

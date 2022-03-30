@@ -33,7 +33,7 @@
 
 #include "network/rpc/message_data_structs.h"
 
-#include "tools/epee/include/hex.h"
+#include "tools/epee/functional/hex.hpp"
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/string_tools.h"
 

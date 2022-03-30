@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "math/hash/pseudo_functional/sha3.hpp"
 
-#include "tools/epee/include/hex.h"
+#include "tools/epee/functional/hex.hpp"
 
 #include <boost/functional/hash.hpp>
 

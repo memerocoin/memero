@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "tools/epee/include/hex.h"
+#include "tools/epee/functional/hex.hpp"
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/blob.hpp"
 #include "tools/epee/include/storages/parserse_base_utils.h"

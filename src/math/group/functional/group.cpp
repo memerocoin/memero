@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "group.hpp"
 
 #include "tools/epee/include/logging.hpp"
-#include "tools/epee/include/hex.h"
+#include "tools/epee/functional/hex.hpp"
 
 #include <sodium.h>
 

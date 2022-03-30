@@ -28,7 +28,7 @@
 //
 #include "rpc_args.h"
 
-#include "tools/epee/include/hex.h"
+#include "tools/epee/functional/hex.hpp"
 #include "tools/epee/include/string_tools.h"
 
 #include <boost/algorithm/string.hpp>

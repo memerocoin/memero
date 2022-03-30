@@ -43,7 +43,7 @@
 #endif
 
 #include "math/crypto/functional/key.hpp"
-#include "tools/epee/include/hex.h"
+#include "tools/epee/functional/hex.hpp"
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/local_ip.h"
