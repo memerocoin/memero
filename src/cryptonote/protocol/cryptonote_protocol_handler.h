@@ -139,10 +139,10 @@ namespace cryptonote
 
     nodetool::p2p_endpoint_stub<connection_context> m_p2p_stub;
     nodetool::i_p2p_endpoint<connection_context>* m_p2p;
-    std::atomic<uint32_t> m_syncronized_connections_count;
+    std::atomic<uint32_t> m_syncronized_connections_count = 0;
     std::atomic<bool> m_synchronized;
-    std::atomic<bool> m_stopping;
-    std::atomic<bool> m_ask_for_txpool_complement;
+    std::atomic<bool> m_stopping = false;
+    std::atomic<bool> m_ask_for_txpool_complement = true;
     std::mutex m_sync_lock;
     block_queue m_block_queue;
     epee::math_helper::once_a_time_seconds<8> m_idle_peer_kicker;
