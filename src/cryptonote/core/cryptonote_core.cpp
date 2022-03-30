@@ -72,17 +72,22 @@ namespace cryptonote
   , "Do not connect to the network"
   };
   //-----------------------------------------------------------------------------------------------
-  core::core(i_cryptonote_protocol* pprotocol):
-              m_mempool(m_blockchain_storage),
-              m_blockchain_storage(m_mempool),
-              m_miner(this, [](const cryptonote::block &b, crypto::hash &hash) {
-                hash = cryptonote::get_mining_hash(b);
-                return true;
-              }),
-              m_starter_message_showed(false),
-              m_target_blockchain_height(0),
-              m_fluffy_blocks_enabled(true),
-              m_nettype(UNDEFINED)
+  core::core
+  (
+   i_cryptonote_protocol* pprotocol
+   )
+    :
+    m_mempool(m_blockchain_storage)
+    , m_blockchain_storage(m_mempool)
+    , m_miner
+    (
+     this
+     , [](const cryptonote::block &b, crypto::hash &hash)
+     {
+       hash = cryptonote::get_mining_hash(b);
+       return true;
+     }
+     )
   {
     set_cryptonote_protocol(pprotocol);
   }

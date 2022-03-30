@@ -859,9 +859,9 @@ namespace cryptonote
      epee::math_helper::once_a_time_seconds<60*10, true> m_check_disk_space_interval; //!< interval for checking for disk space
      epee::math_helper::once_a_time_seconds<90, false> m_block_rate_interval; //!< interval for checking block rate
 
-     std::atomic<bool> m_starter_message_showed; //!< has the "daemon will sync now" message been shown?
+     std::atomic<bool> m_starter_message_showed = false; //!< has the "daemon will sync now" message been shown?
 
-     uint64_t m_target_blockchain_height; //!< blockchain height target
+     uint64_t m_target_blockchain_height = 0; //!< blockchain height target
 
      network_type m_nettype; //!< which network are we on?
 
@@ -870,8 +870,8 @@ namespace cryptonote
      std::unordered_set<crypto::hash> bad_semantics_txes[2];
      std::mutex bad_semantics_txes_lock;
 
-     bool m_fluffy_blocks_enabled;
-     bool m_offline;
+     bool m_fluffy_blocks_enabled = true;
+     bool m_offline = UNDEFINED;
 
     /* `boost::function` is used because the implementation never allocates if
        the callable object has a single `std::shared_ptr` or `std::weap_ptr`
