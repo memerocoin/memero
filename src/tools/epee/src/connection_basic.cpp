@@ -114,10 +114,7 @@ connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::sha
 	m_state(std::move(state)),
 	mI( std::make_unique<connection_basic_pimpl>("peer") ),
 	strand_(GET_IO_SERVICE(sock)),
-	socket_(GET_IO_SERVICE(sock)),
-	m_want_close_connection(false),
-	m_was_shutdown(false),
-	m_is_multithreaded(false)
+	socket_(GET_IO_SERVICE(sock))
 {
 	// add nullptr checks if removed
 	assert(m_state != nullptr); // release runtime check in get_context
