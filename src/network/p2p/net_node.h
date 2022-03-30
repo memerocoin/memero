@@ -248,11 +248,6 @@ namespace nodetool
 
     node_server(t_payload_net_handler& payload_handler)
       : m_payload_handler(payload_handler),
-        m_external_port(0),
-        m_allow_local_ip(false),
-        m_hide_my_port(false),
-        m_offline(false),
-        is_closing(false),
         m_network_id()
     {}
     virtual ~node_server();
@@ -409,13 +404,13 @@ namespace nodetool
     bool m_first_connection_maker_call;
     uint32_t m_listening_port;
     uint32_t m_listening_port_ipv6;
-    uint32_t m_external_port;
-    bool m_allow_local_ip;
-    bool m_hide_my_port;
-    bool m_offline;
+    uint32_t m_external_port = 0;
+    bool m_allow_local_ip = false;
+    bool m_hide_my_port = false;
+    bool m_offline = false;
     bool m_use_ipv6;
     bool m_require_ipv4;
-    std::atomic<bool> is_closing;
+    std::atomic<bool> is_closing = false;
     std::unique_ptr<std::thread> mPeersLoggerThread;
     //std::recursive_mutex m_connections_lock;
     //connections_indexed_container m_connections;
