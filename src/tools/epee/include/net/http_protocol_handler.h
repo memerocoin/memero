@@ -133,8 +133,6 @@ namespace net_utils
 			inline bool handle_request_and_send_response(const http::http_request_info& query_info);
 
 
-			std::string get_not_found_response_body(const std::string& URI);
-
 			std::string m_root_path;
 			std::string m_cache;
 			machine_state m_state;

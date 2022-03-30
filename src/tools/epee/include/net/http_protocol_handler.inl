@@ -474,10 +474,6 @@ namespace net_utils
 	{
 
 		std::string uri_to_path = query_info.m_uri_content.m_path;
-		if("/" == uri_to_path)
-			uri_to_path = "/index.html";
-
-    response.m_body = get_not_found_response_body(query_info.m_URI);
     response.m_response_code = 404;
     response.m_response_comment = "Not found";
     response.m_mime_tipe = "text/html";
@@ -536,23 +532,6 @@ namespace net_utils
 		buf+="\r\n";
 
 		return buf;
-	}
-	//-----------------------------------------------------------------------------------
-	template<class t_connection_context>
-  std::string simple_http_connection_handler<t_connection_context>::get_not_found_response_body(const std::string& URI)
-	{
-		std::string body =
-			"<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\r\n"
-			"<html><head>\r\n"
-			"<title>404 Not Found</title>\r\n"
-			"</head><body>\r\n"
-			"<h1>Not Found</h1>\r\n"
-			"<p>The requested URL \r\n";
-		body += URI;
-		body += "was not found on this server.</p>\r\n"
-			"</body></html>\r\n";
-
-		return body;
 	}
 	//--------------------------------------------------------------------------------------------
 	template<class t_connection_context>
