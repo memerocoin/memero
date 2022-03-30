@@ -34,4 +34,9 @@ add_library(cryptonote_protocol
   connection_context.cpp
 )
 
+
+target_link_libraries( cryptonote_protocol
+  epee_net_p2p
+)
+
 # install(TARGETS cryptonote_protocol)
