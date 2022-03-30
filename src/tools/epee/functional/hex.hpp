@@ -26,7 +26,7 @@ see: etc/other-licenses/monero/LICENSE
 #pragma once
 
 
-#include "tools/epee/include/span.h"
+#include "tools/epee/functional/span.hpp"
 #include "tools/epee/include/blob.hpp"
 
 #include <span>

@@ -40,7 +40,7 @@
 #include "tools/epee/include/int-util.h"
 #include "network/p2p/net_node.h"
 #include "tools/epee/include/net/levin_base.h"
-#include "tools/epee/include/span.h"
+#include "tools/epee/functional/span.hpp"
 
 using namespace epee::levin;
 

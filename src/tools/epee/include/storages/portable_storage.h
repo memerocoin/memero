@@ -30,7 +30,7 @@
 
 #include "portable_storage_val_converters.h"
 
-#include "tools/epee/include/span.h"
+#include "tools/epee/functional/span.hpp"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/logging_macro.hpp"
 
