@@ -27,8 +27,7 @@
 
 #include "tools/epee/include/net/http_protocol_handler.h"
 
-
-
+#include <regex>
 
 namespace epee
 {
@@ -38,7 +37,12 @@ namespace net_utils
 	{
 		bool match_boundary(const std::string& content_type, std::string& boundary)
 		{
-			STATIC_REGEXP_EXPR_1(rexp_match_boundary, "boundary=(.*?)(($)|([;\\s,]))", std::regex::icase );
+			const std::regex rexp_match_boundary
+        (
+         "boundary=(.*?)(($)|([;\\s,]))"
+         , std::regex::icase
+         );
+
 			//											        1
 			std::smatch result;
 			if(std::regex_search(content_type, result, rexp_match_boundary) && result[0].matched)
@@ -52,12 +56,14 @@ namespace net_utils
 
 	  bool parse_header(std::string::const_iterator it_begin, std::string::const_iterator it_end, multipart_entry& entry)
 		{
-			STATIC_REGEXP_EXPR_1(rexp_mach_field,
-				"\n?((Content-Disposition)|(Content-Type)"
-				//  12                     3
-				"|([\\w-]+?)) ?: ?((.*?)(\r?\n))[^\t ]",
-				//4               56    7
-				std::regex::icase );
+			const std::regex rexp_mach_field
+        (
+         "\n?((Content-Disposition)|(Content-Type)"
+         //  12                     3
+         "|([\\w-]+?)) ?: ?((.*?)(\r?\n))[^\t ]"
+         //4               56    7
+         , std::regex::icase
+         );
 
 			std::smatch		result;
 			std::string::const_iterator it_current_bound = it_begin;

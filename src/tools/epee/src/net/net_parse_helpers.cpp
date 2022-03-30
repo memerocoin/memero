@@ -97,7 +97,11 @@ namespace net_utils
   bool parse_uri(const std::string uri, http::uri_content& content)
   {
     content.m_query_params.clear();
-    STATIC_REGEXP_EXPR_1(rexp_match_uri, "^([^?#]*)(\\?([^#]*))?(#(.*))?", std::regex::icase );
+    const std::regex rexp_match_uri
+      (
+       "^([^?#]*)(\\?([^#]*))?(#(.*))?"
+       , std::regex::icase
+       );
 
     std::smatch result;
     if(!(std::regex_search(uri, result, rexp_match_uri) && result[0].matched))

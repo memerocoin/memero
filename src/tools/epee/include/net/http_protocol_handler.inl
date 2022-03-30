@@ -186,7 +186,11 @@ namespace net_utils
   template<class t_connection_context>
 	bool simple_http_connection_handler<t_connection_context>::handle_invoke_query_line()
 	{
-		STATIC_REGEXP_EXPR_1(rexp_match_command_line, "^(((OPTIONS)|(GET)|(HEAD)|(POST)|(PUT)|(DELETE)|(TRACE)) (\\S+) HTTP/(\\d+)\\.(\\d+))\r?\n", std::regex::icase );
+		const std::regex rexp_match_command_line
+      (
+       "^(((OPTIONS)|(GET)|(HEAD)|(POST)|(PUT)|(DELETE)|(TRACE)) (\\S+) HTTP/(\\d+)\\.(\\d+))\r?\n"
+       , std::regex::icase
+       );
 		//											    123         4     5      6      7     8        9        10          11     12
 		//size_t match_len = 0;
 		std::smatch result;
@@ -353,12 +357,14 @@ namespace net_utils
   template<class t_connection_context>
 	bool simple_http_connection_handler<t_connection_context>::parse_cached_header(http_header_info& body_info, const std::string& m_cache_to_process, size_t pos)
 	{
-		STATIC_REGEXP_EXPR_1(rexp_mach_field,
-			"\n?((Connection)|(Referer)|(Content-Length)|(Content-Type)|(Transfer-Encoding)|(Content-Encoding)|(Host)|(Cookie)|(User-Agent)|(Origin)"
-			//  12            3         4                5              6                   7                  8      9        10           11
-			"|([\\w-]+?)) ?: ?((.*?)(\r?\n))[^\t ]",
-			//11             1213   14
-			std::regex::icase );
+    const std::regex rexp_mach_field
+      (
+       "\n?((Connection)|(Referer)|(Content-Length)|(Content-Type)|(Transfer-Encoding)|(Content-Encoding)|(Host)|(Cookie)|(User-Agent)|(Origin)"
+       //  12            3         4                5              6                   7                  8      9        10           11
+       "|([\\w-]+?)) ?: ?((.*?)(\r?\n))[^\t ]"
+       //11             1213   14
+       , std::regex::icase
+       );
 
 		std::smatch		result;
 		std::string::const_iterator it_current_bound = m_cache_to_process.begin();
@@ -413,7 +419,12 @@ namespace net_utils
   template<class t_connection_context>
 	bool simple_http_connection_handler<t_connection_context>::get_len_from_content_lenght(const std::string& str, size_t& len)
 	{
-		STATIC_REGEXP_EXPR_1(rexp_mach_field, "\\d+", std::regex::ECMAScript);
+		const std::regex rexp_mach_field
+      (
+       "\\d+"
+       , std::regex::ECMAScript
+       );
+
 		std::string res;
 		std::smatch result;
 		if(!(std::regex_search( str, result, rexp_mach_field) && result[0].matched))

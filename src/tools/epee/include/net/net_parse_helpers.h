@@ -29,11 +29,6 @@
 
 #include "http_base.h"
 
-#include "tools/epee/include/reg_exp_definer.h"
-
-
-
-
 namespace epee
 {
 namespace net_utils
