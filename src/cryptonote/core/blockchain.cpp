@@ -74,14 +74,9 @@ using namespace cryptonote;
 std::recursive_mutex m_blockchain_lock; // TODO: add here reader/writer lock
 
 //------------------------------------------------------------------
-Blockchain::Blockchain(tx_memory_pool& tx_pool) :
-  m_db(), m_tx_pool(tx_pool), m_timestamps_and_difficulties_height(0), m_reset_timestamps_and_difficulties_height(true),
-  m_db_sync_on_blocks(true), m_db_sync_threshold(1), m_db_sync_mode(db_async), m_db_default_sync(false), m_show_time_stats(false), m_sync_counter(0), m_bytes_to_sync(0), m_cancel(false),
-  m_difficulty_for_next_block_top_hash(crypto::null_hash),
-  m_difficulty_for_next_block(1),
-  m_btc_valid(false),
-  m_batch_success(true),
-  m_prepare_height(0)
+Blockchain::Blockchain(tx_memory_pool& tx_pool)
+  : m_db()
+  , m_tx_pool(tx_pool)
 {
   LOG_PRINT_L3("Blockchain::" + std::string(__func__));
 }

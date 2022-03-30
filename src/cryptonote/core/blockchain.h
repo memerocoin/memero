@@ -814,21 +814,21 @@ namespace cryptonote
     std::vector<std::pair<crypto::hash, uint64_t>> m_blocks_hash_check;
     std::vector<crypto::hash> m_blocks_txs_check;
 
-    blockchain_db_sync_mode m_db_sync_mode;
-    bool m_show_time_stats;
-    bool m_db_default_sync;
-    bool m_db_sync_on_blocks;
-    uint64_t m_db_sync_threshold;
-    uint64_t m_sync_counter;
-    uint64_t m_bytes_to_sync;
+    blockchain_db_sync_mode m_db_sync_mode = db_async;
+    bool m_show_time_stats = false;
+    bool m_db_default_sync = false;
+    bool m_db_sync_on_blocks = true;
+    uint64_t m_db_sync_threshold = 1;
+    uint64_t m_sync_counter = 0;
+    uint64_t m_bytes_to_sync = 0;
     std::vector<uint64_t> m_timestamps;
     std::vector<diff_t> m_difficulties;
-    uint64_t m_timestamps_and_difficulties_height;
-    bool m_reset_timestamps_and_difficulties_height;
+    uint64_t m_timestamps_and_difficulties_height = 0;
+    bool m_reset_timestamps_and_difficulties_height = true;
 
     std::recursive_mutex m_difficulty_lock;
-    crypto::hash m_difficulty_for_next_block_top_hash;
-    diff_t m_difficulty_for_next_block;
+    crypto::hash m_difficulty_for_next_block_top_hash{};
+    diff_t m_difficulty_for_next_block = 1;
 
     boost::asio::io_service m_async_service;
     std::vector<std::thread> m_async_pool;
@@ -840,7 +840,7 @@ namespace cryptonote
     bool m_offline;
     diff_t m_fixed_difficulty;
 
-    std::atomic<bool> m_cancel;
+    std::atomic<bool> m_cancel = false;
 
     // block template cache
     block m_btc;
@@ -850,13 +850,13 @@ namespace cryptonote
     uint64_t m_btc_height;
     uint64_t m_btc_pool_cookie;
     uint64_t m_btc_expected_reward;
-    bool m_btc_valid;
+    bool m_btc_valid = false;
 
 
-    bool m_batch_success;
+    bool m_batch_success = true;
 
     // for prepare_handle_incoming_blocks
-    uint64_t m_prepare_height;
+    uint64_t m_prepare_height = 0;
     uint64_t m_prepare_nblocks;
     std::vector<block> *m_prepare_blocks;
 
