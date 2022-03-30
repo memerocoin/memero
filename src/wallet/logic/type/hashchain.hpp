@@ -42,8 +42,6 @@ namespace type {
   class hashchain
   {
   public:
-    hashchain(): m_genesis(crypto::null_hash), m_offset(0) {}
-
     size_t size() const { return m_blockchain.size() + m_offset; }
     size_t offset() const { return m_offset; }
     const crypto::hash &genesis() const { return m_genesis; }
@@ -73,8 +71,8 @@ namespace type {
     END_SERIALIZE()
 
   private:
-    size_t m_offset;
-    crypto::hash m_genesis;
+    size_t m_offset = 0;
+    crypto::hash m_genesis = {};
     std::deque<crypto::hash> m_blockchain;
   };
 
