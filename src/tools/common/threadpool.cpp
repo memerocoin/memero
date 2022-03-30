@@ -38,7 +38,7 @@ static __thread bool is_leaf = false;
 
 namespace tools
 {
-threadpool::threadpool(unsigned int max_threads) : running(true), active(0) {
+threadpool::threadpool(unsigned int max_threads) {
   create(max_threads);
 }
 

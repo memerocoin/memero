@@ -67,20 +67,8 @@ namespace cryptonote
 
   miner::miner(i_miner_handler* phandler, const get_block_hash_t &gbh)
     :
-    m_stop(true),
-    m_template{},
-    m_template_no(0),
-    m_diff(0),
     m_phandler(phandler),
-    m_gbh(gbh),
-    m_pauser(false),
-    m_threads_total(0),
-    m_starter_nonce(0),
-    m_last_hr_merge_time(0),
-    m_hashes(0),
-    m_do_mining(false),
-    m_current_hash_rate(0),
-    m_block_reward(0)
+    m_gbh(gbh)
   {
   }
 

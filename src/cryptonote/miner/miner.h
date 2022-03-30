@@ -119,16 +119,16 @@ namespace cryptonote
     bool request_block_template();
     void  merge_hr();
 
-    std::atomic<bool> m_stop;
+    std::atomic<bool> m_stop = true;
     std::mutex m_template_lock;
     std::mutex m_thread_lock;
 
-    block m_template;
-    std::atomic<uint32_t> m_template_no;
-    std::atomic<uint64_t> m_starter_nonce;
-    diff_t m_diff;
-    std::atomic<uint32_t> m_threads_total;
-    std::atomic<bool> m_pauser;
+    block m_template{};
+    std::atomic<uint32_t> m_template_no = 0;
+    std::atomic<uint64_t> m_starter_nonce = 0;
+    diff_t m_diff = 0;
+    std::atomic<uint32_t> m_threads_total = 0;
+    std::atomic<bool> m_pauser = false;
 
     std::optional<std::thread> m_thread;
 
@@ -142,12 +142,12 @@ namespace cryptonote
     epee::math_helper::once_a_time_seconds<2>
     m_update_merge_hr_interval;
 
-    std::atomic<uint64_t> m_last_hr_merge_time;
-    std::atomic<uint64_t> m_hashes;
-    std::atomic<uint64_t> m_current_hash_rate;
+    std::atomic<uint64_t> m_last_hr_merge_time = 0;
+    std::atomic<uint64_t> m_hashes = 0;
+    std::atomic<uint64_t> m_current_hash_rate = 0;
     std::mutex m_last_hash_rates_lock;
     std::list<uint64_t> m_last_hash_rates;
-    bool m_do_mining;
-    std::atomic<uint64_t> m_block_reward;
+    bool m_do_mining = false;
+    std::atomic<uint64_t> m_block_reward = 0;
   };
 }

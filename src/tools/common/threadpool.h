@@ -91,9 +91,9 @@ public:
     std::condition_variable has_work;
     std::mutex mutex;
     std::vector<std::thread> threads;
-    unsigned int active;
+    unsigned int active = 0;
     unsigned int max;
-    bool running;
+    bool running = true;
     void run(bool flush = false);
 };
 
