@@ -472,11 +472,7 @@ namespace net_utils
   template<class t_connection_context>
 	bool simple_http_connection_handler<t_connection_context>::handle_request(const http::http_request_info& query_info, http_response_info& response)
 	{
-
-		std::string uri_to_path = query_info.m_uri_content.m_path;
     response.m_response_code = 404;
-    response.m_response_comment = "Not found";
-    response.m_mime_tipe = "text/html";
     return true;
   }
   //-----------------------------------------------------------------------------------
