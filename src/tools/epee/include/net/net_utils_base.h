@@ -33,7 +33,7 @@
 
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "tools/epee/include/int-util.h"
-#include "tools/epee/include/blob.hpp"
+#include "tools/epee/functional/blob.hpp"
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/asio/io_service.hpp>

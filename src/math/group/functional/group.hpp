@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "tools/epee/functional/hex.hpp"
-#include "tools/epee/include/blob.hpp"
+#include "tools/epee/functional/blob.hpp"
 
 #include <sodium.h>
 

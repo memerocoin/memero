@@ -33,7 +33,7 @@
 
 #include <string>
 
-// #include "tools/epee/include/blob.hpp"
+// #include "tools/epee/functional/blob.hpp"
 
 namespace cryptonote
 {

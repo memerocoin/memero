@@ -37,7 +37,7 @@
 #include "math/blockchain/functional/subaddress_index.hpp"
 #include "cryptonote/basic/controller/account.h"
 
-#include "tools/epee/include/blob.hpp"
+#include "tools/epee/functional/blob.hpp"
 #include "tools/epee/include/wipeable_string.h"
 
 namespace cryptonote

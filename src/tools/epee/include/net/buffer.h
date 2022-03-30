@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "tools/epee/include/blob.hpp"
+#include "tools/epee/functional/blob.hpp"
 
 #include <span>
 #include <cstdint>

@@ -33,7 +33,7 @@
 #include "cryptonote/basic/type/string_blob_type.hpp"
 #include "cryptonote/basic/type/tx_extra.hpp"
 
-#include "tools/epee/include/blob.hpp"
+#include "tools/epee/functional/blob.hpp"
 
 #include "math/blockchain/functional/subaddress_index.hpp"
 #include "math/crypto/functional/key.hpp"
