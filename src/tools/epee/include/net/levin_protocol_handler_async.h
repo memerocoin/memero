@@ -37,10 +37,7 @@
 #include "cryptonote/basic/type/string_blob_type.hpp"
 #include "network/p2p/p2p_protocol_defs.h"
 
-#include <random>
-
 #include <boost/uuid/uuid_generators.hpp>
-#include <boost/functional/hash.hpp>
 #include <boost/asio/steady_timer.hpp>
 
 #include "config/lol.hpp"

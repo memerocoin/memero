@@ -26,6 +26,8 @@
 
 #include "tools/epee/include/net/levin_protocol_handler_async.h"
 
+#include <random>
+
 namespace epee
 {
 namespace levin
