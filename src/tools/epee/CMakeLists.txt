@@ -76,6 +76,7 @@ add_library( epee_net_basic
 
 add_library( epee_net
   src/net/http_protocol_handler.cpp
+  src/net/http_protocol_handler_helper.cpp
   src/net/http_abstract_invoke.cpp
 )
 

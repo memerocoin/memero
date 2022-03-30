@@ -66,7 +66,8 @@ namespace net_utils
 		/************************************************************************/
 		/*                                                                      */
 		/************************************************************************/
-		template<class t_connection_context  = epee::net_utils::connection_context_base>
+		using t_connection_context = epee::net_utils::connection_context_base;
+
 		class simple_http_connection_handler
 		{
 		public:
@@ -149,7 +150,6 @@ namespace net_utils
 			t_connection_context& m_conn_context;
 		};
 
-		using t_connection_context = epee::net_utils::connection_context_base;
 		struct i_http_server_handler
 		{
 			virtual ~i_http_server_handler(){}
@@ -169,13 +169,13 @@ namespace net_utils
 		/*                                                                      */
 		/************************************************************************/
 
-		class http_custom_handler: public simple_http_connection_handler<t_connection_context>
+		class http_custom_handler: public simple_http_connection_handler
 		{
 		public:
 			typedef custum_handler_config config_type;
 
 			http_custom_handler(i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context)
-				: simple_http_connection_handler<t_connection_context>(psnd_hndlr, config, conn_context),
+				: simple_http_connection_handler(psnd_hndlr, config, conn_context),
 					m_config(config)
 			{}
 			inline bool handle_request(const http_request_info& query_info, http_response_info& response)
@@ -214,5 +214,3 @@ namespace net_utils
 	}
 }
 }
-
-#include "http_protocol_handler.inl"

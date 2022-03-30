@@ -1,4 +1,3 @@
-// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
 // All rights reserved.
 //
@@ -25,9 +24,20 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+
 #include "tools/epee/include/net/http_protocol_handler.h"
 
-#include <regex>
+#include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/net/net_parse_helpers.h"
+#include "tools/epee/include/time_helper.h"
+
+
+#include <boost/algorithm/string/trim.hpp>
+
+
+#define HTTP_MAX_URI_LEN		 9000
+#define HTTP_MAX_HEADER_LEN		 100000
+#define HTTP_MAX_STARTING_NEWLINES       8
 
 namespace epee
 {
@@ -35,178 +45,504 @@ namespace net_utils
 {
 	namespace http
 	{
-		bool match_boundary(const std::string& content_type, std::string& boundary)
-		{
-			const std::regex rexp_match_boundary
-        (
-         "boundary=(.*?)(($)|([;\\s,]))"
-         , std::regex::icase
-         );
+		//--------------------------------------------------------------------------------------------
+		
+		simple_http_connection_handler::simple_http_connection_handler(i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context):
+		m_state(http_state_retriving_comand_line),
+		m_body_transfer_type(http_body_transfer_undefined),
+		m_is_stop_handling(false),
+		m_len_summary(0),
+		m_len_remain(0),
+		m_config(config),
+		m_want_close(false),
+		m_newlines(0),
+		m_psnd_hndlr(psnd_hndlr),
+		m_conn_context(conn_context)
+	{
 
-			//											        1
-			std::smatch result;
-			if(std::regex_search(content_type, result, rexp_match_boundary) && result[0].matched)
-			{
-				boundary = result[1];
-				return true;
-			}
+	}
+	//--------------------------------------------------------------------------------------------
+    
+	bool simple_http_connection_handler::set_ready_state()
+	{
+		m_is_stop_handling = false;
+		m_state = http_state_retriving_comand_line;
+		m_body_transfer_type = http_body_transfer_undefined;
+		m_query_info.clear();
+		m_len_summary = 0;
+		m_newlines = 0;
+		return true;
+	}
+	//--------------------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::handle_recv(const void* ptr, size_t cb)
+	{
+		std::string buf((const char*)ptr, cb);
+		//LOG_PRINT_L0("HTTP_RECV: " << ptr << "\r\n" << buf);
 
+		bool res = handle_buff_in(buf);
+		if(m_want_close/*m_state == http_state_connection_close || m_state == http_state_error*/)
 			return false;
-		}
+		return res;
+	}
+	//--------------------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::handle_buff_in(std::string& buf)
+	{
 
-	  bool parse_header(std::string::const_iterator it_begin, std::string::const_iterator it_end, multipart_entry& entry)
+		size_t ndel;
+
+		if(m_cache.size())
+			m_cache += buf;
+		else
+			m_cache.swap(buf);
+
+		m_is_stop_handling = false;
+		while(!m_is_stop_handling)
 		{
-			const std::regex rexp_mach_field
-        (
-         "\n?((Content-Disposition)|(Content-Type)"
-         //  12                     3
-         "|([\\w-]+?)) ?: ?((.*?)(\r?\n))[^\t ]"
-         //4               56    7
-         , std::regex::icase
-         );
-
-			std::smatch		result;
-			std::string::const_iterator it_current_bound = it_begin;
-			std::string::const_iterator it_end_bound = it_end;
-
-			//lookup all fields and fill well-known fields
-			while( std::regex_search( it_current_bound, it_end_bound, result, rexp_mach_field) && result[0].matched)
+			switch(m_state)
 			{
-				const size_t field_val = 6;
-				const size_t field_etc_name = 4;
+			case http_state_retriving_comand_line:
+				//The HTTP protocol does not place any a priori limit on the length of a URI.  (c)RFC2616
+				//but we forebly restirct it len to HTTP_MAX_URI_LEN to make it more safely
+				if(!m_cache.size())
+					break;
 
-				int i = 2; //start position = 2
-				if(result[i++].matched)//"Content-Disposition"
-					entry.m_content_disposition = result[field_val];
-				else if(result[i++].matched)//"Content-Type"
-					entry.m_content_type = result[field_val];
-				else if(result[i++].matched)//e.t.c (HAVE TO BE MATCHED!)
-					entry.m_etc_header_fields.push_back(std::pair<std::string, std::string>(result[field_etc_name], result[field_val]));
-				else
+				//check_and_handle_fake_response();
+				ndel = m_cache.find_first_not_of("\r\n");
+				if (ndel != 0)
 				{
-					LOG_ERROR
-            (
-             "simple_http_connection_handler::parse_header() not matched last entry in:"
-             + std::string(it_current_bound, it_end)
-             );
+          //some times it could be that before query line cold be few line breaks
+          //so we have to be calm without panic with assers
+					m_newlines += std::string::npos == ndel ? m_cache.size() : ndel;
+					if (m_newlines > HTTP_MAX_STARTING_NEWLINES)
+					{
+						LOG_ERROR("simple_http_connection_handler::handle_buff_out: Too many starting newlines");
+						m_state = http_state_error;
+						return false;
+					}
+					m_cache.erase(0, ndel);
+					break;
 				}
 
-				it_current_bound = result[(int)result.size()-1].first;
-			}
-			return  true;
-		}
-
-		bool handle_part_of_multipart(std::string::const_iterator it_begin, std::string::const_iterator it_end, multipart_entry& entry)
-		{
-			std::string end_str = "\r\n\r\n";
-			std::string::const_iterator end_header_it = std::search(it_begin, it_end, end_str.begin(), end_str.end());
-			if(end_header_it == it_end)
-			{
-				//header not matched
+				if(std::string::npos != m_cache.find('\n', 0))
+					handle_invoke_query_line();
+				else
+				{
+					m_is_stop_handling = true;
+					if(m_cache.size() > HTTP_MAX_URI_LEN)
+					{
+						LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler::handle_buff_out: Too long URI line");
+						m_state = http_state_error;
+						return false;
+					}
+				}
+				break;
+			case http_state_retriving_header:
+				{
+					std::string::size_type pos = match_end_of_header(m_cache);
+					if(std::string::npos == pos)
+					{
+						m_is_stop_handling = true;
+						if(m_cache.size() > HTTP_MAX_HEADER_LEN)
+						{
+							LOG_ERROR_CC(m_conn_context, "simple_http_connection_handler::handle_buff_in: Too long header area");
+							m_state = http_state_error;
+							return false;
+						}
+						break;
+					}
+					if (!analize_cached_request_header_and_invoke_state(pos))
+						return false;
+					break;
+				}
+			case http_state_retriving_body:
+				return handle_retriving_query_body();
+			case http_state_connection_close:
 				return false;
-			}
-
-			if(!parse_header(it_begin, end_header_it+4, entry))
-			{
-				LOG_ERROR("Failed to parse header:" + std::string(it_begin, end_header_it+2));
-				return false;
-			}
-
-			entry.m_body.assign(end_header_it+4, it_end);
-
-			return true;
-		}
-
-		bool parse_multipart_body(const std::string& content_type, const std::string& body, std::list<multipart_entry>& out_values)
-		{
-			//bool res = file_io_utils::load_file_to_string("C:\\public\\multupart_data", body);
-
-			std::string boundary;
-			if(!match_boundary(content_type, boundary))
-			{
-				LOG_ERROR
+			default:
+				LOG_ERROR_CC
           (
-           "Failed to match boundary in content type: "
-           + content_type
+           m_conn_context
+           , "simple_http_connection_handler::handle_char_out: Wrong state: "
+           + std::to_string(m_state)
+           );
+				return false;
+			case http_state_error:
+				LOG_ERROR_CC
+          (
+           m_conn_context
+           , "simple_http_connection_handler::handle_char_out: Error state!!!"
            );
 				return false;
 			}
 
-			boundary+="\r\n";
-			bool is_stop = false;
-			bool first_step = true;
-
-			std::string::const_iterator it_begin = body.begin();
-			std::string::const_iterator it_end;
-			while(!is_stop)
-			{
-				std::string::size_type pos = body.find(boundary, std::distance(body.begin(), it_begin));
-
-				if(std::string::npos == pos)
-				{
-					is_stop = true;
-					boundary.erase(boundary.size()-2, 2);
-					boundary+= "--";
-					pos = body.find(boundary, std::distance(body.begin(), it_begin));
-					if(std::string::npos == pos)
-					{
-						LOG_ERROR("Error: Filed to match closing multipart tag");
-						it_end = body.end();
-					}else
-					{
-						it_end =  std::next(body.begin(), pos);
-					}
-				}else
-					it_end =  std::next(body.begin(), pos);
-
-
-				if(first_step && !is_stop)
-				{
-					first_step = false;
-					it_begin = it_end + boundary.size();
-					std::string temp = "\r\n--";
-					boundary = temp + boundary;
-					continue;
-				}
-
-				out_values.push_back(multipart_entry());
-				if(!handle_part_of_multipart(it_begin, it_end, out_values.back()))
-				{
-					LOG_ERROR("Failed to handle_part_of_multipart");
-					return false;
-				}
-
-				it_begin = it_end + boundary.size();
-			}
-
-			return true;
+			if(!m_cache.size())
+				m_is_stop_handling = true;
 		}
 
-    //--------------------------------------------------------------------------------------------
-    bool analize_http_method(const std::smatch& result, http::http_method& method, int& http_ver_major, int& http_ver_minor)
-    {
-      LOG_ERROR_AND_RETURN_UNLESS(result[0].matched, false, "simple_http_connection_handler::analize_http_method() assert failed...");
-      if (!boost::conversion::try_lexical_convert<int>(result[11], http_ver_major))
-        return false;
-      if (!boost::conversion::try_lexical_convert<int>(result[12], http_ver_minor))
-        return false;
+		return true;
+	}
+  //--------------------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::handle_invoke_query_line()
+	{
+		const std::regex rexp_match_command_line
+      (
+       "^(((OPTIONS)|(GET)|(HEAD)|(POST)|(PUT)|(DELETE)|(TRACE)) (\\S+) HTTP/(\\d+)\\.(\\d+))\r?\n"
+       , std::regex::icase
+       );
+		//											    123         4     5      6      7     8        9        10          11     12
+		//size_t match_len = 0;
+		std::smatch result;
+		if(std::regex_search(m_cache, result, rexp_match_command_line) && result[0].matched)
+		{
+			if (!analize_http_method(result, m_query_info.m_http_method, m_query_info.m_http_ver_hi, m_query_info.m_http_ver_hi))
+			{
+				m_state = http_state_error;
+				LOG_ERROR("Failed to analyze method");
+				return false;
+			}
+			m_query_info.m_URI = result[10];
+			if (!parse_uri(m_query_info.m_URI, m_query_info.m_uri_content))
+			{
+				m_state = http_state_error;
+				LOG_ERROR("Failed to parse URI: m_query_info.m_URI");
+				return false;
+			}
+			m_query_info.m_http_method_str = result[2];
+			m_query_info.m_full_request_str = result[0];
 
-      if(result[3].matched)
-        method = http::http_method_options;
-      else if(result[4].matched)
-        method = http::http_method_get;
-      else if(result[5].matched)
-        method = http::http_method_head;
-      else if(result[6].matched)
-        method = http::http_method_post;
-      else if(result[7].matched)
-        method = http::http_method_put;
-      else
-        method = http::http_method_etc;
+			m_cache.erase(m_cache.begin(), result[0].second);
 
-      return true;
-    }
+			m_state = http_state_retriving_header;
 
+			return true;
+		}else
+		{
+			m_state = http_state_error;
+			LOG_ERROR_CC
+        (
+         m_conn_context
+         , "simple_http_connection_handler::handle_invoke_query_line(): Failed to match first line: "
+         + m_cache
+         );
+			return false;
+		}
+
+		return false;
+	}
+	//--------------------------------------------------------------------------------------------
+  
+	std::string::size_type simple_http_connection_handler::match_end_of_header(const std::string& buf)
+	{
+
+    //Here we returning head size, including terminating sequence (\r\n\r\n or \n\n)
+		std::string::size_type res = buf.find("\r\n\r\n");
+		if(std::string::npos != res)
+			return res+4;
+		res = buf.find("\n\n");
+		if(std::string::npos != res)
+			return res+2;
+		return res;
+	}
+	//--------------------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::analize_cached_request_header_and_invoke_state(size_t pos)
+	{
+		LOG_PRINT_L3("HTTP HEAD:\r\n" + m_cache.substr(0, pos));
+
+		m_query_info.m_full_request_buf_size = pos;
+    m_query_info.m_request_head.assign(m_cache.begin(), m_cache.begin()+pos);
+
+		if(!parse_cached_header(m_query_info.m_header_info, m_cache, pos))
+		{
+			LOG_ERROR_CC
+        (
+         m_conn_context
+         , "simple_http_connection_handler::analize_cached_request_header_and_invoke_state(): failed to anilize request header: "
+         + m_cache
+         );
+			m_state = http_state_error;
+			return false;
+		}
+
+		m_cache.erase(0, pos);
+
+		std::string req_command_str = m_query_info.m_full_request_str;
+    //if we have POST or PUT command, it is very possible tha we will get body
+    //but now, we suppose than we have body only in case of we have "ContentLength"
+		if(m_query_info.m_header_info.m_content_length.size())
+		{
+			m_state = http_state_retriving_body;
+			m_body_transfer_type = http_body_transfer_measure;
+			if(!get_len_from_content_lenght(m_query_info.m_header_info.m_content_length, m_len_summary))
+			{
+				LOG_ERROR_CC
+          (
+           m_conn_context
+           , "simple_http_connection_handler::analize_cached_request_header_and_invoke_state(): Failed to get_len_from_content_lenght();, m_query_info.m_content_length="
+           + m_query_info.m_header_info.m_content_length
+           );
+				m_state = http_state_error;
+				return false;
+			}
+			if(0 == m_len_summary)
+			{	//current query finished, next will be next query
+				if(handle_request_and_send_response(m_query_info))
+					set_ready_state();
+				else
+					m_state = http_state_error;
+			}
+			m_len_remain = m_len_summary;
+		}else
+		{//current query finished, next will be next query
+			handle_request_and_send_response(m_query_info);
+			set_ready_state();
+		}
+
+		return true;
+	}
+	//-----------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::handle_retriving_query_body()
+	{
+		switch(m_body_transfer_type)
+		{
+		case http_body_transfer_measure:
+			return handle_query_measure();
+		case http_body_transfer_chunked:
+		case http_body_transfer_connection_close:
+		case http_body_transfer_multipart:
+		case http_body_transfer_undefined:
+		default:
+			LOG_ERROR_CC
+        (
+         m_conn_context
+         , "simple_http_connection_handler::handle_retriving_query_body(): Unexpected m_body_query_type state:"
+         + std::to_string(m_body_transfer_type)
+         );
+			m_state = http_state_error;
+			return false;
+		}
+
+		return true;
+	}
+	//-----------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::handle_query_measure()
+	{
+
+		if(m_len_remain >= m_cache.size())
+		{
+			m_len_remain -= m_cache.size();
+			m_query_info.m_body += m_cache;
+			m_cache.clear();
+		}else
+		{
+			m_query_info.m_body.append(m_cache.begin(), std::next(m_cache.begin(), m_len_remain));
+			m_cache.erase(0, m_len_remain);
+			m_len_remain = 0;
+		}
+
+		if(!m_len_remain)
+		{
+			if(handle_request_and_send_response(m_query_info))
+				set_ready_state();
+			else
+				m_state = http_state_error;
+		}
+		return true;
+	}
+	//--------------------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::parse_cached_header(http_header_info& body_info, const std::string& m_cache_to_process, size_t pos)
+	{
+    const std::regex rexp_mach_field
+      (
+       "\n?((Connection)|(Referer)|(Content-Length)|(Content-Type)|(Transfer-Encoding)|(Content-Encoding)|(Host)|(Cookie)|(User-Agent)|(Origin)"
+       //  12            3         4                5              6                   7                  8      9        10           11
+       "|([\\w-]+?)) ?: ?((.*?)(\r?\n))[^\t ]"
+       //11             1213   14
+       , std::regex::icase
+       );
+
+		std::smatch		result;
+		std::string::const_iterator it_current_bound = m_cache_to_process.begin();
+		std::string::const_iterator it_end_bound = m_cache_to_process.begin()+pos;
+
+		body_info.clear();
+
+		//lookup all fields and fill well-known fields
+		while( std::regex_search( it_current_bound, it_end_bound, result, rexp_mach_field) && result[0].matched)
+		{
+			const size_t field_val = 14;
+			const size_t field_etc_name = 12;
+
+			int i = 2; //start position = 2
+			if(result[i++].matched)//"Connection"
+				body_info.m_connection = result[field_val];
+			else if(result[i++].matched)//"Referer"
+				body_info.m_referer = result[field_val];
+			else if(result[i++].matched)//"Content-Length"
+				body_info.m_content_length = result[field_val];
+			else if(result[i++].matched)//"Content-Type"
+				body_info.m_content_type = result[field_val];
+			else if(result[i++].matched)//"Transfer-Encoding"
+				body_info.m_transfer_encoding = result[field_val];
+			else if(result[i++].matched)//"Content-Encoding"
+				body_info.m_content_encoding = result[field_val];
+			else if(result[i++].matched)//"Host"
+				body_info.m_host = result[field_val];
+			else if(result[i++].matched)//"Cookie"
+				body_info.m_cookie = result[field_val];
+			else if(result[i++].matched)//"User-Agent"
+				body_info.m_user_agent = result[field_val];
+			else if(result[i++].matched)//"Origin"
+				body_info.m_origin = result[field_val];
+			else if(result[i++].matched)//e.t.c (HAVE TO BE MATCHED!)
+				body_info.m_etc_fields.push_back(std::pair<std::string, std::string>(result[field_etc_name], result[field_val]));
+			else
+			{
+				LOG_ERROR_CC
+          (
+           m_conn_context
+           , "simple_http_connection_handler::parse_cached_header() not matched last entry in:"
+           + m_cache_to_process
+           );
+			}
+
+			it_current_bound = result[(int)result.size()-1]. first;
+		}
+		return  true;
+	}
+	//-----------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::get_len_from_content_lenght(const std::string& str, size_t& len)
+	{
+		const std::regex rexp_mach_field
+      (
+       "\\d+"
+       , std::regex::ECMAScript
+       );
+
+		std::string res;
+		std::smatch result;
+		if(!(std::regex_search( str, result, rexp_mach_field) && result[0].matched))
+			return false;
+
+		try { len = boost::lexical_cast<size_t>(result[0]); }
+		catch(...) { return false; }
+		return true;
+	}
+	//-----------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::handle_request_and_send_response(const http::http_request_info& query_info)
+	{
+		http_response_info response{};
+		//LOG_ERROR_AND_RETURN_UNLESS(res, res, "handle_request(query_info, response) returned false" );
+		bool res = true;
+
+		if (query_info.m_http_method != http::http_method_options)
+		{
+			res = handle_request(query_info, response);
+			if (response.m_response_code == 500)
+			{
+				m_want_close = true;	// close on all "Internal server error"s
+			}
+		}
+		else
+		{
+			response.m_response_code = 200;
+			response.m_response_comment = "OK";
+		}
+
+		std::string response_data = get_response_header(response);
+		//LOG_PRINT_L0("HTTP_SEND: << \r\n" << response_data + response.m_body);
+
+		LOG_PRINT_L3("HTTP_RESPONSE_HEAD: << \r\n" + response_data);
+
+		if ((response.m_body.size() && (query_info.m_http_method != http::http_method_head)) || (query_info.m_http_method == http::http_method_options))
+			response_data += response.m_body;
+
+		m_psnd_hndlr->do_send(epee::string_tools::string_to_blob(response_data));
+		m_psnd_hndlr->send_done();
+		return res;
+	}
+	//-----------------------------------------------------------------------------------
+  
+	bool simple_http_connection_handler::handle_request(const http::http_request_info& query_info, http_response_info& response)
+	{
+    response.m_response_code = 404;
+    return true;
   }
+  //-----------------------------------------------------------------------------------
+  
+	std::string simple_http_connection_handler::get_response_header(const http_response_info& response)
+	{
+		std::string buf = "HTTP/1.1 ";
+		buf += boost::lexical_cast<std::string>(response.m_response_code) + " " + response.m_response_comment + "\r\n" +
+			"Server: Epee-based\r\n"
+			"Content-Length: ";
+		buf += boost::lexical_cast<std::string>(response.m_body.size()) + "\r\n";
+
+		if(!response.m_mime_tipe.empty())
+		{
+			buf += "Content-Type: ";
+			buf += response.m_mime_tipe + "\r\n";
+		}
+
+		buf += "Accept-Ranges: bytes\r\n";
+		//Wed, 01 Dec 2010 03:27:41 GMT"
+
+		boost::trim(m_query_info.m_header_info.m_connection);
+		if(m_query_info.m_header_info.m_connection.size())
+		{
+			if(!string_tools::compare_no_case("close", m_query_info.m_header_info.m_connection))
+			{
+        //closing connection after sending
+				buf += "Connection: close\r\n";
+				m_state = http_state_connection_close;
+				m_want_close = true;
+			}
+		}
+
+		// Cross-origin resource sharing
+		if(m_query_info.m_header_info.m_origin.size())
+		{
+			if (std::binary_search(m_config.m_access_control_origins.begin(), m_config.m_access_control_origins.end(), m_query_info.m_header_info.m_origin))
+			{
+				buf += "Access-Control-Allow-Origin: ";
+				buf += m_query_info.m_header_info.m_origin;
+				buf += "\r\n";
+				buf += "Access-Control-Expose-Headers: www-authenticate\r\n";
+				if (m_query_info.m_http_method == http::http_method_options)
+					buf += "Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With\r\n";
+				buf += "Access-Control-Allow-Methods: POST, PUT, GET, OPTIONS\r\n";
+			}
+		}
+
+		//add additional fields, if it is
+		for(fields_list::const_iterator it = response.m_additional_fields.begin(); it!=response.m_additional_fields.end(); it++)
+			buf += it->first + ": " + it->second + "\r\n";
+
+		buf+="\r\n";
+
+		return buf;
+	}
+	//--------------------------------------------------------------------------------------------
+	
+  bool simple_http_connection_handler::slash_to_back_slash(std::string& str)
+	{
+		for(std::string::iterator it = str.begin(); it!=str.end(); it++)
+			if('/' == *it)
+				*it = '\\';
+		return true;
+	}
+	}
 }
 }
+
+//--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
