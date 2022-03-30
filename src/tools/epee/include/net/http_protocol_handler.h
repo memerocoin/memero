@@ -127,7 +127,6 @@ namespace net_utils
 			bool handle_query_measure();
 			bool set_ready_state();
 			bool slash_to_back_slash(std::string& str);
-			std::string get_file_mime_tipe(const std::string& path);
 			std::string get_response_header(const http_response_info& response);
 
 			//major function

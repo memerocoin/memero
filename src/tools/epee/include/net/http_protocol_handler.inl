@@ -539,32 +539,6 @@ namespace net_utils
 	}
 	//-----------------------------------------------------------------------------------
 	template<class t_connection_context>
-  std::string simple_http_connection_handler<t_connection_context>::get_file_mime_tipe(const std::string& path)
-	{
-		std::string result;
-		std::string ext = std::filesystem::path(path).extension();
-		if(!string_tools::compare_no_case(ext, ".gif"))
-			result = "image/gif";
-		else if(!string_tools::compare_no_case(ext, ".jpg"))
-			result = "image/jpeg";
-		else if(!string_tools::compare_no_case(ext, ".html"))
-			result = "text/html";
-		else if(!string_tools::compare_no_case(ext, ".htm"))
-			result = "text/html";
-		else if(!string_tools::compare_no_case(ext, ".js"))
-			result = "application/x-javascript";
-		else if(!string_tools::compare_no_case(ext, ".css"))
-			result = "text/css";
-		else if(!string_tools::compare_no_case(ext, ".xml"))
-			result = "application/xml";
-    else if(!string_tools::compare_no_case(ext, ".svg"))
-      result = "image/svg+xml";
-
-
-		return result;
-	}
-	//-----------------------------------------------------------------------------------
-	template<class t_connection_context>
   std::string simple_http_connection_handler<t_connection_context>::get_not_found_response_body(const std::string& URI)
 	{
 		std::string body =
