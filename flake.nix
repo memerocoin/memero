@@ -19,7 +19,7 @@
 
             let
               stdenvLatest = gcc11Stdenv
-              ; clangStdenvLatest = llvmPackages_13.stdenv
+              ; clangStdenvLatest = llvmPackages_14.stdenv
               ; version = builtins.substring 0 8 self.lastModifiedDate
 
               ; lolnero-template =
@@ -201,7 +201,7 @@
               let
                 pkgs = nixpkgs.legacyPackages.${system}
                 ; gccLatest = pkgs.gcc11
-                ; clangLatest = pkgs.llvmPackages_13.clang
+                ; clangLatest = pkgs.llvmPackages_14.clang
 
                 ; CMakeFlags_Lolnero =
                     ''
