@@ -216,28 +216,8 @@ constexpr const std::chrono::seconds wallet2::rpc_timeout;
 const char* wallet2::tr(const char* str) { return str; }
 
 wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended):
-  m_run(true),
-  m_callback(0),
   m_nettype(nettype),
-  m_always_confirm_transfers(true),
-  m_store_tx_info(true),
-  m_default_priority(0),
-  m_refresh_from_block_height(0),
-  m_explicit_refresh_from_block_height(true),
-  m_ask_password(AskPasswordNever),
-  m_merge_destinations(false),
-  m_confirm_export_overwrite(true),
-  m_ignore_fractional_outputs(true),
-  m_ignore_outputs_above(std::numeric_limits<uint64_t>::max()),
-  m_ignore_outputs_below(0),
-  m_is_initialized(false),
-  m_kdf_rounds(kdf_rounds),
-  m_rpc_client(),
-  m_spend_view_public_keys{crypto::null_pkey, crypto::null_pkey},
-  m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
-  m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
-  m_offline(false),
-  m_rpc_version(0)
+  m_kdf_rounds(kdf_rounds)
 {
 }
 

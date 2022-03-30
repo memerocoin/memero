@@ -425,38 +425,39 @@ namespace tools
     payment_container m_payments;
     serializable_unordered_map<crypto::key_image, size_t> m_output_key_images;
     serializable_unordered_map<crypto::public_key, size_t> m_pub_keys;
-    cryptonote::spend_view_public_keys m_spend_view_public_keys;
+    cryptonote::spend_view_public_keys m_spend_view_public_keys{};
     serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index> m_subaddresses;
     std::vector<std::vector<std::string>> m_subaddress_labels;
     serializable_unordered_map<std::string, std::string> m_attributes;
     std::pair<serializable_map<std::string, std::string>, std::vector<std::string>> m_account_tags;
     serializable_unordered_map<crypto::public_key, crypto::key_image> m_cold_output_key_images;
 
-    std::atomic<bool> m_run;
+    std::atomic<bool> m_run = true;
 
-    i_wallet2_callback* m_callback;
+    i_wallet2_callback* m_callback = 0;
     cryptonote::network_type m_nettype;
     uint64_t m_kdf_rounds;
     std::string seed_language; /*!< Language of the mnemonics (seed). */
-    bool m_always_confirm_transfers;
-    bool m_store_tx_info; /*!< request txkey to be returned in RPC, and store in the wallet cache file */
-    uint32_t m_default_priority;
-    uint64_t m_refresh_from_block_height;
+    bool m_always_confirm_transfers = true;
+    bool m_store_tx_info = true; /*!< request txkey to be returned in RPC, and store in the wallet cache file */
+    uint32_t m_default_priority = 0;
+    uint64_t m_refresh_from_block_height = 0;
     // If m_refresh_from_block_height is explicitly set to zero we need this to differentiate it from the case that
     // m_refresh_from_block_height was defaulted to zero.*/
-    bool m_explicit_refresh_from_block_height;
-    AskPasswordType m_ask_password;
-    bool m_merge_destinations;
-    bool m_confirm_export_overwrite;
-    bool m_ignore_fractional_outputs;
-    uint64_t m_ignore_outputs_above;
-    uint64_t m_ignore_outputs_below;
-    bool m_is_initialized;
-    RPC_Client m_rpc_client;
+    bool m_explicit_refresh_from_block_height = true;
+    AskPasswordType m_ask_password = AskPasswordNever;
+    bool m_merge_destinations = false;
+    bool m_confirm_export_overwrite = true;
+    bool m_ignore_fractional_outputs = true;
+    uint64_t m_ignore_outputs_above = std::numeric_limits<uint64_t>::max();
+    uint64_t m_ignore_outputs_below = 0;
+    bool m_is_initialized = false;
+    RPC_Client m_rpc_client{};
     std::unordered_set<crypto::hash> m_scanned_pool_txs[2];
-    size_t m_subaddress_lookahead_major, m_subaddress_lookahead_minor;
-    bool m_offline;
-    uint32_t m_rpc_version;
+    size_t m_subaddress_lookahead_major = config::lol::SUBADDRESS_LOOKAHEAD_MAJOR;
+    size_t m_subaddress_lookahead_minor = config::lol::SUBADDRESS_LOOKAHEAD_MINOR;
+    bool m_offline = false;
+    uint32_t m_rpc_version = 0;
 
     crypto::chacha_key m_cache_key;
   };

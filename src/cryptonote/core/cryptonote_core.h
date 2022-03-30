@@ -871,7 +871,7 @@ namespace cryptonote
      std::mutex bad_semantics_txes_lock;
 
      bool m_fluffy_blocks_enabled = true;
-     bool m_offline = UNDEFINED;
+     bool m_offline = false;
 
     /* `boost::function` is used because the implementation never allocates if
        the callable object has a single `std::shared_ptr` or `std::weap_ptr`

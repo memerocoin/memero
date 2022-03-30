@@ -46,12 +46,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # compiler
 add_compile_options(-Wall)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  # add_compile_options(-Wno-reorder-ctor)
-
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   add_compile_options(-Wno-sign-compare)
-  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-reorder>)
 
   if (CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64)")
     add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-mno-outline-atomics>)
