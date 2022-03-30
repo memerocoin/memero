@@ -101,7 +101,7 @@ struct options {
     {"offline", tools::wallet2::tr("Do not connect to a daemon"), false};
 };
 
-std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variables_map& vm, bool unattended, const options& opts, const std::function<std::optional<tools::password_container>(const char *, bool)> &password_prompter)
+std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variables_map& vm, const options& opts, const std::function<std::optional<tools::password_container>(const char *, bool)> &password_prompter)
 {
   const bool testnet = command_line::get_arg(vm, opts.testnet);
   const network_type nettype = testnet ? TESTNET : MAINNET;
@@ -115,7 +115,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   if (daemon_address.empty())
     daemon_address = daemon_host + ":" + std::to_string(daemon_port);
 
-  std::unique_ptr<tools::wallet2> wallet = std::make_unique<tools::wallet2>(nettype, kdf_rounds, unattended);
+  std::unique_ptr<tools::wallet2> wallet = std::make_unique<tools::wallet2>(nettype, kdf_rounds);
   if (!wallet->init(std::move(daemon_address)))
   {
     THROW_WALLET_EXCEPTION(tools::error::wallet_internal_error, tools::wallet2::tr("failed to initialize the wallet"));
@@ -215,7 +215,7 @@ namespace tools
 constexpr const std::chrono::seconds wallet2::rpc_timeout;
 const char* wallet2::tr(const char* str) { return str; }
 
-wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended):
+wallet2::wallet2(network_type nettype, uint64_t kdf_rounds):
   m_nettype(nettype),
   m_kdf_rounds(kdf_rounds)
 {
@@ -237,7 +237,7 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
 }
 
 std::pair<std::unique_ptr<wallet2>, password_container> wallet2::make_from_file(
-  const boost::program_options::variables_map& vm, bool unattended, const std::string& wallet_file, const std::function<std::optional<tools::password_container>(const char *, bool)> &password_prompter)
+  const boost::program_options::variables_map& vm, const std::string& wallet_file, const std::function<std::optional<tools::password_container>(const char *, bool)> &password_prompter)
 {
   const options opts{};
   auto pwd = get_password(vm, opts, password_prompter, false);
@@ -245,7 +245,7 @@ std::pair<std::unique_ptr<wallet2>, password_container> wallet2::make_from_file(
   {
     return {nullptr, password_container{}};
   }
-  auto wallet = make_basic(vm, unattended, opts, password_prompter);
+  auto wallet = make_basic(vm, opts, password_prompter);
   if (wallet && !wallet_file.empty())
   {
     wallet->load(wallet_file, pwd->password());
@@ -253,7 +253,7 @@ std::pair<std::unique_ptr<wallet2>, password_container> wallet2::make_from_file(
   return {std::move(wallet), std::move(*pwd)};
 }
 
-std::pair<std::unique_ptr<wallet2>, password_container> wallet2::make_new(const boost::program_options::variables_map& vm, bool unattended, const std::function<std::optional<password_container>(const char *, bool)> &password_prompter)
+std::pair<std::unique_ptr<wallet2>, password_container> wallet2::make_new(const boost::program_options::variables_map& vm, const std::function<std::optional<password_container>(const char *, bool)> &password_prompter)
 {
   const options opts{};
   auto pwd = get_password(vm, opts, password_prompter, true);
@@ -261,7 +261,7 @@ std::pair<std::unique_ptr<wallet2>, password_container> wallet2::make_new(const 
   {
     return {nullptr, password_container{}};
   }
-  return {make_basic(vm, unattended, opts, password_prompter), std::move(*pwd)};
+  return {make_basic(vm, opts, password_prompter), std::move(*pwd)};
 }
 
 //----------------------------------------------------------------------------------------------------

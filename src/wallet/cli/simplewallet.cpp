@@ -878,7 +878,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet
  )
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
-  try { rc = tools::wallet2::make_new(vm, false, password_prompter); }
+  try { rc = tools::wallet2::make_new(vm, password_prompter); }
   catch(const std::exception &e) { fail_msg_writer() << ("Error creating wallet: ") + std::string(e.what()); return {}; }
   m_wallet = std::move(rc.first);
   if (!m_wallet)
@@ -957,7 +957,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet
 std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm)
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
-  try { rc = tools::wallet2::make_new(vm, false, password_prompter); }
+  try { rc = tools::wallet2::make_new(vm, password_prompter); }
   catch(const std::exception &e) { fail_msg_writer() << ("Error creating wallet: ") + std::string(e.what()); return {}; }
   m_wallet = std::move(rc.first);
   m_wallet->callback(this);
@@ -998,7 +998,7 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
   epee::wipeable_string password;
   try
   {
-    auto rc = tools::wallet2::make_from_file(vm, false, "", password_prompter);
+    auto rc = tools::wallet2::make_from_file(vm, "", password_prompter);
     m_wallet = std::move(rc.first);
     password = std::move(std::move(rc.second).password());
     if (!m_wallet)
