@@ -41,21 +41,10 @@ namespace hex
   std::string encode_to_hex_formatted
   (const std::span<const std::uint8_t> src);
 
-  //! Append `src` as hex to `out`.
-  void encode_to_hex_stream
-    (std::ostream& out, const std::span<const std::uint8_t> src);
-
-  //! Append `< + src + >` as hex to `out`.
-  void encode_to_hex_stream_formatted
-    (std::ostream& out, const std::span<const std::uint8_t> src);
-
   std::optional<epee::blob::data> decode_from_hex_to_blob
     (const std::string_view src);
 
   std::optional<std::string> decode_from_hex_to_string
-    (const std::string_view src);
-
-  std::optional<epee::blob::data> decode_from_hex_to_blob
     (const std::string_view src);
 };
 }

@@ -54,7 +54,8 @@ namespace crypto {
 
   // not really functional but needed in other part of the code
   inline std::ostream &operator <<(std::ostream &o, const crypto::crypto_data &v) {
-    epee::hex::encode_to_hex_stream_formatted(o, v.data); return o;
+    o << epee::hex::encode_to_hex_formatted(v.data);
+    return o;
   }
 
   std::optional<crypto_data> from_hex(const std::string_view src);

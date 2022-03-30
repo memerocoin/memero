@@ -58,18 +58,6 @@ namespace epee
       return "<" + encode_to_hex(src) + ">";
     }
 
-    void encode_to_hex_stream
-    (std::ostream& out, const std::span<const std::uint8_t> src)
-    {
-      out << encode_to_hex(src);
-    }
-
-    void encode_to_hex_stream_formatted
-    (std::ostream& out, const std::span<const std::uint8_t> src)
-    {
-      out << encode_to_hex_formatted(src);
-    }
-
     bool decode_from_hex_unchecked
     (std::uint8_t* dst, const std::string_view s) noexcept
     {
