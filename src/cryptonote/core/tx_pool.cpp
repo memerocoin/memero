@@ -77,9 +77,9 @@ namespace cryptonote
 
   //---------------------------------------------------------------------------------
   //---------------------------------------------------------------------------------
-  tx_memory_pool::tx_memory_pool(Blockchain& bchs): m_blockchain(bchs), m_txpool_max_weight(DEFAULT_TXPOOL_MAX_WEIGHT), m_txpool_weight(0), m_cookie(0)
+  tx_memory_pool::tx_memory_pool(Blockchain& bchs)
+    : m_blockchain(bchs)
   {
-
   }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::add_tx(transaction &tx, /*const crypto::hash& tx_prefix_hash,*/ const crypto::hash &id, const cryptonote::string_blob &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed)

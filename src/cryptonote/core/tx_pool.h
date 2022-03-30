@@ -547,7 +547,7 @@ private:
     //!< container for transactions organized by fee per size and receive time
     sorted_tx_container m_txs_by_fee_and_receive_time;
 
-    std::atomic<uint64_t> m_cookie; //!< incremented at each change
+    std::atomic<uint64_t> m_cookie = 0; //!< incremented at each change
 
     /**
      * @brief get an iterator to a transaction in the sorted container
@@ -566,8 +566,8 @@ private:
 
     Blockchain& m_blockchain;  //!< reference to the Blockchain object
 
-    size_t m_txpool_max_weight;
-    size_t m_txpool_weight;
+    size_t m_txpool_max_weight = DEFAULT_TXPOOL_MAX_WEIGHT;
+    size_t m_txpool_weight = 0;
 
     std::unordered_map<crypto::hash, transaction> m_parsed_tx_cache;
   };
