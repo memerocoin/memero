@@ -31,22 +31,8 @@
 #include "cryptonote/basic/type/string_blob_type.hpp"
 #include "cryptonote/protocol/connection_context.h"
 
+#include "tools/epee/include/net/levin_protocol_handler_async.h"
 
-
-
-
-namespace epee
-{
-namespace levin
-{
-    template<typename> class async_protocol_handler_config;
-}
-}
-
-namespace nodetool
-{
-  template<typename> struct p2p_connection_context_t;
-}
 
 namespace cryptonote
 {
@@ -58,7 +44,7 @@ namespace levin
     struct zone; //!< Internal data needed for zone notifications
   } // detail
 
-  using connections = epee::levin::async_protocol_handler_config<detail::p2p_context>;
+  using connections = epee::levin::async_protocol_handler_config;
 
   //! Provides tx notification privacy
   class notify

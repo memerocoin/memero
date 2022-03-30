@@ -80,8 +80,17 @@ add_library( epee_net
   src/net/http_abstract_invoke.cpp
 )
 
+add_library( epee_net_p2p
+  src/net/levin_protocol_handler_async.cpp
+)
+
 target_link_libraries( epee_net
   epee_net_basic
+)
+
+target_link_libraries( epee_net_p2p
+  epee_net
+  cryptonote_protocol
 )
 
 add_library( epee_storage

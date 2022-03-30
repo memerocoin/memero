@@ -132,6 +132,7 @@ target_link_libraries(unit_tests_core
   tools_serialization
   network_p2p
   epee_storage
+  epee_net_p2p
   version
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}

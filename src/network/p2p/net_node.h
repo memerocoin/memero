@@ -109,27 +109,6 @@ namespace nodetool
   bool append_net_address(std::vector<epee::net_utils::network_address> & seed_nodes, std::string const & addr, uint16_t default_port);
 
 
-  template<class base_type>
-  struct p2p_connection_context_t: base_type //t_payload_net_handler::connection_context //public epee::net_utils::connection_context_base
-  {
-    p2p_connection_context_t()
-      : fluff_txs(),
-        flush_time(std::chrono::steady_clock::time_point::max()),
-        peer_id(0),
-        support_flags(0),
-        m_in_timedsync(false)
-    {}
-
-    static constexpr int handshake_command() noexcept { return 1001; }
-
-    std::vector<cryptonote::string_blob> fluff_txs;
-    std::chrono::steady_clock::time_point flush_time;
-    peerid_type peer_id;
-    uint32_t support_flags;
-    bool m_in_timedsync;
-    std::set<epee::net_utils::network_address> sent_addresses;
-  };
-
   typedef cryptonote::t_cryptonote_protocol_handler t_payload_net_handler;
 
   class node_server: public epee::levin::levin_commands_handler<p2p_connection_context_t<typename t_payload_net_handler::connection_context> >,
@@ -146,7 +125,7 @@ namespace nodetool
     typedef COMMAND_TIMED_SYNC_T<typename t_payload_net_handler::payload_type> COMMAND_TIMED_SYNC;
     static_assert(p2p_connection_context::handshake_command() == COMMAND_HANDSHAKE::ID, "invalid handshake command id");
 
-    typedef epee::net_utils::boosted_tcp_server<epee::levin::async_protocol_handler<p2p_connection_context>> net_server;
+    typedef epee::net_utils::boosted_tcp_server<epee::levin::async_protocol_handler> net_server;
 
     struct network_zone;
     using connect_func = std::optional<p2p_connection_context>(network_zone&, epee::net_utils::network_address const&);

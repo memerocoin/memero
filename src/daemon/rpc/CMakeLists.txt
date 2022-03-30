@@ -40,6 +40,7 @@ target_link_libraries(lolnerod-rpc
   daemon_messages
   database
   epee_storage
+  epee_net_p2p
   math_crypto
   math_ringct
   network_p2p
