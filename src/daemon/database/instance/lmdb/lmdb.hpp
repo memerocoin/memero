@@ -151,8 +151,8 @@ struct mdb_txn_safe
   static void wait_no_active_txns();
   static void allow_new_txns();
 
-  mdb_threadinfo* m_tinfo;
-  MDB_txn* m_txn;
+  mdb_threadinfo* m_tinfo = NULL;
+  MDB_txn* m_txn = NULL;
   bool m_batch_txn = false;
   bool m_check;
   static std::atomic<uint64_t> num_active_txns;

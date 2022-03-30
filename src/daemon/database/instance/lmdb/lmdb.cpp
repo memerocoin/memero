@@ -361,7 +361,7 @@ mdb_threadinfo::~mdb_threadinfo()
     mdb_txn_abort(m_ti_rtxn);
 }
 
-mdb_txn_safe::mdb_txn_safe(const bool check) : m_txn(NULL), m_tinfo(NULL), m_check(check)
+mdb_txn_safe::mdb_txn_safe(const bool check) : m_check(check)
 {
   if (check)
   {
