@@ -46,21 +46,21 @@ namespace string_tools
     return std::string((char*)s.data(), s.size());
   };
   //----------------------------------------------------------------------------
-  std::string buff_to_hex_nodelimer(const std::string& src)
+  std::string buff_to_hex_nodelimer(const std::string_view src)
   {
     return hex::encode_to_hex(string_to_blob(src));
   }
-	std::string num_to_string_fast(int64_t val)
+	std::string num_to_string_fast(const int64_t val)
 	{
     return std::to_string(val);
 	}
 	//----------------------------------------------------------------------------
-	bool compare_no_case(const std::string& str1, const std::string& str2)
+	bool compare_no_case(const std::string_view str1, const std::string_view str2)
 	{
 		return !boost::iequals(str1, str2);
 	}
 
-  std::string get_ip_string_from_int32(uint32_t ip)
+  std::string get_ip_string_from_int32(const uint32_t ip)
   {
     in_addr adr;
     adr.s_addr = ip;

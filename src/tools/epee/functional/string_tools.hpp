@@ -38,10 +38,10 @@ namespace string_tools
   epee::blob::data string_to_blob(const std::string_view s);
   epee::blob::view string_view_to_blob_view(const std::string_view s);
   std::string blob_to_string(const epee::blob::span s);
-  std::string buff_to_hex_nodelimer(const std::string& src);
+  std::string buff_to_hex_nodelimer(const std::string_view src);
 
-	std::string get_ip_string_from_int32(uint32_t ip);
-	std::string num_to_string_fast(int64_t val);
+	std::string get_ip_string_from_int32(const uint32_t ip);
+	std::string num_to_string_fast(const int64_t val);
 
   //---------------------------------------------------------------------
   template<typename T>
@@ -57,7 +57,7 @@ namespace string_tools
             
 
   //----------------------------------------------------------------------------
-	bool compare_no_case(const std::string& str1, const std::string& str2);
+	bool compare_no_case(const std::string_view str1, const std::string_view str2);
 
   //----------------------------------------------------------------------------
   template<class t_pod_type>
