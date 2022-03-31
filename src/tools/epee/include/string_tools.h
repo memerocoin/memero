@@ -37,8 +37,6 @@ namespace epee
 {
 namespace string_tools
 {
-  bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res);
-
   //----------------------------------------------------------------------------
   template<class XType>
   bool get_xtype_from_string(XType& val, const std::string_view str_id)
@@ -84,18 +82,12 @@ namespace string_tools
 
 		return true;
 	}
+
 	//----------------------------------------------------------------------------
+  bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res);
 	bool get_ip_int32_from_string(uint32_t& ip, const std::string_view ip_str);
   bool parse_peer_from_string
   (uint32_t& ip, uint16_t& port, const std::string_view addres);
-
-  std::string pad_string
-  (
-   const std::string_view s
-   , const size_t n
-   , const char c = ' '
-   , const bool prepend = false
-   );
 
 } // stringtools
 } // epee

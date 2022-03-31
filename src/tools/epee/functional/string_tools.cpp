@@ -71,5 +71,26 @@ namespace string_tools
       return "[failed]";
   }
 
+  //----------------------------------------------------------------------------
+  std::string pad_string
+  (
+   const std::string_view sv
+   , const size_t n
+   , const char c
+   , const bool prepend
+   )
+  {
+    std::string s(sv);
+    if (s.size() < n)
+    {
+      if (prepend)
+        s = std::string(n - s.size(), c) + s;
+      else
+        s.append(n - s.size(), c);
+    }
+    return s;
+  }
+
+
 } // string_tools
 } // epee

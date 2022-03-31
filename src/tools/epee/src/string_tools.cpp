@@ -78,26 +78,6 @@ namespace string_tools
   }
 
   //----------------------------------------------------------------------------
-  std::string pad_string
-  (
-   const std::string_view sv
-   , const size_t n
-   , const char c
-   , const bool prepend
-   )
-  {
-    std::string s(sv);
-    if (s.size() < n)
-    {
-      if (prepend)
-        s = std::string(n - s.size(), c) + s;
-      else
-        s.append(n - s.size(), c);
-    }
-    return s;
-  }
-
-  //----------------------------------------------------------------------------
   bool get_ip_int32_from_string(uint32_t& ip, const std::string_view ip_str)
   {
     ip = inet_addr(ip_str.data());

@@ -79,5 +79,14 @@ namespace string_tools
     return epee::span_to_pod<t_pod_type>(*maybe_blob);
   }
 
+  std::string pad_string
+  (
+   const std::string_view s
+   , const size_t n
+   , const char c = ' '
+   , const bool prepend = false
+   );
+
+
 } // stringtools
 } // epee
