@@ -55,6 +55,7 @@
 #include "tools/common/threadpool.h"
 #include "tools/common/util.h"
 #include "tools/serialization/binary_utils.h"
+#include "tools/epee/include/file_io_utils.h"
 
 
 #include <boost/format.hpp>
@@ -62,8 +63,12 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
 
+
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
+
+#include <fstream>
+
 
 
 using namespace cryptonote;
@@ -142,8 +147,8 @@ std::optional<tools::password_container> get_password(const boost::program_optio
   if (command_line::has_arg(vm, opts.password_file))
   {
     std::string password;
-    bool r = epee::file_io_utils::load_file_to_string(command_line::get_arg(vm, opts.password_file),
-                                                      password);
+    const auto path = command_line::get_arg(vm, opts.password_file);
+    const bool r = epee::file_io_utils::load_file_to_string(path, password);
     THROW_WALLET_EXCEPTION_IF(!r, tools::error::wallet_internal_error, tools::wallet2::tr("the password file specified could not be read"));
 
     // Remove line breaks the user might have inserted
@@ -2626,7 +2631,7 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
     if (use_fs)
     {
       wallet::logic::controller::wallet::load_from_file
-        (m_wallet_file, cache_file_buf, std::numeric_limits<size_t>::max());
+        (m_wallet_file, cache_file_buf);
       THROW_WALLET_EXCEPTION_IF(!r, error::file_read_error, m_wallet_file);
     }
 

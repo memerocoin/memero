@@ -131,10 +131,10 @@ namespace wallet {
   (
    const std::string& path_to_file
    , std::string& target_str
-   , const size_t max_size
    )
   {
-    return epee::file_io_utils::load_file_to_string(path_to_file, target_str, max_size);
+    return epee::file_io_utils::load_file_to_string
+      (path_to_file, target_str);
   }
 
   void print_source_entry(const cryptonote::tx_source_entry& src)
