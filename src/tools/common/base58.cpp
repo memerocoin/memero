@@ -33,7 +33,7 @@
 #include "varint.h"
 
 #include "math/hash/functional/hash.hpp"
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 #include "tools/epee/include/string_tools.h"
 
 #include <boost/multiprecision/cpp_int.hpp>

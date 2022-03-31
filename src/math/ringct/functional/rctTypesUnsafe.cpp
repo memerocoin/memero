@@ -32,7 +32,7 @@
 #include "rctOps.hpp"
 
 #include "tools/epee/include/logging.hpp"
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 
 #include "config/cryptonote.hpp"
 

@@ -32,7 +32,7 @@
 #include "enums.h"
 
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 #include "tools/epee/functional/blob.hpp"
 
 #include <boost/uuid/uuid.hpp>

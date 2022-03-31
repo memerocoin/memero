@@ -6,7 +6,7 @@ Public domain.
 
 #include "chacha.hpp"
 
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 
 
 /*

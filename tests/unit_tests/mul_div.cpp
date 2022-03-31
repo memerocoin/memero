@@ -30,7 +30,7 @@
 
 #include "gtest/gtest.h"
 
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 
 namespace
 {

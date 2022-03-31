@@ -42,7 +42,7 @@
 #include "singleton.h"
 
 #include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 
 
 #include <boost/crc.hpp>

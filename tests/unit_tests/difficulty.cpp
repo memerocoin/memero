@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "gtest/gtest.h"
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 #include "math/blockchain/functional/difficulty.hpp"
 
 static cryptonote::diff_t MKDIFF(uint64_t high, uint64_t low)

@@ -43,9 +43,9 @@
   (((uint64_t) (x) & 0x00ff000000000000) >> 40) | \
   (((uint64_t) (x) & 0xff00000000000000) >> 56))
 
-static inline uint16_t ident16(uint16_t x) { return x; }
-static inline uint32_t ident32(uint32_t x) { return x; }
-static inline uint64_t ident64(uint64_t x) { return x; }
+inline uint16_t ident16(const uint16_t x) { return x; }
+inline uint32_t ident32(const uint32_t x) { return x; }
+inline uint64_t ident64(const uint64_t x) { return x; }
 
 #define SWAP16LE IDENT16
 #define swap16le ident16

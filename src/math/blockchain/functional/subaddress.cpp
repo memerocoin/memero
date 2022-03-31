@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "subaddress.hpp"
 
 
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 #include "tools/epee/include/string_tools.h"
 
 #include "math/crypto/controller/keyGen.hpp"

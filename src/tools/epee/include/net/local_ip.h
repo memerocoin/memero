@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 
 // IP addresses are kept in network byte order
 // Masks below are little endian

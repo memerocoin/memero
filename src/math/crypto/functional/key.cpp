@@ -21,7 +21,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "tools/common/varint.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/logging.hpp"
-#include "tools/epee/include/int-util.h"
+#include "tools/epee/functional/int-util.hpp"
 
 #include "config/cryptonote.hpp"
 
