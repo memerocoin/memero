@@ -40,7 +40,7 @@
 #include "tools/epee/include/net/abstract_tcp_server2.h"
 #include "tools/epee/include/net/levin_protocol_handler_async.h"
 #include "tools/epee/include/net/levin_abstract_invoke2.h"
-#include "tools/epee/include/math_helper.h"
+#include "tools/epee/include/time_helper.h"
 
 #include "config/cryptonote.hpp"
 
@@ -397,11 +397,11 @@ namespace nodetool
     t_payload_net_handler& m_payload_handler;
     peerlist_storage m_peerlist_storage;
 
-    epee::math_helper::once_a_time_seconds<P2P_DEFAULT_HANDSHAKE_INTERVAL> m_peer_handshake_idle_maker_interval;
-    epee::math_helper::once_a_time_seconds<1> m_connections_maker_interval;
-    epee::math_helper::once_a_time_seconds<60*30, false> m_peerlist_store_interval;
-    epee::math_helper::once_a_time_seconds<60> m_gray_peerlist_housekeeping_interval;
-    epee::math_helper::once_a_time_seconds<3600, false> m_incoming_connections_interval;
+    epee::time_helper::once_a_time_seconds<P2P_DEFAULT_HANDSHAKE_INTERVAL> m_peer_handshake_idle_maker_interval;
+    epee::time_helper::once_a_time_seconds<1> m_connections_maker_interval;
+    epee::time_helper::once_a_time_seconds<60*30, false> m_peerlist_store_interval;
+    epee::time_helper::once_a_time_seconds<60> m_gray_peerlist_housekeeping_interval;
+    epee::time_helper::once_a_time_seconds<3600, false> m_incoming_connections_interval;
 
     std::vector<epee::net_utils::network_address> m_priority_peers;
     std::vector<epee::net_utils::network_address> m_exclusive_peers;

@@ -34,7 +34,7 @@
 
 namespace epee
 {
-namespace math_helper
+namespace time_helper
 {
 
 	template<typename get_interval, bool start_immediate = true>

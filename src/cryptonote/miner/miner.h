@@ -34,7 +34,7 @@ copyright (c) 2012-2013 The Cryptonote developers
 #include "math/blockchain/functional/difficulty.hpp"
 #include "cryptonote/basic/type/string_blob_type.hpp"
 
-#include "tools/epee/include/math_helper.h"
+#include "tools/epee/include/time_helper.h"
 
 #include <boost/program_options.hpp>
 
@@ -136,10 +136,10 @@ namespace cryptonote
     get_block_hash_t m_gbh;
     spend_view_public_keys m_mine_address;
 
-    epee::math_helper::once_a_time_seconds<5>
+    epee::time_helper::once_a_time_seconds<5>
     m_update_block_template_interval;
 
-    epee::math_helper::once_a_time_seconds<2>
+    epee::time_helper::once_a_time_seconds<2>
     m_update_merge_hr_interval;
 
     std::atomic<uint64_t> m_last_hr_merge_time = 0;

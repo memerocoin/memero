@@ -37,7 +37,7 @@
 
 #include "cryptonote/basic/type/verification_context.hpp"
 
-#include "tools/epee/include/math_helper.h"
+#include "tools/epee/include/time_helper.h"
 
 namespace cryptonote
 {
@@ -541,7 +541,7 @@ private:
 
     //TODO: this time should be a named constant somewhere, not hard-coded
     //! interval on which to check for stale/"stuck" transactions
-    epee::math_helper::once_a_time_seconds<30> m_remove_stuck_tx_interval;
+    epee::time_helper::once_a_time_seconds<30> m_remove_stuck_tx_interval;
 
     //TODO: look into doing this better
     //!< container for transactions organized by fee per size and receive time
