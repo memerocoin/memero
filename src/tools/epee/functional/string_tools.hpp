@@ -24,77 +24,67 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "tools/epee/include/string_tools.h"
+#pragma once
+
+#include "tools/epee/functional/hex.hpp"
+#include "tools/epee/functional/span.hpp"
+#include "tools/epee/functional/blob.hpp"
+#include "tools/epee/include/storages/parserse_base_utils.h"
+
+#include <filesystem>
+
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/lexical_cast.hpp>
 
 
-#include <arpa/inet.h>
 
 namespace epee
 {
 namespace string_tools
 {
-  //----------------------------------------------------------------------------
-  bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)
-  {
-    const auto maybe_str = hex::decode_from_hex_to_string(s);
-    if (!maybe_str) {
-      return false;
-    } else {
-      res = *maybe_str;
-      return true;
-    }
-  }
-  //----------------------------------------------------------------------------
-  bool parse_peer_from_string(uint32_t& ip, uint16_t& port, const std::string& addres)
-  {
-    //parse ip and address
-    std::string::size_type p = addres.find(':');
-    std::string ip_str, port_str;
-    if(p == std::string::npos)
-    {
-      port = 0;
-      ip_str = addres;
-    }
-    else
-    {
-      ip_str = addres.substr(0, p);
-      port_str = addres.substr(p+1, addres.size());
-    }
+  epee::blob::data string_to_blob(const std::string_view s);
+  epee::blob::view string_view_to_blob_view(const std::string_view s);
+  std::string blob_to_string(const epee::blob::span s);
+  std::string buff_to_hex_nodelimer(const std::string& src);
 
-    if(!get_ip_int32_from_string(ip, ip_str))
-    {
-      return false;
-    }
+	std::string get_ip_string_from_int32(uint32_t ip);
+	std::string num_to_string_fast(int64_t val);
 
-    if(p != std::string::npos && !get_xtype_from_string(port, port_str))
-    {
-      return false;
-    }
-    return true;
-  }
-
-  //----------------------------------------------------------------------------
-  std::string pad_string(std::string s, size_t n, char c, bool prepend)
+  //---------------------------------------------------------------------
+  template<typename T>
+  std::string to_string_hex(const T &val)
   {
-    if (s.size() < n)
-    {
-      if (prepend)
-        s = std::string(n - s.size(), c) + s;
-      else
-        s.append(n - s.size(), c);
-    }
+    static_assert(std::is_arithmetic<T>::value, "only arithmetic types");
+    std::stringstream ss;
+    ss << std::hex << val;
+    std::string s;
+    ss >> s;
     return s;
   }
+            
 
   //----------------------------------------------------------------------------
-  bool get_ip_int32_from_string(uint32_t& ip, const std::string& ip_str)
-  {
-    ip = inet_addr(ip_str.c_str());
-    if(INADDR_NONE == ip)
-      return false;
+	bool compare_no_case(const std::string& str1, const std::string& str2);
 
-    return true;
+  //----------------------------------------------------------------------------
+  template<class t_pod_type>
+  std::string pod_to_hex(const t_pod_type& s)
+  {
+    static_assert(std::is_standard_layout<t_pod_type>(), "expected standard layout type");
+    return hex::encode_to_hex(pod_to_span(s));
   }
 
-} // string_tools
+  //----------------------------------------------------------------------------
+  template<class t_pod_type>
+  std::optional<t_pod_type> hex_to_pod
+  (const std::string_view hex_str)
+  {
+    static_assert(std::is_standard_layout<t_pod_type>(), "expected standard layout type");
+    const auto maybe_blob = hex::decode_from_hex_to_blob(hex_str);
+    if (!maybe_blob) return {};
+
+    return epee::span_to_pod<t_pod_type>(*maybe_blob);
+  }
+
+} // stringtools
 } // epee

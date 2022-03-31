@@ -34,6 +34,7 @@ add_library( epee_log
 
 add_library( epee_basic
   functional/hex.cpp
+  functional/string_tools.cpp
   src/string_tools.cpp
 )
 

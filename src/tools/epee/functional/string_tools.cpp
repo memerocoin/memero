@@ -24,7 +24,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "tools/epee/include/string_tools.h"
+#include "string_tools.hpp"
 
 
 #include <arpa/inet.h>
@@ -34,66 +34,45 @@ namespace epee
 namespace string_tools
 {
   //----------------------------------------------------------------------------
-  bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)
-  {
-    const auto maybe_str = hex::decode_from_hex_to_string(s);
-    if (!maybe_str) {
-      return false;
-    } else {
-      res = *maybe_str;
-      return true;
-    }
-  }
+  epee::blob::view string_view_to_blob_view(const std::string_view s) {
+    return std::basic_string_view((uint8_t*)s.data(), s.size());
+  };
   //----------------------------------------------------------------------------
-  bool parse_peer_from_string(uint32_t& ip, uint16_t& port, const std::string& addres)
+  epee::blob::data string_to_blob(const std::string_view s) {
+    return std::basic_string((uint8_t*)s.data(), s.size());
+  };
+  //----------------------------------------------------------------------------
+  std::string blob_to_string(const epee::blob::span s) {
+    return std::string((char*)s.data(), s.size());
+  };
+  //----------------------------------------------------------------------------
+  std::string buff_to_hex_nodelimer(const std::string& src)
   {
-    //parse ip and address
-    std::string::size_type p = addres.find(':');
-    std::string ip_str, port_str;
-    if(p == std::string::npos)
-    {
-      port = 0;
-      ip_str = addres;
-    }
+    return hex::encode_to_hex(string_to_blob(src));
+  }
+	std::string num_to_string_fast(int64_t val)
+	{
+		/*
+		char  buff[30] = {0};
+		i64toa_s(val, buff, sizeof(buff)-1, 10);
+		return buff;*/
+		return boost::lexical_cast<std::string>(val);
+	}
+	//----------------------------------------------------------------------------
+	bool compare_no_case(const std::string& str1, const std::string& str2)
+	{
+		return !boost::iequals(str1, str2);
+	}
+
+  std::string get_ip_string_from_int32(uint32_t ip)
+  {
+    in_addr adr;
+    adr.s_addr = ip;
+    const char* pbuf = inet_ntoa(adr);
+    if(pbuf)
+      return pbuf;
     else
-    {
-      ip_str = addres.substr(0, p);
-      port_str = addres.substr(p+1, addres.size());
-    }
-
-    if(!get_ip_int32_from_string(ip, ip_str))
-    {
-      return false;
-    }
-
-    if(p != std::string::npos && !get_xtype_from_string(port, port_str))
-    {
-      return false;
-    }
-    return true;
-  }
-
-  //----------------------------------------------------------------------------
-  std::string pad_string(std::string s, size_t n, char c, bool prepend)
-  {
-    if (s.size() < n)
-    {
-      if (prepend)
-        s = std::string(n - s.size(), c) + s;
-      else
-        s.append(n - s.size(), c);
-    }
-    return s;
-  }
-
-  //----------------------------------------------------------------------------
-  bool get_ip_int32_from_string(uint32_t& ip, const std::string& ip_str)
-  {
-    ip = inet_addr(ip_str.c_str());
-    if(INADDR_NONE == ip)
-      return false;
-
-    return true;
+      return "[failed]";
   }
 
 } // string_tools
