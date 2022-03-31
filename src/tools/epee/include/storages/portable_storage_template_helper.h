@@ -29,8 +29,6 @@
 
 #include "portable_storage.h"
 
-#include "tools/epee/include/file_io_utils.h"
-
 namespace epee
 {
   namespace serialization
@@ -79,16 +77,6 @@ namespace epee
     bool load_t_from_binary(t_struct& out, const std::string& binary_buff)
     {
       return load_t_from_binary(out, epee::string_tools::string_to_blob(binary_buff));
-    }
-    //-----------------------------------------------------------------------------------------------------------
-    template<class t_struct>
-    bool load_t_from_binary_file(t_struct& out, const std::string& binary_file)
-    {
-      std::string f_buff;
-      if(!file_io_utils::load_file_to_string(binary_file, f_buff))
-        return false;
-
-      return load_t_from_binary(out, f_buff);
     }
     //-----------------------------------------------------------------------------------------------------------
     template<class t_struct>

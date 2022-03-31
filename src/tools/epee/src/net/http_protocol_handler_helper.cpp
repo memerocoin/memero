@@ -119,8 +119,6 @@ namespace net_utils
 
 		bool parse_multipart_body(const std::string& content_type, const std::string& body, std::list<multipart_entry>& out_values)
 		{
-			//bool res = file_io_utils::load_file_to_string("C:\\public\\multupart_data", body);
-
 			std::string boundary;
 			if(!match_boundary(content_type, boundary))
 			{
