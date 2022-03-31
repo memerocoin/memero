@@ -39,7 +39,7 @@
 
 #include "tools/common/base58.h"
 #include "tools/serialization/binary_utils.h"
-#include "tools/epee/include/wipeable_string.h"
+#include "tools/epee/functional/wipeable_string.hpp"
 
 
 namespace cryptonote

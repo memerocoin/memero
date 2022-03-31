@@ -38,7 +38,7 @@
 #include "cryptonote/basic/controller/account.h"
 
 #include "tools/epee/functional/blob.hpp"
-#include "tools/epee/include/wipeable_string.h"
+#include "tools/epee/functional/wipeable_string.hpp"
 
 namespace cryptonote
 {

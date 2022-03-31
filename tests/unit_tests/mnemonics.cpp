@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "gtest/gtest.h"
-#include "tools/epee/include/wipeable_string.h"
+#include "tools/epee/functional/wipeable_string.hpp"
 #include "math/crypto/functional/key.hpp"
 #include <stdlib.h>
 #include <vector>
