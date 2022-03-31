@@ -27,7 +27,7 @@
 
 #include "tools/epee/include/net/http_protocol_handler.h"
 
-#include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/string_file.hpp"
 #include "tools/epee/include/net/net_parse_helpers.h"
 #include "tools/epee/include/time_helper.h"
 
@@ -46,7 +46,7 @@ namespace net_utils
 	namespace http
 	{
 		//--------------------------------------------------------------------------------------------
-		
+
 		simple_http_connection_handler::simple_http_connection_handler(i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context):
 		m_state(http_state_retriving_comand_line),
 		m_body_transfer_type(http_body_transfer_undefined),
@@ -62,7 +62,7 @@ namespace net_utils
 
 	}
 	//--------------------------------------------------------------------------------------------
-    
+
 	bool simple_http_connection_handler::set_ready_state()
 	{
 		m_is_stop_handling = false;
@@ -74,7 +74,7 @@ namespace net_utils
 		return true;
 	}
 	//--------------------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::handle_recv(const void* ptr, size_t cb)
 	{
 		std::string buf((const char*)ptr, cb);
@@ -86,7 +86,7 @@ namespace net_utils
 		return res;
 	}
 	//--------------------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::handle_buff_in(std::string& buf)
 	{
 
@@ -184,7 +184,7 @@ namespace net_utils
 		return true;
 	}
   //--------------------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::handle_invoke_query_line()
 	{
 		const std::regex rexp_match_command_line
@@ -233,7 +233,7 @@ namespace net_utils
 		return false;
 	}
 	//--------------------------------------------------------------------------------------------
-  
+
 	std::string::size_type simple_http_connection_handler::match_end_of_header(const std::string& buf)
 	{
 
@@ -247,7 +247,7 @@ namespace net_utils
 		return res;
 	}
 	//--------------------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::analize_cached_request_header_and_invoke_state(size_t pos)
 	{
 		LOG_PRINT_L3("HTTP HEAD:\r\n" + m_cache.substr(0, pos));
@@ -304,7 +304,7 @@ namespace net_utils
 		return true;
 	}
 	//-----------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::handle_retriving_query_body()
 	{
 		switch(m_body_transfer_type)
@@ -329,7 +329,7 @@ namespace net_utils
 		return true;
 	}
 	//-----------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::handle_query_measure()
 	{
 
@@ -355,7 +355,7 @@ namespace net_utils
 		return true;
 	}
 	//--------------------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::parse_cached_header(http_header_info& body_info, const std::string& m_cache_to_process, size_t pos)
 	{
     const std::regex rexp_mach_field
@@ -417,7 +417,7 @@ namespace net_utils
 		return  true;
 	}
 	//-----------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::get_len_from_content_lenght(const std::string& str, size_t& len)
 	{
 		const std::regex rexp_mach_field
@@ -436,7 +436,7 @@ namespace net_utils
 		return true;
 	}
 	//-----------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::handle_request_and_send_response(const http::http_request_info& query_info)
 	{
 		http_response_info response{};
@@ -470,14 +470,14 @@ namespace net_utils
 		return res;
 	}
 	//-----------------------------------------------------------------------------------
-  
+
 	bool simple_http_connection_handler::handle_request(const http::http_request_info& query_info, http_response_info& response)
 	{
     response.m_response_code = 404;
     return true;
   }
   //-----------------------------------------------------------------------------------
-  
+
 	std::string simple_http_connection_handler::get_response_header(const http_response_info& response)
 	{
 		std::string buf = "HTTP/1.1 ";
@@ -531,7 +531,7 @@ namespace net_utils
 		return buf;
 	}
 	//--------------------------------------------------------------------------------------------
-	
+
   bool simple_http_connection_handler::slash_to_back_slash(std::string& str)
 	{
 		for(std::string::iterator it = str.begin(); it!=str.end(); it++)

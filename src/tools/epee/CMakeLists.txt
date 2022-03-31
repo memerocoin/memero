@@ -58,7 +58,7 @@ add_library( epee
   src/levin_base.cpp
   src/connection_basic.cpp
   src/buffer.cpp
-  src/file_io_utils.cpp
+  src/string_file.cpp
   src/console_handler.cpp
   src/time_helper.cpp
   src/misc_os_dependent.cpp

@@ -49,7 +49,7 @@
 #include <rapidjson/writer.h>
 
 #include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/string_file.hpp"
 #include "tools/epee/include/storages/portable_storage_template_helper.h"
 #include "tools/serialization/binary_utils.h"
 #include "tools/common/json_util.h"
@@ -124,7 +124,7 @@ namespace wallet {
    , const std::string& raw
    )
   {
-    return epee::file_io_utils::save_string_to_file(path_to_file, raw);
+    return epee::string_file::save_string_to_file(path_to_file, raw);
   }
 
   std::optional<std::string> load_from_file
@@ -132,7 +132,7 @@ namespace wallet {
    const std::string& path_to_file
    )
   {
-    return epee::file_io_utils::load_file_to_string
+    return epee::string_file::load_file_to_string
       (path_to_file);
   }
 

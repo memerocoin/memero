@@ -55,7 +55,7 @@
 #include "tools/common/threadpool.h"
 #include "tools/common/util.h"
 #include "tools/serialization/binary_utils.h"
-#include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/string_file.hpp"
 
 
 #include <boost/format.hpp>
@@ -148,7 +148,7 @@ std::optional<tools::password_container> get_password(const boost::program_optio
   {
     const auto path = command_line::get_arg(vm, opts.password_file);
     const auto maybe_password =
-      epee::file_io_utils::load_file_to_string(path);
+      epee::string_file::load_file_to_string(path);
     THROW_WALLET_EXCEPTION_IF(!maybe_password, tools::error::wallet_internal_error, tools::wallet2::tr("the password file specified could not be read"));
 
     std::string password = *maybe_password;

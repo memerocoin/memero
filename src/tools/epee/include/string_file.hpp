@@ -29,58 +29,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#pragma once
 
-#include "tools/epee/include/file_io_utils.h"
-
-#include <fstream>
-#include <filesystem>
-
+#include <string>
+#include <optional>
 
 namespace epee
 {
-  namespace file_io_utils
-  {
+namespace string_file
+{
+  bool save_string_to_file
+    (const std::string& path_to_file, const std::string& str);
 
-    // https://www.boost.org/doc/libs/1_78_0/boost/filesystem/string_file.hpp
-
-    bool save_string_to_file(const std::string& p, const std::string& str)
-    {
-      try
-        {
-          std::ofstream file;
-          file.exceptions(std::ios_base::failbit | std::ios_base::badbit);
-          file.open(p, std::ios_base::binary);
-          file.write(str.c_str(), str.size());
-          return true;
-        }
-
-      catch(...)
-        {
-          return false;
-        }
-    }
-
-    std::optional<std::string> load_file_to_string
-    (const std::string& p)
-    {
-      try
-      {
-        std::string str;
-        std::ifstream file;
-        file.exceptions(std::ios_base::failbit | std::ios_base::badbit);
-        file.open(p, std::ios_base::binary);
-        std::size_t sz =
-          static_cast< std::size_t >(std::filesystem::file_size(p));
-        str.resize(sz, '\0');
-        file.read(&str[0], sz);
-        return str;
-      }
-
-      catch(...)
-      {
-        return {};
-      }
-    }
-
-  }
+  std::optional<std::string> load_file_to_string
+    (const std::string& path_to_file);
+}
 }

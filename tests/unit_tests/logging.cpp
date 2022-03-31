@@ -30,7 +30,7 @@
 
 #include "gtest/gtest.h"
 
-#include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/string_file.hpp"
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"
 

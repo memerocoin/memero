@@ -29,19 +29,58 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#pragma once
 
-#include <string>
-#include <optional>
+#include "tools/epee/include/string_file.hpp"
+
+#include <fstream>
+#include <filesystem>
+
 
 namespace epee
 {
-namespace file_io_utils
-{
-  bool save_string_to_file
-    (const std::string& path_to_file, const std::string& str);
+  namespace string_file
+  {
 
-  std::optional<std::string> load_file_to_string
-    (const std::string& path_to_file);
-}
+    // https://www.boost.org/doc/libs/1_78_0/boost/filesystem/string_file.hpp
+
+    bool save_string_to_file(const std::string& p, const std::string& str)
+    {
+      try
+        {
+          std::ofstream file;
+          file.exceptions(std::ios_base::failbit | std::ios_base::badbit);
+          file.open(p, std::ios_base::binary);
+          file.write(str.c_str(), str.size());
+          return true;
+        }
+
+      catch(...)
+        {
+          return false;
+        }
+    }
+
+    std::optional<std::string> load_file_to_string
+    (const std::string& p)
+    {
+      try
+      {
+        std::string str;
+        std::ifstream file;
+        file.exceptions(std::ios_base::failbit | std::ios_base::badbit);
+        file.open(p, std::ios_base::binary);
+        std::size_t sz =
+          static_cast< std::size_t >(std::filesystem::file_size(p));
+        str.resize(sz, '\0');
+        file.read(&str[0], sz);
+        return str;
+      }
+
+      catch(...)
+      {
+        return {};
+      }
+    }
+
+  }
 }
