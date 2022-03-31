@@ -48,16 +48,6 @@ namespace epee
     }
     //-----------------------------------------------------------------------------------------------------------
     template<class t_struct>
-    bool load_t_from_json_file(t_struct& out, const std::string& json_file)
-    {
-      std::string f_buff;
-      if(!file_io_utils::load_file_to_string(json_file, f_buff))
-        return false;
-
-      return load_t_from_json(out, f_buff);
-    }
-    //-----------------------------------------------------------------------------------------------------------
-    template<class t_struct>
     bool store_t_to_json(t_struct& str_in, std::string& json_buff, size_t indent = 0, bool insert_newlines = true)
     {
       portable_storage ps;
@@ -72,14 +62,6 @@ namespace epee
       std::string json_buff;
       store_t_to_json(str_in, json_buff, indent, insert_newlines);
       return json_buff;
-    }
-    //-----------------------------------------------------------------------------------------------------------
-    template<class t_struct>
-    bool store_t_to_json_file(t_struct& str_in, const std::string& fpath)
-    {
-      std::string json_buff;
-      store_t_to_json(str_in, json_buff);
-      return file_io_utils::save_string_to_file(fpath, json_buff);
     }
     //-----------------------------------------------------------------------------------------------------------
     template<class t_struct>
