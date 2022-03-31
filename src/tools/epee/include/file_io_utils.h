@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <string>
+#include <optional>
 
 namespace epee
 {
@@ -40,7 +41,7 @@ namespace file_io_utils
   bool save_string_to_file
     (const std::string& path_to_file, const std::string& str);
 
-	bool load_file_to_string
-    (const std::string& path_to_file, std::string& target_str);
+  std::optional<std::string> load_file_to_string
+    (const std::string& path_to_file);
 }
 }

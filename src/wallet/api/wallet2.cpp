@@ -146,10 +146,12 @@ std::optional<tools::password_container> get_password(const boost::program_optio
 
   if (command_line::has_arg(vm, opts.password_file))
   {
-    std::string password;
     const auto path = command_line::get_arg(vm, opts.password_file);
-    const bool r = epee::file_io_utils::load_file_to_string(path, password);
-    THROW_WALLET_EXCEPTION_IF(!r, tools::error::wallet_internal_error, tools::wallet2::tr("the password file specified could not be read"));
+    const auto maybe_password =
+      epee::file_io_utils::load_file_to_string(path);
+    THROW_WALLET_EXCEPTION_IF(!maybe_password, tools::error::wallet_internal_error, tools::wallet2::tr("the password file specified could not be read"));
+
+    std::string password = *maybe_password;
 
     // Remove line breaks the user might have inserted
     boost::trim_right_if(password, boost::is_any_of("\r\n"));
@@ -2199,13 +2201,22 @@ void wallet2::change_password(const std::string &filename, const epee::wipeable_
  */
 bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_string& password)
 {
-  std::string keys_file_buf;
-  bool r = wallet::logic::controller::wallet::load_from_file(keys_file_name, keys_file_buf);
-  THROW_WALLET_EXCEPTION_IF(!r, error::file_read_error, keys_file_name);
+  const auto maybe_keys_file_buf =
+    wallet::logic::controller::wallet::load_from_file
+    (keys_file_name);
+  THROW_WALLET_EXCEPTION_IF
+    (
+     !maybe_keys_file_buf
+     , error::file_read_error
+     , keys_file_name
+     );
+
+  const std::string keys_file_buf = *maybe_keys_file_buf;
 
   // Load keys from buffer
   std::optional<crypto::chacha_key> keys_to_encrypt;
-  r = wallet2::load_keys_buf(keys_file_buf, password, keys_to_encrypt);
+  const bool r =
+    wallet2::load_keys_buf(keys_file_buf, password, keys_to_encrypt);
 
   // Rewrite with encrypted keys if unencrypted, ignore errors
   if (r && keys_to_encrypt != std::nullopt)
@@ -2627,12 +2638,19 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
   {
     wallet::logic::type::wallet::cache_file_data cache_file_data;
     std::string cache_file_buf;
-    bool r = true;
     if (use_fs)
     {
-      wallet::logic::controller::wallet::load_from_file
-        (m_wallet_file, cache_file_buf);
-      THROW_WALLET_EXCEPTION_IF(!r, error::file_read_error, m_wallet_file);
+      const auto maybe_cache_file_buf =
+        wallet::logic::controller::wallet::load_from_file
+        (m_wallet_file);
+      THROW_WALLET_EXCEPTION_IF
+        (
+         !maybe_cache_file_buf
+         , error::file_read_error
+         , m_wallet_file
+         );
+
+      cache_file_buf = *maybe_cache_file_buf;
     }
 
     // try to read it as an encrypted cache
@@ -2640,7 +2658,8 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
     {
       LOG_PRINT_L1("Trying to decrypt cache data");
 
-      r = ::serialization::parse_binary(use_fs ? cache_file_buf : cache_buf, cache_file_data);
+      const bool r = ::serialization::parse_binary
+        (use_fs ? cache_file_buf : cache_buf, cache_file_data);
       THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "internal error: failed to deserialize \"" + m_wallet_file + '\"');
       std::string cache_data;
       cache_data.resize(cache_file_data.cache_data.size());

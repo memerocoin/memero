@@ -60,10 +60,12 @@ namespace epee
         }
     }
 
-    bool load_file_to_string(const std::string& p, std::string& str)
+    std::optional<std::string> load_file_to_string
+    (const std::string& p)
     {
       try
       {
+        std::string str;
         std::ifstream file;
         file.exceptions(std::ios_base::failbit | std::ios_base::badbit);
         file.open(p, std::ios_base::binary);
@@ -71,12 +73,12 @@ namespace epee
           static_cast< std::size_t >(std::filesystem::file_size(p));
         str.resize(sz, '\0');
         file.read(&str[0], sz);
-        return true;
+        return str;
       }
 
       catch(...)
       {
-        return false;
+        return {};
       }
     }
 

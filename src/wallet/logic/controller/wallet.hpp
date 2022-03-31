@@ -73,10 +73,9 @@ namespace wallet {
    , const std::string& raw
    );
 
-  bool load_from_file
+  std::optional<std::string> load_from_file
   (
    const std::string& path_to_file
-   , std::string& target_str
    );
 
   void print_source_entry(const cryptonote::tx_source_entry& src);

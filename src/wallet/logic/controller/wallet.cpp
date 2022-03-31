@@ -127,14 +127,13 @@ namespace wallet {
     return epee::file_io_utils::save_string_to_file(path_to_file, raw);
   }
 
-  bool load_from_file
+  std::optional<std::string> load_from_file
   (
    const std::string& path_to_file
-   , std::string& target_str
    )
   {
     return epee::file_io_utils::load_file_to_string
-      (path_to_file, target_str);
+      (path_to_file);
   }
 
   void print_source_entry(const cryptonote::tx_source_entry& src)
@@ -176,14 +175,22 @@ namespace wallet {
   {
     rapidjson::Document json;
     ::wallet::logic::type::wallet::keys_file_data keys_file_data;
-    std::string buf;
     bool encrypted_secret_keys = false;
-    bool r = ::wallet::logic::controller::wallet::load_from_file(keys_file_name, buf);
-    THROW_WALLET_EXCEPTION_IF(!r, tools::error::file_read_error, keys_file_name);
+    const auto maybe_buf =
+      ::wallet::logic::controller::wallet::load_from_file(keys_file_name);
+    THROW_WALLET_EXCEPTION_IF
+      (
+       !maybe_buf
+       , tools::error::file_read_error
+       , keys_file_name
+       );
+
+    const std::string buf = *maybe_buf;
 
     // Decrypt the contents
-    r = ::serialization::parse_binary(buf, keys_file_data);
+    bool r = ::serialization::parse_binary(buf, keys_file_data);
     THROW_WALLET_EXCEPTION_IF(!r, tools::error::wallet_internal_error, "internal error: failed to deserialize \"" + keys_file_name + '\"');
+
     crypto::chacha_key key;
     crypto::generate_chacha_key(password.data(), password.size(), key, kdf_rounds);
     std::string account_data;
