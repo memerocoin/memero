@@ -41,7 +41,7 @@ namespace string_tools
 
   //----------------------------------------------------------------------------
   template<class XType>
-  bool get_xtype_from_string(XType& val, const std::string& str_id)
+  bool get_xtype_from_string(XType& val, const std::string_view str_id)
   {
     if (std::is_integral<XType>::value && !std::numeric_limits<XType>::is_signed && !std::is_same<XType, bool>::value)
     {
@@ -85,10 +85,17 @@ namespace string_tools
 		return true;
 	}
 	//----------------------------------------------------------------------------
-	bool get_ip_int32_from_string(uint32_t& ip, const std::string& ip_str);
-  bool parse_peer_from_string(uint32_t& ip, uint16_t& port, const std::string& addres);
+	bool get_ip_int32_from_string(uint32_t& ip, const std::string_view ip_str);
+  bool parse_peer_from_string
+  (uint32_t& ip, uint16_t& port, const std::string_view addres);
 
-  std::string pad_string(std::string s, size_t n, char c = ' ', bool prepend = false);
+  std::string pad_string
+  (
+   const std::string_view s
+   , const size_t n
+   , const char c = ' '
+   , const bool prepend = false
+   );
 
 } // stringtools
 } // epee

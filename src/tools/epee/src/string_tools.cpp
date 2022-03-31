@@ -45,7 +45,11 @@ namespace string_tools
     }
   }
   //----------------------------------------------------------------------------
-  bool parse_peer_from_string(uint32_t& ip, uint16_t& port, const std::string& addres)
+  bool parse_peer_from_string
+  (
+   uint32_t& ip
+   , uint16_t& port
+   , const std::string_view addres)
   {
     //parse ip and address
     std::string::size_type p = addres.find(':');
@@ -74,8 +78,15 @@ namespace string_tools
   }
 
   //----------------------------------------------------------------------------
-  std::string pad_string(std::string s, size_t n, char c, bool prepend)
+  std::string pad_string
+  (
+   const std::string_view sv
+   , const size_t n
+   , const char c
+   , const bool prepend
+   )
   {
+    std::string s(sv);
     if (s.size() < n)
     {
       if (prepend)
@@ -87,9 +98,9 @@ namespace string_tools
   }
 
   //----------------------------------------------------------------------------
-  bool get_ip_int32_from_string(uint32_t& ip, const std::string& ip_str)
+  bool get_ip_int32_from_string(uint32_t& ip, const std::string_view ip_str)
   {
-    ip = inet_addr(ip_str.c_str());
+    ip = inet_addr(ip_str.data());
     if(INADDR_NONE == ip)
       return false;
 
