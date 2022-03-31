@@ -29,7 +29,7 @@
 
 #include "tools/epee/include/string_file.hpp"
 #include "tools/epee/include/net/net_parse_helpers.h"
-#include "tools/epee/include/time_helper.h"
+#include "tools/epee/functional/time_helper.hpp"
 
 
 #include <boost/algorithm/string/trim.hpp>

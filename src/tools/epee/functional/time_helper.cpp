@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "tools/epee/include/time_helper.h"
+#include "tools/epee/functional/time_helper.hpp"
 
 namespace epee
 {

@@ -39,7 +39,7 @@
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/time_helper.h"
+#include "tools/epee/functional/time_helper.hpp"
 
 namespace nodetool
 {

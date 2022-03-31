@@ -60,7 +60,7 @@ add_library( epee
   src/buffer.cpp
   src/string_file.cpp
   src/console_handler.cpp
-  src/time_helper.cpp
+  functional/time_helper.cpp
   src/misc_os_dependent.cpp
 )
 
