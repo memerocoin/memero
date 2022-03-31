@@ -33,6 +33,8 @@
 
 #include "tools/epee/include/string_tools.h"
 
+#include <boost/algorithm/string/predicate.hpp>
+
 namespace net
 {
     void get_network_address_host_and_port(const std::string& address, std::string& host, std::string& port)

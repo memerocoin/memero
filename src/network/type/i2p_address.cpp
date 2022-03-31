@@ -35,6 +35,7 @@
 
 #include <boost/spirit/include/karma_generate.hpp>
 #include <boost/spirit/include/karma_uint.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 
 namespace net

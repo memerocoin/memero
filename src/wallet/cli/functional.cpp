@@ -33,6 +33,7 @@
 
 #include "tools/common/command_line.h"
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <numeric>
 
 namespace wallet {

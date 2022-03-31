@@ -40,7 +40,7 @@
 #include <boost/endian/conversion.hpp>
 
 #include <boost/algorithm/string/find_iterator.hpp>
-
+#include <boost/algorithm/string/predicate.hpp>
 
 
 namespace

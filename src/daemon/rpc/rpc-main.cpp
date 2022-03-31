@@ -37,6 +37,8 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 #include "config/version/version.hpp"
 
+#include <filesystem>
+
 int main(int argc, char const * argv[])
 {
   tools::on_startup();

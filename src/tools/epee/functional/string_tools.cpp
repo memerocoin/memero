@@ -26,8 +26,8 @@
 
 #include "string_tools.hpp"
 
-
 #include <arpa/inet.h>
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace epee
 {
@@ -52,11 +52,7 @@ namespace string_tools
   }
 	std::string num_to_string_fast(int64_t val)
 	{
-		/*
-		char  buff[30] = {0};
-		i64toa_s(val, buff, sizeof(buff)-1, 10);
-		return buff;*/
-		return boost::lexical_cast<std::string>(val);
+    return std::to_string(val);
 	}
 	//----------------------------------------------------------------------------
 	bool compare_no_case(const std::string& str1, const std::string& str2)

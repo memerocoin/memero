@@ -39,6 +39,7 @@
 #include "tools/common/threadpool.h"
 
 #include <boost/uuid/nil_generator.hpp>
+#include <filesystem>
 
 
 #define LOG_ERROR_VER(x) LOG_CATEGORY(epee::LogLevel::Error, "verify", x)

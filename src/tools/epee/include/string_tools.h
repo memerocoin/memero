@@ -26,16 +26,9 @@
 
 #pragma once
 
-#include "tools/epee/functional/hex.hpp"
-#include "tools/epee/functional/span.hpp"
-#include "tools/epee/functional/blob.hpp"
+#include "tools/epee/functional/string_tools.hpp"
 #include "tools/epee/include/storages/parserse_base_utils.h"
 
-#include "tools/epee/functional/string_tools.hpp"
-
-#include <filesystem>
-
-#include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
 
 

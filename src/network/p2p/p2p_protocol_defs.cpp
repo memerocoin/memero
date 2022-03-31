@@ -29,6 +29,8 @@
 
 #include "p2p_protocol_defs.h"
 
+#include <filesystem>
+
 namespace nodetool
 {
   std::string peerid_to_string(peerid_type peer_id)
