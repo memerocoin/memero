@@ -26,7 +26,6 @@
 
 #pragma once
 
-#include "buffer.h"
 #include "levin_base.h"
 
 #include "tools/epee/include/misc_os_dependent.h"

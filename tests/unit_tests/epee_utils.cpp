@@ -47,7 +47,6 @@
 #include "tools/epee/functional/span.hpp"
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/local_ip.h"
-#include "tools/epee/include/net/buffer.h"
 #include "network/p2p/net_peerlist_boost_serialization.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/storages/parserse_base_utils.h"
@@ -552,67 +551,6 @@ TEST(NetUtils, PrivateRanges)
   ASSERT_EQ(is_local("0.0.168.192"), false);
   ASSERT_EQ(is_local("0.0.30.172"), false);
   ASSERT_EQ(is_local("0.0.30.127"), false);
-}
-
-TEST(net_buffer, basic)
-{
-  epee::net_utils::buffer buf;
-
-  ASSERT_EQ(buf.size(), 0);
-  buf.append_raw("a", 1);
-  std::span<const uint8_t> span = buf.span().subspan(0, 1);
-  ASSERT_EQ(span.size(), 1);
-  ASSERT_EQ(span.data()[0], 'a');
-  buf.append_raw("bc", 2);
-  buf.erase(1);
-  span = buf.span().subspan(0, 2);
-  ASSERT_EQ(span.size(), 2);
-  ASSERT_EQ(span.data()[0], 'b');
-  ASSERT_EQ(span.data()[1], 'c');
-  buf.erase(1);
-  span = buf.span().subspan(0, 1);
-  ASSERT_EQ(span.size(), 1);
-  ASSERT_EQ(span.data()[0], 'c');
-  buf.erase(1);
-  EXPECT_EQ(buf.size(), 0);
-}
-
-TEST(net_buffer, existing_capacity)
-{
-  epee::net_utils::buffer buf;
-
-  buf.append_raw("123456789", 9);
-  buf.erase(9);
-  buf.append_raw("abc", 3);
-  buf.append_raw("def", 3);
-  ASSERT_EQ(buf.size(), 6);
-  std::span<const uint8_t> span = buf.span().subspan(0, 6);
-  ASSERT_TRUE(!memcmp(span.data(), "abcdef", 6));
-}
-
-TEST(net_buffer, reallocate)
-{
-  epee::net_utils::buffer buf;
-
-  buf.append_raw(std::string(4000, ' ').c_str(), 4000);
-  buf.append_raw(std::string(8000, '0').c_str(), 8000);
-  ASSERT_EQ(buf.size(), 12000);
-  std::span<const uint8_t> span = buf.span().subspan(0, 12000);
-  ASSERT_TRUE(!memcmp(span.data(), std::string(4000, ' ').c_str(), 4000));
-  ASSERT_TRUE(!memcmp(span.data() + 4000, std::string(8000, '0').c_str(), 8000));
-}
-
-TEST(net_buffer, move)
-{
-  epee::net_utils::buffer buf;
-
-  buf.append_raw(std::string(400, ' ').c_str(), 400);
-  buf.erase(399);
-  buf.append_raw(std::string(4000, '0').c_str(), 4000);
-  ASSERT_EQ(buf.size(), 4001);
-  std::span<const uint8_t> span = buf.span().subspan(0, 4001);
-  ASSERT_TRUE(!memcmp(span.data(), std::string(1, ' ').c_str(), 1));
-  ASSERT_TRUE(!memcmp(span.data() + 1, std::string(4000, '0').c_str(), 4000));
 }
 
 TEST(parsing, isspace)
