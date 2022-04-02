@@ -162,10 +162,7 @@ public:
 
   std::atomic<int> m_invoke_result_code;
 
-  std::recursive_mutex m_local_inv_buff_lock;
-  epee::blob::data m_local_inv_buff;
-
-  std::recursive_mutex m_call_lock;
+  std::mutex m_call_lock;
 
   std::atomic<uint32_t> m_wait_count;
   std::atomic<bool> m_close_called;
@@ -404,7 +401,7 @@ public:
         break;
       }
 
-      LOCK_RECURSIVE_MUTEX(m_call_lock);
+      LOCK_MUTEX(m_call_lock);
 
       if(m_deletion_initiated)
       {
@@ -413,6 +410,7 @@ public:
       }
 
       m_invoke_buf_ready = false;
+
       {
         LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
 

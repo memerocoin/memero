@@ -441,8 +441,6 @@ namespace levin
                         }else
                         {
                           {
-                            LOCK_RECURSIVE_MUTEX(m_local_inv_buff_lock);
-                            m_local_inv_buff = buff_to_invoke;
                             buff_to_invoke.clear();
                             m_invoke_result_code = m_current_head.m_return_code;
                           }
@@ -593,7 +591,7 @@ namespace levin
     if(m_deletion_initiated)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
 
-    LOCK_RECURSIVE_MUTEX(m_call_lock);
+    LOCK_MUTEX(m_call_lock);
 
     if(m_deletion_initiated)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
