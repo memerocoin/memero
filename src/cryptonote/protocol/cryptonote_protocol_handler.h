@@ -40,6 +40,7 @@
 #include "cryptonote/core/cryptonote_core.h"
 
 #include "tools/epee/include/net/levin_abstract_invoke2.h"
+#include "tools/epee/include/net/levin_abstract_invoke2_macro.h"
 
 
 
