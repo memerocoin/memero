@@ -499,7 +499,14 @@ namespace levin
             {
               if(m_cache_in_buffer.size() < sizeof(bucket_head2))
                 {
-                  if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)epee::blob::span(m_cache_in_buffer).subspan(8).data()) != SWAP64LE(constant::LEVIN_SIGNATURE))
+                  const auto levin_data =
+                    epee::blob::span(m_cache_in_buffer).subspan(8);
+                  if
+                    (
+                     m_cache_in_buffer.size() >= sizeof(uint64_t)
+                     && *((uint64_t*)levin_data.data())
+                     != SWAP64LE(constant::LEVIN_SIGNATURE)
+                     )
                     {
                       LOG_WARNING
                         (
