@@ -133,25 +133,6 @@ namespace epee
       return true;
     }
 
-    template<class t_arg, class t_transport>
-    bool notify_remote_command2(const typename t_transport::connection_context &context, int command, const t_arg& out_struct, t_transport& transport)
-    {
-      const boost::uuids::uuid &conn_id = context.m_connection_id;
-      serialization::portable_storage stg;
-      out_struct.store(stg);
-      std::string buff_to_send;
-      stg.store_to_binary(buff_to_send);
-
-      on_levin_traffic(context, true, true, false, buff_to_send.size(), command);
-      int res = transport.notify(command, epee::string_tools::string_to_blob(buff_to_send), conn_id);
-      if(res <=0 )
-      {
-        LOG_ERROR("Failed to notify command " + std::to_string(command) + " return code " + std::to_string(res));
-        return false;
-      }
-      return true;
-    }
-    //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     template<class t_owner, class t_in_type, class t_out_type, class t_context, class callback_t>
     int buff_to_t_adapter
