@@ -28,13 +28,8 @@
 
 #pragma once
 
-#include "tools/epee/include/string_tools.h"
-
-#include <regex>
 #include <list>
-
-
-
+#include <string>
 
 namespace epee
 {
@@ -61,7 +56,7 @@ namespace net_utils
         http_content_type_not_set
       };
 
-    typedef std::list<std::pair<std::string, std::string> > fields_list;
+    using fields_list = std::list<std::pair<std::string, std::string>>;
 
     struct http_header_info
     {

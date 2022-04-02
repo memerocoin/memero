@@ -30,6 +30,8 @@
 #include "tools/epee/include/string_file.hpp"
 #include "tools/epee/include/net/net_parse_helpers.h"
 #include "tools/epee/functional/time_helper.hpp"
+#include "tools/epee/include/string_tools.h"
+
 
 
 #include <boost/algorithm/string/trim.hpp>

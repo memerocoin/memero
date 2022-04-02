@@ -31,7 +31,7 @@
 
 #include "tools/epee/include/logging.hpp"
 
-
+#include <regex>
 
 
 namespace epee

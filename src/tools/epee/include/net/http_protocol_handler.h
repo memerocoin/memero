@@ -31,8 +31,9 @@
 #include "net_utils_base.h"
 #include "http_base.h"
 
+#include <regex>
 
-
+#include <boost/lexical_cast.hpp>
 
 namespace epee
 {
