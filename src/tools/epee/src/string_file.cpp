@@ -43,14 +43,15 @@ namespace epee
 
     // https://www.boost.org/doc/libs/1_78_0/boost/filesystem/string_file.hpp
 
-    bool save_string_to_file(const std::string& p, const std::string& str)
+    bool save_string_to_file
+    (const std::string_view p, const std::string_view str)
     {
       try
         {
           std::ofstream file;
           file.exceptions(std::ios_base::failbit | std::ios_base::badbit);
-          file.open(p, std::ios_base::binary);
-          file.write(str.c_str(), str.size());
+          file.open(std::string(p), std::ios_base::binary);
+          file.write(str.data(), str.size());
           return true;
         }
 
@@ -61,14 +62,14 @@ namespace epee
     }
 
     std::optional<std::string> load_file_to_string
-    (const std::string& p)
+    (const std::string_view p)
     {
       try
       {
         std::string str;
         std::ifstream file;
         file.exceptions(std::ios_base::failbit | std::ios_base::badbit);
-        file.open(p, std::ios_base::binary);
+        file.open(std::string(p), std::ios_base::binary);
         std::size_t sz =
           static_cast< std::size_t >(std::filesystem::file_size(p));
         str.resize(sz, '\0');

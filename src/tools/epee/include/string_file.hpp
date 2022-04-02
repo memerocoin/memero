@@ -39,9 +39,9 @@ namespace epee
 namespace string_file
 {
   bool save_string_to_file
-    (const std::string& path_to_file, const std::string& str);
+    (const std::string_view path_to_file, const std::string_view str);
 
   std::optional<std::string> load_file_to_string
-    (const std::string& path_to_file);
+    (const std::string_view path_to_file);
 }
 }
