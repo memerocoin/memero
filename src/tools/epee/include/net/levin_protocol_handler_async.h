@@ -176,7 +176,7 @@ public:
   t_connection_context& m_connection_context;
   std::atomic<uint64_t> m_max_packet_size;
 
-  epee::net_utils::buffer m_cache_in_buffer;
+  epee::blob::data m_cache_in_buffer;
   stream_state m_state;
 
   int32_t m_oponent_protocol_ver;

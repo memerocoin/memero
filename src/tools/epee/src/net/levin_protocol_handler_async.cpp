@@ -325,7 +325,7 @@ namespace levin
         return false;
       }
 
-    m_cache_in_buffer.append(epee::blob::span((const uint8_t*)ptr, cb));
+    m_cache_in_buffer.append((const uint8_t*)ptr, cb);
 
     bool is_continue = true;
     while(is_continue)
@@ -352,9 +352,11 @@ namespace levin
 
             {
               epee::blob::data temp;
+              const size_t head_size = m_current_head.m_cb;
               epee::blob::data buff_to_invoke =
-                m_cache_in_buffer.carve
-                ((std::string::size_type)m_current_head.m_cb);
+                m_cache_in_buffer.substr(0, head_size);
+
+              m_cache_in_buffer.erase(0, head_size);
 
               m_state = stream_state_head;
 
@@ -487,7 +489,7 @@ namespace levin
             {
               if(m_cache_in_buffer.size() < sizeof(bucket_head2))
                 {
-                  if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)m_cache_in_buffer.span().subspan(8).data()) != SWAP64LE(constant::LEVIN_SIGNATURE))
+                  if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)epee::blob::span(m_cache_in_buffer).subspan(8).data()) != SWAP64LE(constant::LEVIN_SIGNATURE))
                     {
                       LOG_WARNING
                         (
@@ -501,7 +503,7 @@ namespace levin
                 }
 
               const bucket_head2 phead =
-                epee::span_to_pod<bucket_head2>(m_cache_in_buffer.span());
+                epee::span_to_pod<bucket_head2>(m_cache_in_buffer);
 
               if(constant::LEVIN_SIGNATURE != phead.m_signature)
                 {
@@ -510,7 +512,7 @@ namespace levin
                 }
               m_current_head = phead;
 
-              m_cache_in_buffer.erase(sizeof(bucket_head2));
+              m_cache_in_buffer.erase(0, sizeof(bucket_head2));
               m_state = stream_state_body;
               m_oponent_protocol_ver = m_current_head.m_protocol_version;
               const size_t max_bytes = m_connection_context.get_max_bytes(m_current_head.m_command);
