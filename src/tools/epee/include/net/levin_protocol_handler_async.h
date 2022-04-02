@@ -114,7 +114,6 @@ public:
   uint64_t m_max_packet_size;
   uint64_t m_invoke_timeout;
 
-  int invoke(int command, const std::span<const uint8_t> in_buff, epee::blob::data& buff_out, boost::uuids::uuid connection_id);
   template<class callback_t>
   int invoke_async(int command, const std::span<const uint8_t> in_buff, boost::uuids::uuid connection_id, const callback_t &cb, size_t timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED);
 
@@ -444,68 +443,6 @@ public:
     }
 
     return true;
-  }
-
-  int invoke(int command, const std::span<const uint8_t> in_buff, epee::blob::data& buff_out)
-  {
-    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler
-      (std::bind(&async_protocol_handler::finish_outer_call, this));
-
-    if(m_deletion_initiated)
-      return LEVIN_ERROR_CONNECTION_DESTROYED;
-
-    LOCK_RECURSIVE_MUTEX(m_call_lock);
-
-    if(m_deletion_initiated)
-      return LEVIN_ERROR_CONNECTION_DESTROYED;
-
-    m_invoke_buf_ready = false;
-
-    if (command == m_connection_context.handshake_command())
-      m_max_packet_size = m_config.m_max_packet_size;
-
-    if (!send_message(command, in_buff, LEVIN_PACKET_REQUEST, true))
-    {
-      LOG_ERROR_CC(m_connection_context, "Failed to send request");
-      return LEVIN_ERROR_CONNECTION;
-    }
-
-    uint64_t ticks_start = epee::misc_utils::get_tick_count();
-    size_t prev_size = 0;
-
-    while(!m_invoke_buf_ready && !m_deletion_initiated && !m_protocol_released)
-    {
-      if(m_cache_in_buffer.size() - prev_size >= MIN_BYTES_WANTED)
-      {
-        prev_size = m_cache_in_buffer.size();
-        ticks_start = epee::misc_utils::get_tick_count();
-      }
-      if(misc_utils::get_tick_count() - ticks_start > m_config.m_invoke_timeout)
-      {
-        LOG_WARNING
-          (
-           m_connection_context.to_str()
-           + "invoke timeout ("
-           + std::to_string(m_config.m_invoke_timeout)
-           + "), closing connection "
-           );
-        close();
-        return LEVIN_ERROR_CONNECTION_TIMEDOUT;
-      }
-      if(!m_pservice_endpoint->call_run_once_service_io())
-        return LEVIN_ERROR_CONNECTION_DESTROYED;
-    }
-
-    if(m_deletion_initiated || m_protocol_released)
-      return LEVIN_ERROR_CONNECTION_DESTROYED;
-
-    {
-      LOCK_RECURSIVE_MUTEX(m_local_inv_buff_lock);
-      buff_out = m_local_inv_buff;
-      m_local_inv_buff.clear();
-    }
-
-    return m_invoke_result_code;
   }
 
   int notify(int command, const std::span<const uint8_t> in_buff);

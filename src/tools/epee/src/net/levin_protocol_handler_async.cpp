@@ -115,13 +115,6 @@ namespace levin
     return LEVIN_OK;
   }
   //------------------------------------------------------------------------------------------
-  int async_protocol_handler_config::invoke(int command, const std::span<const uint8_t> in_buff, epee::blob::data& buff_out, boost::uuids::uuid connection_id)
-  {
-    async_protocol_handler* aph;
-    int r = find_and_lock_connection(connection_id, aph);
-    return LEVIN_OK == r ? aph->invoke(command, in_buff, buff_out) : r;
-  }
-  //------------------------------------------------------------------------------------------
 
   size_t async_protocol_handler_config::get_connections_count()
   {
