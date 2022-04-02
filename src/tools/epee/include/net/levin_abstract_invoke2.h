@@ -74,61 +74,6 @@ namespace epee
 {
   namespace net_utils
   {
-#if 0
-    template<class t_arg, class t_transport>
-    bool notify_remote_command2(int command, const t_arg& out_struct, t_transport& transport)
-    {
-      if(!transport.is_connected())
-        return false;
-
-      serialization::portable_storage stg;
-      out_struct.store(&stg);
-      std::string buff_to_send;
-      stg.store_to_binary(buff_to_send);
-
-      int res = transport.notify(command, buff_to_send);
-      if(res <=0 )
-      {
-        LOG_ERROR("Failed to notify command " + std::to_string(command) + " return code " + std::to_string(res));
-        return false;
-      }
-      return true;
-    }
-#endif
-
-    template<class t_arg, class t_result, class t_transport>
-    bool invoke_remote_command2(const epee::net_utils::connection_context_base context, int command, const t_arg& out_struct, t_result& result_struct, t_transport& transport)
-    {
-      const boost::uuids::uuid &conn_id = context.m_connection_id;
-      typename serialization::portable_storage stg;
-      out_struct.store(stg);
-      std::string buff_to_send, buff_to_recv;
-      stg.store_to_binary(buff_to_send);
-
-      on_levin_traffic(context, true, true, false, buff_to_send.size(), command);
-      int res = transport.invoke(command, buff_to_send, buff_to_recv, conn_id);
-      if( res <=0 )
-      {
-        LOG_PRINT_L1
-          (
-           "Failed to invoke command "
-           + std::to_string(command)
-           + " return code "
-           + std::to_string(res)
-           );
-        return false;
-      }
-      typename serialization::portable_storage stg_ret;
-      if(!stg_ret.load_from_binary(buff_to_recv, &default_levin_limits))
-      {
-        on_levin_traffic(context, true, false, true, buff_to_recv.size(), command);
-        LOG_ERROR("Failed to load_from_binary on command " + std::to_string(command));
-        return false;
-      }
-      on_levin_traffic(context, true, false, false, buff_to_recv.size(), command);
-      return result_struct.load(stg_ret);
-    }
-
     template<class t_result, class t_arg, class callback_t, class t_transport>
     bool async_invoke_remote_command2(const epee::net_utils::connection_context_base &context, int command, const t_arg& out_struct, t_transport& transport, const callback_t &cb, size_t inv_timeout = constant::LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
     {
