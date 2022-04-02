@@ -24,8 +24,8 @@ namespace epee
 namespace net_utils
 {
 
-  void buffer::append_raw(const void *data, size_t sz) {
-    append(epee::blob::span((uint8_t*)data, sz));
+  void buffer::append_raw(const void *data, const size_t sz) {
+    append(epee::blob::span((const uint8_t*)data, sz));
   }
 
   void buffer::append(const epee::blob::span x) {
@@ -36,11 +36,11 @@ namespace net_utils
     storage.erase(0, sz);
   }
 
-  std::span<const uint8_t> buffer::span(size_t sz) const {
+  const epee::blob::span buffer::span(const size_t sz) const {
     return std::span<const uint8_t>(storage).subspan(0, sz);
   }
 
-  epee::blob::data buffer::carve(size_t sz) {
+  epee::blob::data buffer::carve(const size_t sz) {
     const epee::blob::data x = storage.substr(0, sz);
     erase(sz);
     return x;

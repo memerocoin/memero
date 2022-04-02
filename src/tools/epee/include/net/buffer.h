@@ -28,12 +28,11 @@ namespace net_utils
 class buffer
 {
 public:
-  void append_raw(const void *data, size_t sz);
+  void append_raw(const void *data, const size_t sz);
   void append(const epee::blob::span x);
-  void erase(size_t sz);
-  std::span<const uint8_t> span(size_t sz) const;
-  // carve must keep the data in scope till next call, other API calls (such as append, erase) can invalidate the carved buffer
-  epee::blob::data carve(size_t sz);
+  void erase(const size_t sz);
+  const epee::blob::span span(const size_t sz) const;
+  epee::blob::data carve(const size_t sz);
   size_t size() const;
 
 private:
