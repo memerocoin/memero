@@ -26,6 +26,8 @@
 
 #include "tools/epee/include/net/levin_protocol_handler_async.h"
 
+#include "tools/epee/functional/span.hpp"
+
 #include <random>
 
 namespace epee
@@ -380,7 +382,7 @@ namespace levin
                   temp = m_fragment_buffer;
                   m_fragment_buffer.clear();
 
-                  std::memcpy(std::addressof(m_current_head), std::addressof(temp[0]), sizeof(bucket_head2));
+                  m_current_head = epee::span_to_pod<bucket_head2>(temp);
                   const size_t max_bytes = m_connection_context.get_max_bytes(m_current_head.m_command);
                   if(m_current_head.m_cb > std::min<size_t>(max_packet_size, max_bytes))
                     {
@@ -483,7 +485,7 @@ namespace levin
             {
               if(m_cache_in_buffer.size() < sizeof(bucket_head2))
                 {
-                  if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)m_cache_in_buffer.span(8).data()) != SWAP64LE(constant::LEVIN_SIGNATURE))
+                  if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)m_cache_in_buffer.span().subspan(8).data()) != SWAP64LE(constant::LEVIN_SIGNATURE))
                     {
                       LOG_WARNING
                         (
@@ -496,17 +498,9 @@ namespace levin
                   break;
                 }
 
-#if BYTE_ORDER == LITTLE_ENDIAN
-              bucket_head2& phead = *(bucket_head2*)m_cache_in_buffer.span(sizeof(bucket_head2)).data();
-#else
-              bucket_head2 phead = *(bucket_head2*)m_cache_in_buffer.span(sizeof(bucket_head2)).data();
-              phead.m_signature = SWAP64LE(phead.m_signature);
-              phead.m_cb = SWAP64LE(phead.m_cb);
-              phead.m_command = SWAP32LE(phead.m_command);
-              phead.m_return_code = SWAP32LE(phead.m_return_code);
-              phead.m_flags = SWAP32LE(phead.m_flags);
-              phead.m_protocol_version = SWAP32LE(phead.m_protocol_version);
-#endif
+              const bucket_head2 phead =
+                epee::span_to_pod<bucket_head2>(m_cache_in_buffer.span());
+
               if(constant::LEVIN_SIGNATURE != phead.m_signature)
                 {
                   LOG_ERROR_CC(m_connection_context, "Signature mismatch, connection will be closed");

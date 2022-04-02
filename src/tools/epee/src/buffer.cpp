@@ -37,13 +37,17 @@ namespace net_utils
   }
 
   const epee::blob::span buffer::span(const size_t sz) const {
-    return std::span<const uint8_t>(storage).subspan(0, sz);
+    return span().subspan(0, sz);
   }
 
   epee::blob::data buffer::carve(const size_t sz) {
     const epee::blob::data x = storage.substr(0, sz);
     erase(sz);
     return x;
+  }
+
+  const epee::blob::span buffer::span() const {
+    return epee::blob::span(storage);
   }
 
   size_t buffer::size() const {

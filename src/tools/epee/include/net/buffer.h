@@ -34,6 +34,8 @@ public:
   const epee::blob::span span(const size_t sz) const;
   epee::blob::data carve(const size_t sz);
   size_t size() const;
+  const epee::blob::span span() const;
+
 
 private:
   epee::blob::data storage;

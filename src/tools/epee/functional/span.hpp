@@ -61,7 +61,7 @@ namespace epee
       (
        std::addressof(x)
        , src.data()
-       , src.size()
+       , std::min(sizeof(T), src.size())
        );
 
     return x;
