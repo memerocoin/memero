@@ -36,10 +36,6 @@ namespace net_utils
     storage.erase(0, sz);
   }
 
-  const epee::blob::span buffer::span(const size_t sz) const {
-    return span().subspan(0, sz);
-  }
-
   epee::blob::data buffer::carve(const size_t sz) {
     const epee::blob::data x = storage.substr(0, sz);
     erase(sz);

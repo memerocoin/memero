@@ -560,17 +560,17 @@ TEST(net_buffer, basic)
 
   ASSERT_EQ(buf.size(), 0);
   buf.append_raw("a", 1);
-  std::span<const uint8_t> span = buf.span(1);
+  std::span<const uint8_t> span = buf.span().subspan(0, 1);
   ASSERT_EQ(span.size(), 1);
   ASSERT_EQ(span.data()[0], 'a');
   buf.append_raw("bc", 2);
   buf.erase(1);
-  span = buf.span(2);
+  span = buf.span().subspan(0, 2);
   ASSERT_EQ(span.size(), 2);
   ASSERT_EQ(span.data()[0], 'b');
   ASSERT_EQ(span.data()[1], 'c');
   buf.erase(1);
-  span = buf.span(1);
+  span = buf.span().subspan(0, 1);
   ASSERT_EQ(span.size(), 1);
   ASSERT_EQ(span.data()[0], 'c');
   buf.erase(1);
@@ -586,7 +586,7 @@ TEST(net_buffer, existing_capacity)
   buf.append_raw("abc", 3);
   buf.append_raw("def", 3);
   ASSERT_EQ(buf.size(), 6);
-  std::span<const uint8_t> span = buf.span(6);
+  std::span<const uint8_t> span = buf.span().subspan(0, 6);
   ASSERT_TRUE(!memcmp(span.data(), "abcdef", 6));
 }
 
@@ -597,7 +597,7 @@ TEST(net_buffer, reallocate)
   buf.append_raw(std::string(4000, ' ').c_str(), 4000);
   buf.append_raw(std::string(8000, '0').c_str(), 8000);
   ASSERT_EQ(buf.size(), 12000);
-  std::span<const uint8_t> span = buf.span(12000);
+  std::span<const uint8_t> span = buf.span().subspan(0, 12000);
   ASSERT_TRUE(!memcmp(span.data(), std::string(4000, ' ').c_str(), 4000));
   ASSERT_TRUE(!memcmp(span.data() + 4000, std::string(8000, '0').c_str(), 8000));
 }
@@ -610,7 +610,7 @@ TEST(net_buffer, move)
   buf.erase(399);
   buf.append_raw(std::string(4000, '0').c_str(), 4000);
   ASSERT_EQ(buf.size(), 4001);
-  std::span<const uint8_t> span = buf.span(4001);
+  std::span<const uint8_t> span = buf.span().subspan(0, 4001);
   ASSERT_TRUE(!memcmp(span.data(), std::string(1, ' ').c_str(), 1));
   ASSERT_TRUE(!memcmp(span.data() + 1, std::string(4000, '0').c_str(), 4000));
 }

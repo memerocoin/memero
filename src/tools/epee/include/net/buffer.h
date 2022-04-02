@@ -31,7 +31,6 @@ public:
   void append_raw(const void *data, const size_t sz);
   void append(const epee::blob::span x);
   void erase(const size_t sz);
-  const epee::blob::span span(const size_t sz) const;
   epee::blob::data carve(const size_t sz);
   size_t size() const;
   const epee::blob::span span() const;
