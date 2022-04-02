@@ -31,6 +31,7 @@
 #include <string>
 #include <cstring>
 #include <span>
+#include <optional>
 
 namespace epee
 {
@@ -50,10 +51,14 @@ namespace epee
   }
 
   template<typename T>
-  constexpr T span_to_pod(const std::span<const std::uint8_t> src) noexcept
+  constexpr std::optional<T> span_to_pod(const std::span<const std::uint8_t> src) noexcept
   {
     static_assert(!std::is_empty<T>(), "empty types will not work -> sizeof == 1");
     static_assert(!has_padding<T>(), "source type may have padding");
+
+    if (src.size() < sizeof(T)) {
+      return {};
+    }
 
     T x;
 
@@ -61,7 +66,7 @@ namespace epee
       (
        std::addressof(x)
        , src.data()
-       , std::min(sizeof(T), src.size())
+       , sizeof(T)
        );
 
     return x;

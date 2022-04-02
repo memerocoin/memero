@@ -143,7 +143,12 @@ T read_hex(const rapidjson::Value& val)
     throw BAD_INPUT();
   }
 
-  return epee::span_to_pod<T>(*maybe_blob);
+  const auto maybe_pod = epee::span_to_pod<T>(*maybe_blob);
+  if (!maybe_pod) {
+    throw BAD_INPUT();
+  }
+
+  return *maybe_pod;
 }
 
 

@@ -377,7 +377,17 @@ namespace levin
                   temp = m_fragment_buffer;
                   m_fragment_buffer.clear();
 
-                  m_current_head = epee::span_to_pod<bucket_head2>(temp);
+                  const auto maybe_head = epee::span_to_pod<bucket_head2>(temp);
+                  if (!maybe_head) {
+                      LOG_ERROR
+                        (
+                         m_connection_context.to_str()
+                         + "Failed to get head"
+                         );
+                      return false;
+                  }
+                  m_current_head = *maybe_head;
+
                   const size_t max_bytes = m_connection_context.get_max_bytes(m_current_head.m_command);
                   if(m_current_head.m_cb > std::min<size_t>(max_packet_size, max_bytes))
                     {
@@ -502,8 +512,19 @@ namespace levin
                   break;
                 }
 
-              const bucket_head2 phead =
+              const auto maybe_head =
                 epee::span_to_pod<bucket_head2>(m_cache_in_buffer);
+
+              if (!maybe_head) {
+                LOG_ERROR
+                  (
+                   m_connection_context.to_str()
+                   + "Failed to get head"
+                   );
+                return false;
+              }
+
+              const bucket_head2 phead = *maybe_head;
 
               if(constant::LEVIN_SIGNATURE != phead.m_signature)
                 {
