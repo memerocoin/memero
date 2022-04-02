@@ -252,7 +252,7 @@ namespace levin
   {
     decltype(m_invoke_response_handlers) local_invoke_response_handlers;
     {
-      LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
+      LOCK_MUTEX(m_invoke_response_handlers_lock);
       local_invoke_response_handlers.swap(m_invoke_response_handlers);
       m_protocol_released = true;
     }
@@ -338,7 +338,7 @@ namespace levin
                 is_continue = false;
                 if(cb >= MIN_BYTES_WANTED)
                   {
-                    LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
+                    LOCK_MUTEX(m_invoke_response_handlers_lock);
                     if (!m_invoke_response_handlers.empty())
                       {
                         //async call scenario
@@ -379,12 +379,12 @@ namespace levin
 
                   const auto maybe_head = epee::span_to_pod<bucket_head2>(temp);
                   if (!maybe_head) {
-                      LOG_ERROR
-                        (
-                         m_connection_context.to_str()
-                         + "Failed to get head"
-                         );
-                      return false;
+                    LOG_ERROR
+                      (
+                       m_connection_context.to_str()
+                       + "Failed to get head"
+                       );
+                    return false;
                   }
                   m_current_head = *maybe_head;
 
@@ -418,19 +418,32 @@ namespace levin
               if(is_response)
                 {//response to some invoke
 
-                  if(!m_invoke_response_handlers.empty())
-                    {//async call scenario
-                      std::unique_lock<decltype(m_invoke_response_handlers_lock)> invoke_response_handlers_guard(m_invoke_response_handlers_lock);
-                      std::shared_ptr<invoke_response_handler_base> response_handler = m_invoke_response_handlers.front();
-                      bool timer_cancelled = response_handler->cancel_timer();
-                      // Don't pop handler, to avoid destroying it
-                      if(timer_cancelled)
-                        m_invoke_response_handlers.pop_front();
-                      invoke_response_handlers_guard.unlock();
+                  std::optional<std::shared_ptr<invoke_response_handler_base>>
+                    maybe_response_handler = {};
 
-                      if(timer_cancelled)
-                        response_handler->handle(m_current_head.m_return_code, buff_to_invoke, m_connection_context);
+                  if(!m_invoke_response_handlers.empty())
+                  {
+                    {
+                      LOCK_MUTEX(m_invoke_response_handlers_lock);
+                      {
+                        if(!m_invoke_response_handlers.empty()) {
+                          //async call scenario
+                          const auto response_handler = m_invoke_response_handlers.front();
+                          bool timer_cancelled = response_handler->cancel_timer();
+                          // Don't pop handler, to avoid destroying it
+                          if(timer_cancelled) {
+                            m_invoke_response_handlers.pop_front();
+                            maybe_response_handler = response_handler;
+                          }
+                        }
+                      }
                     }
+
+                    if (maybe_response_handler) {
+                      const auto response_handler = *maybe_response_handler;
+                      response_handler->handle(m_current_head.m_return_code, buff_to_invoke, m_connection_context);
+                    }
+                  }
                   else
                     {
                       //use sync call scenario
@@ -447,7 +460,8 @@ namespace levin
                           m_invoke_buf_ready = true;
                         }
                     }
-                }else
+                }
+              else
                 {
                   if(m_current_head.m_have_to_return_data)
                     {

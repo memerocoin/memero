@@ -300,20 +300,23 @@ public:
       }
     }
   };
-  std::recursive_mutex m_invoke_response_handlers_lock;
+  std::mutex m_invoke_response_handlers_lock;
   std::list<std::shared_ptr<invoke_response_handler_base> > m_invoke_response_handlers;
 
   template<class callback_t>
   bool add_invoke_response_handler(const callback_t &cb, uint64_t timeout,  async_protocol_handler& con, int command)
   {
-    LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
     if (m_protocol_released)
     {
       LOG_ERROR("Adding response handler to a released object");
       return false;
     }
     std::shared_ptr<invoke_response_handler_base> handler(std::make_shared<anvoke_handler<callback_t>>(cb, timeout, con, command));
-    m_invoke_response_handlers.push_back(handler);
+
+    {
+      LOCK_MUTEX(m_invoke_response_handlers_lock);
+      m_invoke_response_handlers.push_back(handler);
+    }
     return handler->is_timer_started();
   }
 
@@ -407,25 +410,22 @@ public:
 
       m_invoke_buf_ready = false;
 
-      {
-        LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
+      if (command == m_connection_context.handshake_command())
+        m_max_packet_size = m_config.m_max_packet_size;
 
-        if (command == m_connection_context.handshake_command())
-          m_max_packet_size = m_config.m_max_packet_size;
-
-        if(!send_message(command, in_buff, LEVIN_PACKET_REQUEST, true))
+      if(!send_message(command, in_buff, LEVIN_PACKET_REQUEST, true))
         {
           LOG_ERROR_CC(m_connection_context, "Failed to do_send");
           err_code = LEVIN_ERROR_CONNECTION;
           break;
         }
 
-        if(!add_invoke_response_handler(cb, timeout, *this, command))
+      if(!add_invoke_response_handler(cb, timeout, *this, command))
         {
           err_code = LEVIN_ERROR_CONNECTION_DESTROYED;
           break;
         }
-      }
+
     } while (false);
 
     if (LEVIN_OK != err_code)
