@@ -162,8 +162,6 @@ public:
 
   std::atomic<int> m_invoke_result_code;
 
-  std::mutex m_call_lock;
-
   std::atomic<uint32_t> m_wait_count;
   std::atomic<bool> m_close_called;
   bucket_head2 m_current_head;
@@ -400,8 +398,6 @@ public:
         err_code = LEVIN_ERROR_CONNECTION_DESTROYED;
         break;
       }
-
-      LOCK_MUTEX(m_call_lock);
 
       if(m_deletion_initiated)
       {

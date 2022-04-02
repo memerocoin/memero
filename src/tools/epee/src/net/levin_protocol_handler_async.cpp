@@ -591,8 +591,6 @@ namespace levin
     if(m_deletion_initiated)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
 
-    LOCK_MUTEX(m_call_lock);
-
     if(m_deletion_initiated)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
 
