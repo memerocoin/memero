@@ -144,7 +144,7 @@ public:
 /************************************************************************/
 class async_protocol_handler
 {
-  std::string m_fragment_buffer;
+  epee::blob::data m_fragment_buffer;
 
   bool send_message(uint32_t command, std::span<const uint8_t> in_buff, uint32_t flags, bool expect_response);
 

@@ -356,15 +356,17 @@ namespace levin
               }
 
             {
-              std::string temp{};
-              epee::blob::data buff_to_invoke = m_cache_in_buffer.carve((std::string::size_type)m_current_head.m_cb);
+              epee::blob::data temp;
+              epee::blob::data buff_to_invoke =
+                m_cache_in_buffer.carve
+                ((std::string::size_type)m_current_head.m_cb);
+
               m_state = stream_state_head;
 
               // abstract_tcp_server2.h manages max bandwidth for a p2p link
               if (!(m_current_head.m_flags & (LEVIN_PACKET_REQUEST | LEVIN_PACKET_RESPONSE)))
                 {
-                  m_fragment_buffer.append(reinterpret_cast<const char*>(buff_to_invoke.data()), buff_to_invoke.size());
-
+                  m_fragment_buffer.append(buff_to_invoke);
                   if (m_fragment_buffer.size() < sizeof(bucket_head2))
                     {
                       LOG_ERROR
@@ -375,8 +377,9 @@ namespace levin
                       return false;
                     }
 
-                  temp = std::move(m_fragment_buffer);
+                  temp = m_fragment_buffer;
                   m_fragment_buffer.clear();
+
                   std::memcpy(std::addressof(m_current_head), std::addressof(temp[0]), sizeof(bucket_head2));
                   const size_t max_bytes = m_connection_context.get_max_bytes(m_current_head.m_command);
                   if(m_current_head.m_cb > std::min<size_t>(max_packet_size, max_bytes))
@@ -472,7 +475,7 @@ namespace levin
               if (!temp.empty() && temp.capacity() <= 64 * 1024)
                 {
                   temp.clear();
-                  m_fragment_buffer = std::move(temp);
+                  m_fragment_buffer.clear();
                 }
             }
             break;
