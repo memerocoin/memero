@@ -30,40 +30,13 @@
 
 #include "tools/epee/include/storages/portable_storage_template_helper.h"
 
-
-
-
-
+#include "config/lol.hpp"
 
 
 namespace
 {
-  template<typename context_t>
-  void on_levin_traffic(const context_t &context, bool initiator, bool sent, bool error, size_t bytes, const char *category)
-  {
-    LOG_CATEGORY
-      (
-       epee::LogLevel::Verbose
-       , "net.p2p.traffic"
-       , context.to_str()
-       + std::to_string(bytes)
-       + " bytes "
-       + (sent ? "sent" : "received")
-       + (error ? "/corrupt" : "")
-       + " for category "
-       + category
-       + " initiated by "
-       + (initiator ? "us" : "peer")
-       );
-  }
-  template<typename context_t>
-  void on_levin_traffic(const context_t &context, bool initiator, bool sent, bool error, size_t bytes, int command)
-  {
-    char buf[32];
-    snprintf(buf, sizeof(buf),  "command-%u", command);
-    return on_levin_traffic(context, initiator, sent, error, bytes, buf);
-  }
-  static const constexpr epee::serialization::portable_storage::limits_t default_levin_limits = {
+  constexpr epee::serialization::portable_storage::limits_t
+  default_levin_limits = {
     8192, // objects
     16384, // fields
     16384, // strings
@@ -72,8 +45,14 @@ namespace
 
 namespace epee
 {
-  namespace net_utils
-  {
+namespace net_utils
+{
+
+  using context_t = epee::net_utils::connection_context_base;
+  void on_levin_traffic(const context_t &context, bool initiator, bool sent, bool error, size_t bytes, const char *category);
+  void on_levin_traffic(const context_t &context, bool initiator, bool sent, bool error, size_t bytes, int command);
+
+
     template<class t_result, class t_arg, class callback_t, class t_transport>
     bool async_invoke_remote_command2(const epee::net_utils::connection_context_base &context, int command, const t_arg& out_struct, t_transport& transport, const callback_t &cb, size_t inv_timeout = constant::LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
     {
@@ -295,6 +274,7 @@ namespace epee
   } \
   }
 
-  }
-}
+
+} //net_utils
+} // epee
 

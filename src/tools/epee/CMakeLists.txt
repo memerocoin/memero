@@ -87,6 +87,7 @@ target_link_libraries( epee_net
 
 add_library( epee_net_p2p
   src/net/levin_protocol_handler_async.cpp
+  src/net/levin_abstract_invoke2.cpp
 )
 
 target_link_libraries( epee_net_p2p
