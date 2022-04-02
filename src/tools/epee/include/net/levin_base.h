@@ -31,6 +31,8 @@
 
 #include "net_utils_base.h"
 
+#include "tools/epee/functional/span.hpp"
+
 #include <span>
 
 namespace epee
@@ -60,7 +62,12 @@ namespace levin
   template<class t_connection_context = epee::net_utils::connection_context_base>
   struct levin_commands_handler
   {
-    virtual int invoke(int command, const std::span<const uint8_t> in_buff, std::string& buff_out, t_connection_context& context)=0;
+    virtual int invoke
+    (
+     int command, const std::span<const uint8_t> in_buff
+     , epee::blob::data & buff_out
+     , t_connection_context& context
+     )=0;
     virtual int notify(int command, const std::span<const uint8_t> in_buff, t_connection_context& context)=0;
     virtual void callback(t_connection_context& context){};
 

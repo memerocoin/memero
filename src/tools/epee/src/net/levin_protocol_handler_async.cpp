@@ -441,10 +441,15 @@ namespace levin
                 {
                   if(m_current_head.m_have_to_return_data)
                     {
-                      std::string return_buff;
-                      const uint32_t return_code = m_config.m_pcommands_handler->invoke(
-                                                                                        m_current_head.m_command, buff_to_invoke, return_buff, m_connection_context
-                                                                                        );
+                      epee::blob::data return_buff;
+                      const uint32_t return_code =
+                        m_config.m_pcommands_handler->invoke
+                        (
+                         m_current_head.m_command
+                         , buff_to_invoke
+                         , return_buff
+                         , m_connection_context
+                         );
 
                       // peer_id remains unset if dropped
                       if (m_current_head.m_command == m_connection_context.handshake_command() && m_connection_context.handshake_complete())
@@ -452,10 +457,14 @@ namespace levin
 
                       bucket_head2 head = make_header(m_current_head.m_command, return_buff.size(), LEVIN_PACKET_RESPONSE, false);
                       head.m_return_code = SWAP32LE(return_code);
-                      return_buff.insert(0, reinterpret_cast<const char*>(&head), sizeof(head));
+                      const auto head_span = epee::pod_to_span(head);
+                      return_buff.insert(0, head_span.data(), head_span.size());
 
-                      if(!m_pservice_endpoint->do_send(epee::string_tools::string_to_blob(return_buff)))
+                      if(
+                         !m_pservice_endpoint->do_send(return_buff)
+                         ) {
                         return false;
+                      }
 
                       LOG_DEBUG_MUTE(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
                                      << ", flags" << head.m_flags
