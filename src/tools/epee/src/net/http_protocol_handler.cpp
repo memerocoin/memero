@@ -68,7 +68,7 @@ namespace net_utils
 		m_is_stop_handling = false;
 		m_state = http_state_retriving_comand_line;
 		m_body_transfer_type = http_body_transfer_undefined;
-		m_query_info.clear();
+		m_query_info = {};
 		m_len_summary = 0;
 		m_newlines = 0;
 		return true;
@@ -371,7 +371,7 @@ namespace net_utils
 		std::string::const_iterator it_current_bound = m_cache_to_process.begin();
 		std::string::const_iterator it_end_bound = m_cache_to_process.begin()+pos;
 
-		body_info.clear();
+		body_info = {};
 
 		//lookup all fields and fill well-known fields
 		while( std::regex_search( it_current_bound, it_end_bound, result, rexp_mach_field) && result[0].matched)
