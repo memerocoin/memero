@@ -19,44 +19,35 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "tools/epee/include/net/buffer.h"
 
-#include "tools/epee/include/logging.hpp"
-
-
-
-
 namespace epee
 {
 namespace net_utils
 {
 
-  void buffer::append(const void *data, size_t sz) {
-    storage.append((uint8_t*)data, sz);
+  void buffer::append_raw(const void *data, size_t sz) {
+    append(epee::blob::span((uint8_t*)data, sz));
+  }
+
+  void buffer::append(const epee::blob::span x) {
+    storage.append(x.data(), x.size());
   }
 
   void buffer::erase(size_t sz) {
-    NET_BUFFER_LOG("erasing " << sz << "/" << size());
-    LOG_ERROR_AND_THROW_UNLESS(offset + sz <= storage.size(), "erase: sz too large");
-    offset += sz;
-    if (offset == storage.size()) {
-      storage.clear();
-      offset = 0;
-    }
+    storage.erase(0, sz);
   }
 
   std::span<const uint8_t> buffer::span(size_t sz) const {
-    LOG_ERROR_AND_THROW_UNLESS(sz <= size(), "span is too large");
-    return std::span<const uint8_t>(storage).subspan(offset, sz);
+    return std::span<const uint8_t>(storage).subspan(0, sz);
   }
 
   epee::blob::data buffer::carve(size_t sz) {
-    LOG_ERROR_AND_THROW_UNLESS(sz <= size(), "span is too large");
-    const epee::blob::data x = storage.substr(offset, sz);
-    offset += sz;
+    const epee::blob::data x = storage.substr(0, sz);
+    erase(sz);
     return x;
   }
 
   size_t buffer::size() const {
-    return storage.size() - offset;
+    return storage.size();
   }
 
 }

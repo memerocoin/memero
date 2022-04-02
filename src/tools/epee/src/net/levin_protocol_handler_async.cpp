@@ -330,7 +330,7 @@ namespace levin
         return false;
       }
 
-    m_cache_in_buffer.append((const char*)ptr, cb);
+    m_cache_in_buffer.append(epee::blob::span((const uint8_t*)ptr, cb));
 
     bool is_continue = true;
     while(is_continue)

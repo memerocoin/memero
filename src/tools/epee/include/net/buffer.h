@@ -21,16 +21,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "tools/epee/functional/blob.hpp"
 
-#include <span>
-#include <cstdint>
-#include <string>
-
-
-
-
-//#define NET_BUFFER_LOG(x) LOG_DEBUG(x)
-#define NET_BUFFER_LOG(x) ((void)0)
-
 namespace epee
 {
 namespace net_utils
@@ -38,9 +28,8 @@ namespace net_utils
 class buffer
 {
 public:
-  buffer(size_t reserve = 0): offset(0) { storage.reserve(reserve); }
-
-  void append(const void *data, size_t sz);
+  void append_raw(const void *data, size_t sz);
+  void append(const epee::blob::span x);
   void erase(size_t sz);
   std::span<const uint8_t> span(size_t sz) const;
   // carve must keep the data in scope till next call, other API calls (such as append, erase) can invalidate the carved buffer
@@ -49,7 +38,6 @@ public:
 
 private:
   epee::blob::data storage;
-  size_t offset;
 };
 }
 }
