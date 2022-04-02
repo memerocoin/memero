@@ -113,7 +113,7 @@ namespace levin
     return LEVIN_OK;
   }
   //------------------------------------------------------------------------------------------
-  int async_protocol_handler_config::invoke(int command, const std::span<const uint8_t> in_buff, std::string& buff_out, boost::uuids::uuid connection_id)
+  int async_protocol_handler_config::invoke(int command, const std::span<const uint8_t> in_buff, epee::blob::data& buff_out, boost::uuids::uuid connection_id)
   {
     async_protocol_handler* aph;
     int r = find_and_lock_connection(connection_id, aph);
@@ -435,7 +435,7 @@ namespace levin
                         {
                           {
                             LOCK_RECURSIVE_MUTEX(m_local_inv_buff_lock);
-                            m_local_inv_buff = std::string((const char*)buff_to_invoke.data(), buff_to_invoke.size());
+                            m_local_inv_buff = buff_to_invoke;
                             buff_to_invoke.clear();
                             m_invoke_result_code = m_current_head.m_return_code;
                           }

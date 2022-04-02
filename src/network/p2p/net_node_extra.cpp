@@ -2044,7 +2044,7 @@ namespace nodetool
   }
   //-----------------------------------------------------------------------------------
 
-  bool node_server::invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, std::string& resp_buff, const epee::net_utils::connection_context_base& context)
+  bool node_server::invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, epee::blob::data& resp_buff, const epee::net_utils::connection_context_base& context)
   {
     if(is_filtered_command(context.m_remote_address, command))
       return false;

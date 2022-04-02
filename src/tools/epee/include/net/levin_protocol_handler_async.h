@@ -114,7 +114,7 @@ public:
   uint64_t m_max_packet_size;
   uint64_t m_invoke_timeout;
 
-  int invoke(int command, const std::span<const uint8_t> in_buff, std::string& buff_out, boost::uuids::uuid connection_id);
+  int invoke(int command, const std::span<const uint8_t> in_buff, epee::blob::data& buff_out, boost::uuids::uuid connection_id);
   template<class callback_t>
   int invoke_async(int command, const std::span<const uint8_t> in_buff, boost::uuids::uuid connection_id, const callback_t &cb, size_t timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED);
 
@@ -165,7 +165,7 @@ public:
   std::atomic<int> m_invoke_result_code;
 
   std::recursive_mutex m_local_inv_buff_lock;
-  std::string m_local_inv_buff;
+  epee::blob::data m_local_inv_buff;
 
   std::recursive_mutex m_call_lock;
 
@@ -446,7 +446,7 @@ public:
     return true;
   }
 
-  int invoke(int command, const std::span<const uint8_t> in_buff, std::string& buff_out)
+  int invoke(int command, const std::span<const uint8_t> in_buff, epee::blob::data& buff_out)
   {
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler
       (std::bind(&async_protocol_handler::finish_outer_call, this));
@@ -501,7 +501,7 @@ public:
 
     {
       LOCK_RECURSIVE_MUTEX(m_local_inv_buff_lock);
-      buff_out.swap(m_local_inv_buff);
+      buff_out = m_local_inv_buff;
       m_local_inv_buff.clear();
     }
 

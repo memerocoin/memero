@@ -45,7 +45,7 @@ namespace nodetool
   {
     virtual bool relay_notify_to_list(int command, const std::span<const uint8_t> data_buff, std::vector<std::pair<epee::net_utils::zone, boost::uuids::uuid>> connections)=0;
     virtual epee::net_utils::zone send_txs(std::vector<cryptonote::string_blob> txs, const epee::net_utils::zone origin, const boost::uuids::uuid& source, cryptonote::i_core_events& core)=0;
-    virtual bool invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, std::string& resp_buff, const epee::net_utils::connection_context_base& context)=0;
+    virtual bool invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, epee::blob::data& resp_buff, const epee::net_utils::connection_context_base& context)=0;
     virtual bool invoke_notify_to_peer(int command, const std::span<const uint8_t> req_buff, const epee::net_utils::connection_context_base& context)=0;
     virtual bool drop_connection(const epee::net_utils::connection_context_base& context)=0;
     virtual void request_callback(const epee::net_utils::connection_context_base& context)=0;
@@ -70,7 +70,7 @@ namespace nodetool
     {
       return epee::net_utils::zone::invalid;
     }
-    virtual bool invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, std::string& resp_buff, const epee::net_utils::connection_context_base& context)
+    virtual bool invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, epee::blob::data& resp_buff, const epee::net_utils::connection_context_base& context)
     {
       return false;
     }
