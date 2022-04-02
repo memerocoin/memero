@@ -2044,17 +2044,6 @@ namespace nodetool
   }
   //-----------------------------------------------------------------------------------
 
-  bool node_server::invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, epee::blob::data& resp_buff, const epee::net_utils::connection_context_base& context)
-  {
-    if(is_filtered_command(context.m_remote_address, command))
-      return false;
-
-    network_zone& zone = m_network_zones.at(context.m_remote_address.get_zone());
-    int res = zone.m_net_server.get_config_object().invoke(command, req_buff, resp_buff, context.m_connection_id);
-    return res > 0;
-  }
-  //-----------------------------------------------------------------------------------
-
   bool node_server::drop_connection(const epee::net_utils::connection_context_base& context)
   {
     m_network_zones.at(context.m_remote_address.get_zone()).m_net_server.get_config_object().close(context.m_connection_id);
