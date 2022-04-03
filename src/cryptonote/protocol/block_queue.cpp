@@ -183,10 +183,8 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
   i = std::next(block_hashes.begin(), span_start_height - block_hashes_start_height);
 
   uint64_t span_length = 0;
-  std::vector<crypto::hash> hashes;
   while (i != block_hashes.end() && span_length < max_blocks)
   {
-    hashes.push_back((*i).first);
     ++i;
     ++span_length;
   }
@@ -199,7 +197,11 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
   return std::make_pair(span_start_height, span_length);
 }
 
-std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled(std::vector<crypto::hash> &hashes, boost::uuids::uuid &connection_id, std::chrono::time_point<std::chrono::system_clock> &time) const
+std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled
+(
+ boost::uuids::uuid &connection_id
+ , std::chrono::time_point<std::chrono::system_clock> &time
+ ) const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   if (batches.empty())

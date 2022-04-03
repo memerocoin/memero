@@ -1932,19 +1932,12 @@ skip:
       {
         if (span.second == 0)
         {
-          std::vector<crypto::hash> hashes;
           boost::uuids::uuid span_connection_id;
           std::chrono::time_point<std::chrono::system_clock> time;
-          span = m_block_queue.get_next_span_if_scheduled(hashes, span_connection_id, time);
+          span = m_block_queue.get_next_span_if_scheduled(span_connection_id, time);
           if (span.second > 0)
           {
             is_next = true;
-            req.blocks.reserve(hashes.size());
-            for (const auto &hash: hashes)
-            {
-              req.blocks.push_back(hash);
-              context.m_requested_objects.insert(hash);
-            }
             m_block_queue.reset_next_span_time();
           }
         }
@@ -2001,25 +1994,13 @@ skip:
            context.to_str()
            + " still no span reserved, we may be in the corner case of next span scheduled and everything else scheduled/filled"
            );
-        std::vector<crypto::hash> hashes;
         boost::uuids::uuid span_connection_id;
         std::chrono::time_point<std::chrono::system_clock> time;
-        span = m_block_queue.get_next_span_if_scheduled(hashes, span_connection_id, time);
+        span = m_block_queue.get_next_span_if_scheduled
+          (span_connection_id, time);
         if (span.second > 0)
         {
           is_next = true;
-          req.blocks.reserve(hashes.size());
-          for (const auto &hash: hashes)
-          {
-            req.blocks.push_back(hash);
-            ++count;
-            context.m_requested_objects.insert(hash);
-            // that's atrocious O(n) wise, but this is rare
-            auto i = std::find_if(context.m_needed_objects.begin(), context.m_needed_objects.end(),
-                [&hash](const std::pair<crypto::hash, uint64_t> &o) { return o.first == hash; });
-            if (i != context.m_needed_objects.end())
-              context.m_needed_objects.erase(i);
-          }
         }
       }
       LOG_DEBUG
