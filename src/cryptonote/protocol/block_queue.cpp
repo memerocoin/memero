@@ -142,11 +142,6 @@ bool block_queue::requested(const crypto::hash &hash) const
   return false;
 }
 
-bool block_queue::have(const crypto::hash &hash) const
-{
-  return false;
-}
-
 std::pair<uint64_t, uint64_t> block_queue::reserve_span
 (
  uint64_t first_block_height

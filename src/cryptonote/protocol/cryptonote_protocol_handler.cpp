@@ -1873,7 +1873,11 @@ skip:
   {
     // take out blocks we already have
     size_t skip = 0;
-    while (skip < context.m_needed_objects.size() && (m_core.have_block(context.m_needed_objects[skip].first) || (check_block_queue && m_block_queue.have(context.m_needed_objects[skip].first))))
+    while
+      (
+       skip < context.m_needed_objects.size()
+       && m_core.have_block(context.m_needed_objects[skip].first)
+       )
     {
       // if we're popping the last hash, record it so we can ask again from that hash,
       // this prevents never being able to progress on peers we get old hash lists from
@@ -2401,7 +2405,7 @@ skip:
       const bool have_block = m_core.have_block_unlocked(arg.m_block_ids[i], &where);
       if (first)
       {
-        if (!have_block && !m_block_queue.requested(arg.m_block_ids[i]) && !m_block_queue.have(arg.m_block_ids[i]))
+        if (!have_block && !m_block_queue.requested(arg.m_block_ids[i]))
         {
           LOG_ERROR_CCONTEXT("First block hash is unknown, dropping connection");
           drop_connection_with_score(context, 5, false);

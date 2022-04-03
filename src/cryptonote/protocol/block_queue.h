@@ -131,7 +131,6 @@ namespace cryptonote
     bool has_next_span(uint64_t height, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const;
     crypto::hash get_last_known_hash(const boost::uuids::uuid &connection_id) const;
     bool requested(const crypto::hash &hash) const;
-    bool have(const crypto::hash &hash) const;
 
   private:
     void erase_block(batchV::iterator j);
