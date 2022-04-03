@@ -79,10 +79,10 @@ void block_queue::add_blocks(uint64_t height, uint64_t nblocks, const boost::uui
 void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  block_map::iterator i = batches.begin();
+  batchV::iterator i = batches.begin();
   while (i != batches.end())
   {
-    block_map::iterator j = i++;
+    batchV::iterator j = i++;
     if (j->connection_id == connection_id && (all || j->blocks.size() == 0))
     {
       erase_block(j);
@@ -90,7 +90,7 @@ void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
   }
 }
 
-void block_queue::erase_block(block_map::iterator j)
+void block_queue::erase_block(batchV::iterator j)
 {
   LOG_ERROR_AND_THROW_UNLESS(j != batches.end(), "Invalid iterator");
   for (const crypto::hash &h: j->hashes)
@@ -104,10 +104,10 @@ void block_queue::erase_block(block_map::iterator j)
 void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  block_map::iterator i = batches.begin();
+  batchV::iterator i = batches.begin();
   while (i != batches.end())
   {
-    block_map::iterator j = i++;
+    batchV::iterator j = i++;
     if (j->blocks.empty() && live_connections.find(j->connection_id) == live_connections.end())
     {
       erase_block(j);
@@ -118,7 +118,7 @@ void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_con
 bool block_queue::remove_span(uint64_t start_block_height, std::vector<crypto::hash> *hashes)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  for (block_map::iterator i = batches.begin(); i != batches.end(); ++i)
+  for (batchV::iterator i = batches.begin(); i != batches.end(); ++i)
   {
     if (i->start_block_height == start_block_height)
     {
@@ -134,9 +134,9 @@ bool block_queue::remove_span(uint64_t start_block_height, std::vector<crypto::h
 void block_queue::remove_spans(const boost::uuids::uuid &connection_id, uint64_t start_block_height)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  for (block_map::iterator i = batches.begin(); i != batches.end(); )
+  for (batchV::iterator i = batches.begin(); i != batches.end(); )
   {
-    block_map::iterator j = i++;
+    batchV::iterator j = i++;
     if (j->connection_id == connection_id && j->start_block_height <= start_block_height)
     {
       erase_block(j);
@@ -262,7 +262,7 @@ std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled(std::vecto
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   if (batches.empty())
     return std::make_pair(0, 0);
-  block_map::const_iterator i = batches.begin();
+  batchV::const_iterator i = batches.begin();
   if (i == batches.end())
     return std::make_pair(0, 0);
   if (!i->blocks.empty())
@@ -278,7 +278,7 @@ void block_queue::reset_next_span_time(std::chrono::time_point<std::chrono::syst
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   LOG_ERROR_AND_THROW_UNLESS(!batches.empty(), "No next span to reset time");
 
-  block_map::iterator i = batches.begin();
+  batchV::iterator i = batches.begin();
   LOG_ERROR_AND_THROW_UNLESS(i != batches.end(), "No next span to reset time");
 
   LOG_ERROR_AND_THROW_UNLESS(i->blocks.empty(), "Next span is not empty");
@@ -288,7 +288,7 @@ void block_queue::reset_next_span_time(std::chrono::time_point<std::chrono::syst
 void block_queue::set_span_hashes(uint64_t start_height, const boost::uuids::uuid &connection_id, std::vector<crypto::hash> hashes)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  for (block_map::iterator i = batches.begin(); i != batches.end(); ++i)
+  for (batchV::iterator i = batches.begin(); i != batches.end(); ++i)
   {
     if (i->start_block_height == start_height && i->connection_id == connection_id)
     {
@@ -308,7 +308,7 @@ bool block_queue::get_next_span(uint64_t &height, std::vector<cryptonote::block_
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   if (batches.empty())
     return false;
-  block_map::const_iterator i = batches.begin();
+  batchV::const_iterator i = batches.begin();
   for (; i != batches.end(); ++i)
   {
     if (!filled || !i->blocks.empty())
@@ -328,7 +328,7 @@ bool block_queue::has_next_span(uint64_t height, bool &filled, std::chrono::time
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   if (batches.empty())
     return false;
-  block_map::const_iterator i = batches.begin();
+  batchV::const_iterator i = batches.begin();
   if (i == batches.end())
     return false;
   if (i->start_block_height > height)

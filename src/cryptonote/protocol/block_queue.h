@@ -94,7 +94,7 @@ namespace cryptonote
 
     };
 
-    using block_map = std::list<batch>;
+    using batchV = std::list<batch>;
 
   public:
     void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float block_rate, size_t data_size);
@@ -130,11 +130,11 @@ namespace cryptonote
     bool have(const crypto::hash &hash) const;
 
   private:
-    void erase_block(block_map::iterator j);
+    void erase_block(batchV::iterator j);
     inline bool requested_internal(const crypto::hash &hash) const;
 
   public:
-    block_map batches;
+    batchV batches;
 
   private:
     std::unordered_set<crypto::hash> requested_hashes;
