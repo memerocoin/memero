@@ -79,8 +79,8 @@ namespace cryptonote
     (
      const uint64_t height
      , const std::span<const cryptonote::block_complete_entry> xs
-     , const boost::uuids::uuid &connection_id
-     , const epee::net_utils::network_address &addr
+     , const boost::uuids::uuid connection_id
+     , const epee::net_utils::network_address addr
      , const float rate
      , const size_t size
      );
@@ -104,7 +104,7 @@ namespace cryptonote
      , const boost::uuids::uuid &connection_id
      , const epee::net_utils::network_address &addr
      , const uint64_t blockchain_height
-     , const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes
+     , const std::span<std::pair<crypto::hash, uint64_t>> block_hashes
      , const std::chrono::time_point<std::chrono::system_clock> time
      = std::chrono::system_clock::now()
      ) const;
