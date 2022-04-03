@@ -1405,7 +1405,7 @@ namespace cryptonote
           if (blocks.empty())
           {
             LOG_ERROR(context.to_str() + "Next span has no blocks");
-            m_block_queue.remove_connection(span_connection_id, start_height);
+            m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
             continue;
           }
 
@@ -1416,7 +1416,7 @@ namespace cryptonote
           if (!r)
           {
             LOG_ERROR(context.to_str() + "Failed to parse block, but it should already have been parsed");
-            m_block_queue.remove_connection(span_connection_id, start_height);
+            m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
             continue;
           }
           const auto last_block_hash = r->second;
@@ -1434,7 +1434,7 @@ namespace cryptonote
                + ", blockchain height "
                + std::to_string(m_core.get_current_blockchain_height())
                );
-            m_block_queue.remove_connection(span_connection_id, start_height);
+            m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
             ++m_sync_old_spans_downloaded;
             continue;
           }
@@ -1443,7 +1443,7 @@ namespace cryptonote
           if (!maybeBlock)
           {
             LOG_ERROR(context.to_str() + "Failed to parse block, but it should already have been parsed");
-            m_block_queue.remove_connection(span_connection_id, start_height);
+            m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
             continue;
           }
           const auto& new_block = *maybeBlock;
@@ -1461,7 +1461,7 @@ namespace cryptonote
               // this can happen if a connection was sicced onto a late span, if it did not have those blocks,
               // since we don't know that at the sic time
               LOG_ERROR_CCONTEXT("Got block with unknown parent which was not requested - querying block hashes");
-              m_block_queue.remove_connection(span_connection_id, start_height);
+              m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
               context.m_needed_objects.clear();
               context.m_last_response_height = 0;
               goto skip;
@@ -1556,7 +1556,7 @@ namespace cryptonote
                   return 1;
                 }
                 // in case the peer had dropped beforehand, remove the span anyway so other threads can wake up and get it
-                m_block_queue.remove_connection(span_connection_id, start_height);
+                m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
                 return 1;
               }
             }
@@ -1584,7 +1584,7 @@ namespace cryptonote
               }
 
               // in case the peer had dropped beforehand, remove the span anyway so other threads can wake up and get it
-              m_block_queue.remove_connection(span_connection_id, start_height);
+              m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
               return 1;
             }
             if(bvc.m_marked_as_orphaned)
@@ -1604,7 +1604,7 @@ namespace cryptonote
               }
 
               // in case the peer had dropped beforehand, remove the span anyway so other threads can wake up and get it
-              m_block_queue.remove_connection(span_connection_id, start_height);
+              m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
               return 1;
             }
 
@@ -1618,7 +1618,7 @@ namespace cryptonote
             return 1;
           }
 
-          m_block_queue.remove_connection(span_connection_id, start_height);
+          m_block_queue.remove_batches_from_connection(span_connection_id, start_height);
 
           const uint64_t current_blockchain_height = m_core.get_current_blockchain_height();
           if (current_blockchain_height > previous_height)
@@ -1910,7 +1910,7 @@ skip:
       live_connections.insert(context.m_connection_id);
       return true;
     });
-    m_block_queue.flush_empty_connections(live_connections);
+    m_block_queue.remove_empty_batches_from_connections(live_connections);
 
     // if we don't need to get next span, and the block queue is full enough, wait a bit
     bool start_from_current_chain = false;
@@ -2598,7 +2598,7 @@ skip:
        + std::to_string(flush_all_spans)
        );
 
-    m_block_queue.flush_empty_connection(context.m_connection_id, flush_all_spans);
+    m_block_queue.remove_empty_batches_from_connection(context.m_connection_id, flush_all_spans);
 
     // copy since dropping the connection will invalidate the context, and thus the address
     const auto remote_address = context.m_remote_address;
@@ -2630,7 +2630,7 @@ skip:
     });
     for (const boost::uuids::uuid &id: drop)
     {
-      m_block_queue.flush_empty_connection(id, true);
+      m_block_queue.remove_empty_batches_from_connection(id, true);
       m_p2p->for_connection(id, [&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t f)->bool{
         drop_connection(context, true, false);
         return true;
@@ -2686,7 +2686,7 @@ skip:
             }
         }
 
-      m_block_queue.flush_empty_connection(context.m_connection_id, false);
+      m_block_queue.remove_empty_batches_from_connection(context.m_connection_id, false);
     }
 
     LOG_PEER_STATE("closed");

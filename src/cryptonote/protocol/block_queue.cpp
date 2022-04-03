@@ -50,7 +50,7 @@ namespace cryptonote
   }
 
 
-  void block_queue::flush_empty_connection(const boost::uuids::uuid &connection_id, bool all)
+  void block_queue::remove_empty_batches_from_connection(const boost::uuids::uuid &connection_id, bool all)
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
     batchV::iterator i = batches.begin();
@@ -70,7 +70,7 @@ namespace cryptonote
       }
   }
 
-  void block_queue::flush_empty_connections(const std::set<boost::uuids::uuid> &live_connections)
+  void block_queue::remove_empty_batches_from_connections(const std::set<boost::uuids::uuid> &live_connections)
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
     batchV::iterator i = batches.begin();
@@ -91,7 +91,7 @@ namespace cryptonote
       }
   }
 
-  void block_queue::remove_connection
+  void block_queue::remove_batches_from_connection
   (
    const boost::uuids::uuid connection_id
    , const uint64_t start_block_height
