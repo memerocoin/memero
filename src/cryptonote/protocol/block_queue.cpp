@@ -210,19 +210,13 @@ namespace cryptonote
     return false;
   }
 
-  bool block_queue::has_next_batch(uint64_t height, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const
+  bool block_queue::has_next_batch(const uint64_t height) const
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
     if (batches.empty())
       return false;
-    batchV::const_iterator i = batches.begin();
-    if (i == batches.end())
-      return false;
-    if (i->start_block_height > height)
-      return false;
-    time = i->time;
-    connection_id = i->connection_id;
-    return true;
+
+    return batches.front().start_block_height <= height;
   }
 
 }

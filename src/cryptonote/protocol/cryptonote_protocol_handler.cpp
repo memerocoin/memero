@@ -1849,15 +1849,11 @@ skip:
 
   bool t_cryptonote_protocol_handler::should_download_next_batch(cryptonote_connection_context& context, bool standby)
   {
-    std::vector<crypto::hash> hashes;
-    std::chrono::time_point<std::chrono::system_clock> request_time;
-    boost::uuids::uuid connection_id;
-
     const uint64_t blockchain_height = m_core.get_current_blockchain_height();
     if (context.m_remote_blockchain_height <= blockchain_height)
       return false;
     {
-      if (!m_block_queue.has_next_batch(blockchain_height, request_time, connection_id))
+      if (!m_block_queue.has_next_batch(blockchain_height))
       {
         LOG_DEBUG(context.to_str() + " we should download it as no peer reserved it");
         return true;
