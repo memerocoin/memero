@@ -145,12 +145,9 @@ namespace levin
   }
   //------------------------------------------------------------------------------------------
 
-  void async_protocol_handler_config::set_handler(levin_commands_handler<t_connection_context>* handler, void (*destroy)(levin_commands_handler<t_connection_context>*))
+  void async_protocol_handler_config::set_handler(levin_commands_handler<t_connection_context>* handler)
   {
-    if (m_pcommands_handler && m_pcommands_handler_destroy)
-      (*m_pcommands_handler_destroy)(m_pcommands_handler);
     m_pcommands_handler = handler;
-    m_pcommands_handler_destroy = destroy;
   }
   //------------------------------------------------------------------------------------------
 
