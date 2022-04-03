@@ -107,7 +107,6 @@ void block_queue::remove_spans
     if (x.connection_id == connection_id
         && x.start_block_height <= start_block_height)
     {
-      remove_hashes(x.hashes);
     }
     else {
       new_batches.push_back(x);
@@ -144,13 +143,6 @@ void block_queue::print() const
 
 bool block_queue::requested(const crypto::hash &hash) const
 {
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  for (const auto &x: batches)
-  {
-    for (const auto &h: x.hashes)
-      if (h == hash)
-        return true;
-  }
   return false;
 }
 
@@ -241,7 +233,6 @@ std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled(std::vecto
     return std::make_pair(0, 0);
   if (!i->blocks.empty())
     return std::make_pair(0, 0);
-  hashes = i->hashes;
   connection_id = i->connection_id;
   time = i->time;
   return std::make_pair(i->start_block_height, i->nblocks);
@@ -297,21 +288,7 @@ bool block_queue::has_next_span(uint64_t height, bool &filled, std::chrono::time
 
 crypto::hash block_queue::get_last_known_hash(const boost::uuids::uuid &connection_id) const
 {
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  crypto::hash hash = crypto::null_hash;
-  uint64_t highest_height = 0;
-  for (const auto &batch: batches)
-  {
-    if (batch.connection_id != connection_id)
-      continue;
-    uint64_t h = batch.start_block_height + batch.nblocks - 1;
-    if (h > highest_height && batch.hashes.size() == batch.nblocks)
-    {
-      hash = batch.hashes.back();
-      highest_height = h;
-    }
-  }
-  return hash;
+  return {};
 }
 
 }

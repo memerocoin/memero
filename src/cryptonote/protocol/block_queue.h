@@ -49,7 +49,6 @@ namespace cryptonote
     struct batch
     {
       uint64_t start_block_height;
-      std::vector<crypto::hash> hashes;
       std::vector<cryptonote::block_complete_entry> blocks;
       boost::uuids::uuid connection_id;
       uint64_t nblocks;
