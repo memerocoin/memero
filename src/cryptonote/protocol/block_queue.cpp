@@ -46,16 +46,7 @@ void block_queue::add_blocks(uint64_t height, std::vector<cryptonote::block_comp
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   std::vector<crypto::hash> hashes;
-  bool has_hashes = remove_span(height, &hashes);
   batches.emplace_back(height, std::move(bcel), connection_id, addr, rate, size);
-  if (has_hashes)
-  {
-    for (const crypto::hash &h: hashes)
-    {
-      have_blocks.insert(h);
-    }
-    set_span_hashes(height, connection_id, hashes);
-  }
 }
 
 void block_queue::add_blocks(uint64_t height, uint64_t nblocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, std::chrono::time_point<std::chrono::system_clock> time)
@@ -109,22 +100,6 @@ void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_con
       erase_block(j);
     }
   }
-}
-
-bool block_queue::remove_span(uint64_t start_block_height, std::vector<crypto::hash> *hashes)
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  for (batchV::iterator i = batches.begin(); i != batches.end(); ++i)
-  {
-    if (i->start_block_height == start_block_height)
-    {
-      if (hashes)
-        *hashes = std::move(i->hashes);
-      erase_block(i);
-      return true;
-    }
-  }
-  return false;
 }
 
 void block_queue::remove_spans
@@ -291,22 +266,6 @@ void block_queue::reset_next_span_time(std::chrono::time_point<std::chrono::syst
 
   LOG_ERROR_AND_THROW_UNLESS(i->blocks.empty(), "Next span is not empty");
   (std::chrono::time_point<std::chrono::system_clock>&)i->time = t; // sod off, time doesn't influence sorting
-}
-
-void block_queue::set_span_hashes(uint64_t start_height, const boost::uuids::uuid &connection_id, std::vector<crypto::hash> hashes)
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  for (batchV::iterator i = batches.begin(); i != batches.end(); ++i)
-  {
-    if (i->start_block_height == start_height && i->connection_id == connection_id)
-    {
-      batch s = *i;
-      erase_block(i);
-      s.hashes = std::move(hashes);
-      batches.push_back(s);
-      return;
-    }
-  }
 }
 
 bool block_queue::get_next_span(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr, bool filled) const
