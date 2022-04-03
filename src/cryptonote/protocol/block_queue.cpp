@@ -159,7 +159,7 @@ namespace cryptonote
     return std::make_pair(span_start_height, span_length);
   }
 
-  std::pair<uint64_t, uint64_t> block_queue::get_next_batch_if_scheduled
+  std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled
   (
    boost::uuids::uuid &connection_id
    , std::chrono::time_point<std::chrono::system_clock> &time
@@ -187,24 +187,26 @@ namespace cryptonote
     batches.front().time = t;
   }
 
-  bool block_queue::get_next_batch(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr) const
+  bool block_queue::get_next_batch
+  (
+   uint64_t &height
+   , std::vector<cryptonote::block_complete_entry> &bcel
+   , boost::uuids::uuid &connection_id
+   , epee::net_utils::network_address &addr
+   ) const
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
     if (batches.empty())
       return false;
-    batchV::const_iterator i = batches.begin();
-    for (; i != batches.end(); ++i)
-      {
-        if (!i->blocks.empty())
-          {
-            height = i->start_block_height;
-            bcel = i->blocks;
-            connection_id = i->connection_id;
-            addr = i->origin;
-            return true;
-          }
-      }
-    return false;
+
+    const auto& x = batches.front();
+
+    height = x.start_block_height;
+    bcel = x.blocks;
+    connection_id = x.connection_id;
+    addr = x.origin;
+
+    return true;
   }
 
   bool block_queue::has_next_batch(const uint64_t height) const

@@ -1921,7 +1921,7 @@ skip:
         {
           boost::uuids::uuid span_connection_id;
           std::chrono::time_point<std::chrono::system_clock> time;
-          span = m_block_queue.get_next_batch_if_scheduled(span_connection_id, time);
+          span = m_block_queue.get_next_span_if_scheduled(span_connection_id, time);
           if (span.second > 0)
           {
             is_next = true;
@@ -1983,7 +1983,7 @@ skip:
            );
         boost::uuids::uuid span_connection_id;
         std::chrono::time_point<std::chrono::system_clock> time;
-        span = m_block_queue.get_next_batch_if_scheduled
+        span = m_block_queue.get_next_span_if_scheduled
           (span_connection_id, time);
         if (span.second > 0)
         {

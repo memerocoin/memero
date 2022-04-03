@@ -109,7 +109,7 @@ namespace cryptonote
      = std::chrono::system_clock::now()
      );
 
-    std::pair<uint64_t, uint64_t> get_next_batch_if_scheduled
+    std::pair<uint64_t, uint64_t> get_next_span_if_scheduled
     (
      boost::uuids::uuid &connection_id
      , std::chrono::time_point<std::chrono::system_clock> &time
@@ -121,7 +121,13 @@ namespace cryptonote
      = std::chrono::system_clock::now()
      );
 
-    bool get_next_batch(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr) const;
+    bool get_next_batch
+    (
+     uint64_t &height
+     , std::vector<cryptonote::block_complete_entry> &bcel
+     , boost::uuids::uuid &connection_id
+     , epee::net_utils::network_address &addr
+     ) const;
 
     bool has_next_batch(uint64_t height) const;
 
