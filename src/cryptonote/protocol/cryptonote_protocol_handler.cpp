@@ -1919,10 +1919,7 @@ skip:
       {
         if (!maybe_span)
         {
-          boost::uuids::uuid span_connection_id;
-          std::chrono::time_point<std::chrono::system_clock> time;
-          maybe_span = m_block_queue.get_next_span_if_scheduled
-            (span_connection_id, time);
+          maybe_span = m_block_queue.get_next_span_if_scheduled();
           if (maybe_span)
           {
             is_next = true;
@@ -1985,10 +1982,7 @@ skip:
            context.to_str()
            + " still no span reserved, we may be in the corner case of next span scheduled and everything else scheduled/filled"
            );
-        boost::uuids::uuid span_connection_id;
-        std::chrono::time_point<std::chrono::system_clock> time;
-        maybe_span = m_block_queue.get_next_span_if_scheduled
-          (span_connection_id, time);
+        maybe_span = m_block_queue.get_next_span_if_scheduled();
         if (maybe_span)
         {
           is_next = true;

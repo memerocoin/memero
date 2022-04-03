@@ -161,19 +161,12 @@ namespace cryptonote
   }
 
   std::optional<std::pair<uint64_t, uint64_t>>
-  block_queue::get_next_span_if_scheduled
-  (
-   boost::uuids::uuid &connection_id
-   , std::chrono::time_point<std::chrono::system_clock> &time
-   ) const
+  block_queue::get_next_span_if_scheduled() const
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
     if (batches.empty()) return {};
 
     const auto& x = batches.front();
-
-    connection_id = x.connection_id;
-    time = x.time;
 
     return {{x.start_block_height, x.blocks.size()}};
   }

@@ -109,11 +109,8 @@ namespace cryptonote
      = std::chrono::system_clock::now()
      );
 
-    std::optional<std::pair<uint64_t, uint64_t>> get_next_span_if_scheduled
-    (
-     boost::uuids::uuid &connection_id
-     , std::chrono::time_point<std::chrono::system_clock> &time
-     ) const;
+    std::optional<std::pair<uint64_t, uint64_t>>
+    get_next_span_if_scheduled() const;
 
     void reset_next_batch_time
     (
