@@ -32,6 +32,8 @@
 
 #include "cryptonote_protocol_defs.h"
 
+#include "tools/epee/include/syncobj.h"
+
 #include <boost/uuid/uuid_io.hpp>
 
 #include <numeric>
@@ -40,7 +42,7 @@
 namespace cryptonote
 {
 
-  std::recursive_mutex mutex;
+  std::mutex mutex;
 
   void block_queue::add_blocks
   (
@@ -54,7 +56,7 @@ namespace cryptonote
   {
     if (xs.empty()) return;
 
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
+    LOCK_MUTEX(mutex);
     batches.emplace_back(height, xs, connection_id, addr, rate, size);
   }
 
@@ -64,7 +66,7 @@ namespace cryptonote
    const boost::uuids::uuid connection_id
    )
   {
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
+    LOCK_MUTEX(mutex);
     batchV new_batches;
 
     for (const auto& x: batches) {
@@ -82,7 +84,7 @@ namespace cryptonote
    , const uint64_t start_block_height
    )
   {
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
+    LOCK_MUTEX(mutex);
     batchV new_batches;
 
     for (const auto& x: batches) {
@@ -112,7 +114,7 @@ namespace cryptonote
    , std::chrono::time_point<std::chrono::system_clock> time
    )
   {
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
+    LOCK_MUTEX(mutex);
 
     LOG_DEBUG
       (
@@ -203,7 +205,7 @@ namespace cryptonote
   std::optional<std::pair<uint64_t, uint64_t>>
   block_queue::get_next_span_if_scheduled() const
   {
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
+    LOCK_MUTEX(mutex);
     if (batches.empty()) return {};
 
     const auto& x = batches.front();
@@ -214,7 +216,7 @@ namespace cryptonote
   void block_queue::reset_next_batch_time
   (std::chrono::time_point<std::chrono::system_clock> t)
   {
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
+    LOCK_MUTEX(mutex);
     if (batches.empty()) return;
 
     batches.front().time = t;
@@ -228,7 +230,8 @@ namespace cryptonote
    , epee::net_utils::network_address &addr
    ) const
   {
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
+    LOCK_MUTEX(mutex);
+
     if (batches.empty())
       return false;
 
@@ -244,7 +247,7 @@ namespace cryptonote
 
   bool block_queue::has_next_batch(const uint64_t height) const
   {
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
+    LOCK_MUTEX(mutex);
     if (batches.empty())
       return false;
 
