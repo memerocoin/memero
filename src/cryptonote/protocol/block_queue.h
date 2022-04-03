@@ -92,15 +92,9 @@ namespace cryptonote
         , origin(addr)
       {}
 
-
-      bool operator<(const batch &s) const
-      {
-        return start_block_height < s.start_block_height;
-      }
-
     };
 
-    using block_map = std::set<batch>;
+    using block_map = std::list<batch>;
 
   public:
     void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float block_rate, size_t data_size);

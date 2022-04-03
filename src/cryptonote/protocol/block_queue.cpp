@@ -57,7 +57,7 @@ void block_queue::add_blocks(uint64_t height, std::vector<cryptonote::block_comp
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   std::vector<crypto::hash> hashes;
   bool has_hashes = remove_span(height, &hashes);
-  batches.insert(batch(height, std::move(bcel), connection_id, addr, rate, size));
+  batches.emplace_back(height, std::move(bcel), connection_id, addr, rate, size);
   if (has_hashes)
   {
     for (const crypto::hash &h: hashes)
@@ -73,7 +73,7 @@ void block_queue::add_blocks(uint64_t height, uint64_t nblocks, const boost::uui
 {
   LOG_ERROR_AND_THROW_UNLESS(nblocks > 0, "Empty span");
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  batches.insert(batch(height, nblocks, connection_id, addr, time));
+  batches.push_back(batch(height, nblocks, connection_id, addr, time));
 }
 
 void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
@@ -254,8 +254,6 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
     return std::make_pair(0, 0);
   }
   LOG_DEBUG_MUTE("Reserving span " << span_start_height << " - " << (span_start_height + span_length - 1) << " for " << connection_id);
-  add_blocks(span_start_height, span_length, connection_id, addr, time);
-  set_span_hashes(span_start_height, connection_id, hashes);
   return std::make_pair(span_start_height, span_length);
 }
 
@@ -299,7 +297,7 @@ void block_queue::set_span_hashes(uint64_t start_height, const boost::uuids::uui
       s.hashes = std::move(hashes);
       for (const crypto::hash &h: s.hashes)
         requested_hashes.insert(h);
-      batches.insert(s);
+      batches.push_back(s);
       return;
     }
   }
