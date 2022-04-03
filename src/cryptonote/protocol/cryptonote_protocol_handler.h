@@ -120,10 +120,10 @@ namespace cryptonote
     virtual bool relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg, const boost::uuids::uuid& source, epee::net_utils::zone zone);
     //----------------------------------------------------------------------------------
     //bool get_payload_sync_data(HANDSHAKE_DATA::request& hshd, cryptonote_connection_context& context);
-    bool request_missing_objects(cryptonote_connection_context& context, bool check_having_blocks, bool force_next_span = false);
+    bool request_missing_objects(cryptonote_connection_context& context, bool check_having_blocks, bool force_next_batch = false);
     size_t get_synchronizing_connections_count();
     bool on_connection_synchronized();
-    bool should_download_next_span(cryptonote_connection_context& context, bool standby);
+    bool should_download_next_batch(cryptonote_connection_context& context, bool standby);
     void drop_connection(cryptonote_connection_context &context, bool add_fail, bool flush_all_spans);
     void drop_connection_with_score(cryptonote_connection_context &context, unsigned int score, bool flush_all_spans);
     void drop_bad_connections(const epee::net_utils::network_address address);

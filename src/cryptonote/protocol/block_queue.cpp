@@ -56,7 +56,7 @@ void block_queue::add_blocks(uint64_t height, uint64_t nblocks, const boost::uui
   batches.push_back(batch(height, nblocks, connection_id, addr, time));
 }
 
-void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
+void block_queue::flush_batches(const boost::uuids::uuid &connection_id, bool all)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   batchV::iterator i = batches.begin();
@@ -76,7 +76,7 @@ void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
   }
 }
 
-void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections)
+void block_queue::flush_empty_batches(const std::set<boost::uuids::uuid> &live_connections)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   batchV::iterator i = batches.begin();
@@ -97,7 +97,7 @@ void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_con
   }
 }
 
-void block_queue::remove_spans
+void block_queue::remove_batches
 (
  const boost::uuids::uuid connection_id
  , const uint64_t start_block_height
@@ -144,7 +144,7 @@ void block_queue::print() const
      );
 }
 
-std::pair<uint64_t, uint64_t> block_queue::reserve_span
+std::pair<uint64_t, uint64_t> block_queue::reserve_batch
 (
  uint64_t first_block_height
  , uint64_t last_block_height
@@ -158,7 +158,7 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
 
-  LOG_DEBUG_MUTE("reserve_span: first_block_height " << first_block_height
+  LOG_DEBUG_MUTE("reserve_batch: first_block_height " << first_block_height
          << ", last_block_height " << last_block_height
          << ", max " << max_blocks
          << ", blockchain_height " << blockchain_height
@@ -166,12 +166,12 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
          );
   if (last_block_height < first_block_height || max_blocks == 0)
   {
-    LOG_DEBUG_MUTE("reserve_span: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
+    LOG_DEBUG_MUTE("reserve_batch: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
     return std::make_pair(0, 0);
   }
   if (block_hashes.size() > last_block_height)
   {
-    LOG_DEBUG_MUTE("reserve_span: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
+    LOG_DEBUG_MUTE("reserve_batch: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
     return std::make_pair(0, 0);
   }
 
@@ -204,7 +204,7 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
   return std::make_pair(span_start_height, span_length);
 }
 
-std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled
+std::pair<uint64_t, uint64_t> block_queue::get_next_batch_if_scheduled
 (
  boost::uuids::uuid &connection_id
  , std::chrono::time_point<std::chrono::system_clock> &time
@@ -223,7 +223,7 @@ std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled
   return std::make_pair(i->start_block_height, i->nblocks);
 }
 
-void block_queue::reset_next_span_time(std::chrono::time_point<std::chrono::system_clock> t)
+void block_queue::reset_next_batch_time(std::chrono::time_point<std::chrono::system_clock> t)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   LOG_ERROR_AND_THROW_UNLESS(!batches.empty(), "No next span to reset time");
@@ -235,7 +235,7 @@ void block_queue::reset_next_span_time(std::chrono::time_point<std::chrono::syst
   (std::chrono::time_point<std::chrono::system_clock>&)i->time = t; // sod off, time doesn't influence sorting
 }
 
-bool block_queue::get_next_span(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr, bool filled) const
+bool block_queue::get_next_batch(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr, bool filled) const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   if (batches.empty())
@@ -255,7 +255,7 @@ bool block_queue::get_next_span(uint64_t &height, std::vector<cryptonote::block_
   return false;
 }
 
-bool block_queue::has_next_span(uint64_t height, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const
+bool block_queue::has_next_batch(uint64_t height, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   if (batches.empty())
