@@ -137,11 +137,6 @@ void block_queue::print() const
      );
 }
 
-bool block_queue::requested(const crypto::hash &hash) const
-{
-  return false;
-}
-
 std::pair<uint64_t, uint64_t> block_queue::reserve_span
 (
  uint64_t first_block_height
@@ -176,11 +171,6 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
   // skip everything we've already requested
   uint64_t span_start_height = last_block_height - block_hashes.size() + 1;
   std::vector<std::pair<crypto::hash, uint64_t>>::const_iterator i = block_hashes.begin();
-  while (i != block_hashes.end() && requested((*i).first))
-  {
-    ++i;
-    ++span_start_height;
-  }
 
   LOG_DEBUG_MUTE("span_start_height: " <<span_start_height);
   const uint64_t block_hashes_start_height = last_block_height - block_hashes.size() + 1;
@@ -191,11 +181,6 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
   }
 
   i = std::next(block_hashes.begin(), span_start_height - block_hashes_start_height);
-  while (i != block_hashes.end() && requested((*i).first))
-  {
-    ++i;
-    ++span_start_height;
-  }
 
   uint64_t span_length = 0;
   std::vector<crypto::hash> hashes;

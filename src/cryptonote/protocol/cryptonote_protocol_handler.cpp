@@ -1455,7 +1455,7 @@ namespace cryptonote
             //  - later in an alt chain
             //  - orphan
             // if it was requested, then it'll be resolved later, otherwise it's an orphan
-            bool parent_requested = m_block_queue.requested(new_block.prev_id);
+            constexpr bool parent_requested = false;
             if (!parent_requested)
             {
               // this can happen if a connection was sicced onto a late span, if it did not have those blocks,
@@ -2405,14 +2405,12 @@ skip:
       const bool have_block = m_core.have_block_unlocked(arg.m_block_ids[i], &where);
       if (first)
       {
-        if (!have_block && !m_block_queue.requested(arg.m_block_ids[i]))
+        if (!have_block)
         {
           LOG_ERROR_CCONTEXT("First block hash is unknown, dropping connection");
           drop_connection_with_score(context, 5, false);
           return 1;
         }
-        if (!have_block)
-          expect_unknown = true;
       }
       if (!first)
       {
