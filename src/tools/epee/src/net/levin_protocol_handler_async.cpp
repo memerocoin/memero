@@ -28,8 +28,6 @@
 
 #include "tools/epee/functional/span.hpp"
 
-#include <random>
-
 namespace epee
 {
 namespace levin
@@ -56,10 +54,6 @@ namespace levin
             connections.push_back(c.first);
         }
 
-      // close random connections from  the provided set
-      // TODO or better just keep removing random elements (performance)
-      unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-      shuffle(connections.begin(), connections.end(), std::default_random_engine(seed));
       while (count > 0 && connections.size() > 0)
         {
           try
