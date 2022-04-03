@@ -37,7 +37,7 @@ namespace levin
   void async_protocol_handler_config::del_connection(async_protocol_handler* pconn)
   {
     {
-      LOCK_RECURSIVE_MUTEX(m_connects_lock);
+      LOCK_MUTEX(m_connects_lock);
       m_connects.erase(pconn->get_connection_id());
     }
     m_pcommands_handler->on_connection_close(pconn->m_connection_context);
@@ -46,7 +46,7 @@ namespace levin
   void async_protocol_handler_config::add_connection(async_protocol_handler* pconn)
   {
     {
-      LOCK_RECURSIVE_MUTEX(m_connects_lock);
+      LOCK_MUTEX(m_connects_lock);
       m_connects[pconn->get_connection_id()] = pconn;
     }
     m_pcommands_handler->on_connection_new(pconn->m_connection_context);
@@ -54,14 +54,16 @@ namespace levin
   //------------------------------------------------------------------------------------------
   async_protocol_handler* async_protocol_handler_config::find_connection(boost::uuids::uuid connection_id) const
   {
-    auto it = m_connects.find(connection_id);
+    const auto it = m_connects.find(connection_id);
     return it == m_connects.end() ? 0 : it->second;
   }
   //------------------------------------------------------------------------------------------
   int async_protocol_handler_config::find_and_lock_connection(boost::uuids::uuid connection_id, async_protocol_handler*& aph)
   {
-    LOCK_RECURSIVE_MUTEX(m_connects_lock);
-    aph = find_connection(connection_id);
+    {
+      LOCK_MUTEX(m_connects_lock);
+      aph = find_connection(connection_id);
+    }
     if(0 == aph)
       return LEVIN_ERROR_CONNECTION_NOT_FOUND;
     if(!aph->start_outer_call())
@@ -72,14 +74,13 @@ namespace levin
 
   size_t async_protocol_handler_config::get_connections_count()
   {
-    LOCK_RECURSIVE_MUTEX(m_connects_lock);
     return m_connects.size();
   }
   //------------------------------------------------------------------------------------------
 
   size_t async_protocol_handler_config::get_out_connections_count()
   {
-    LOCK_RECURSIVE_MUTEX(m_connects_lock);
+    LOCK_MUTEX(m_connects_lock);
     size_t count = 0;
     for (const auto &c: m_connects)
       if (!c.second->m_connection_context.m_is_income)
@@ -90,7 +91,7 @@ namespace levin
 
   size_t async_protocol_handler_config::get_in_connections_count()
   {
-    LOCK_RECURSIVE_MUTEX(m_connects_lock);
+    LOCK_MUTEX(m_connects_lock);
     size_t count = 0;
     for (const auto &c: m_connects)
       if (c.second->m_connection_context.m_is_income)
@@ -115,8 +116,11 @@ namespace levin
 
   bool async_protocol_handler_config::close(boost::uuids::uuid connection_id)
   {
-    LOCK_RECURSIVE_MUTEX(m_connects_lock);
-    async_protocol_handler* aph = find_connection(connection_id);
+    async_protocol_handler* aph = nullptr;
+    {
+      LOCK_MUTEX(m_connects_lock);
+      aph = find_connection(connection_id);
+    }
     if (!aph)
       return false;
     if (!aph->close())
@@ -128,8 +132,11 @@ namespace levin
 
   bool async_protocol_handler_config::update_connection_context(const t_connection_context& contxt)
   {
-    LOCK_RECURSIVE_MUTEX(m_connects_lock);
-    async_protocol_handler* aph = find_connection(contxt.m_connection_id);
+    async_protocol_handler* aph = nullptr;
+    {
+      LOCK_MUTEX(m_connects_lock);
+      aph = find_connection(contxt.m_connection_id);
+    }
     if(0 == aph)
       return false;
     aph->update_connection_context(contxt);

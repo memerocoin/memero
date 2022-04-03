@@ -90,8 +90,8 @@ using t_connection_context =
 
 class async_protocol_handler_config
 {
-  typedef std::unordered_map<boost::uuids::uuid, async_protocol_handler*, boost::hash<boost::uuids::uuid>> connections_map;
-  std::recursive_mutex m_connects_lock;
+  using connections_map = std::unordered_map<boost::uuids::uuid, async_protocol_handler*, boost::hash<boost::uuids::uuid>>;
+  std::mutex m_connects_lock;
   connections_map m_connects;
 
   void add_connection(async_protocol_handler* pc);
@@ -103,8 +103,6 @@ class async_protocol_handler_config
   friend class async_protocol_handler;
 
   levin_commands_handler<t_connection_context>* m_pcommands_handler;
-
-  void delete_connections (size_t count, bool incoming);
 
 public:
   typedef t_connection_context connection_context;
@@ -453,8 +451,13 @@ int async_protocol_handler_config::invoke_async(int command, const std::span<con
 template<class callback_t>
 bool async_protocol_handler_config::foreach_connection(const callback_t &cb)
 {
-  LOCK_RECURSIVE_MUTEX(m_connects_lock);
-  for(auto& c: m_connects)
+  connections_map connects;
+  {
+    LOCK_MUTEX(m_connects_lock);
+    connects = m_connects;
+  }
+
+  for(auto& c: connects)
   {
     async_protocol_handler* aph = c.second;
     if(!cb(aph->get_context_ref()))
@@ -466,8 +469,11 @@ bool async_protocol_handler_config::foreach_connection(const callback_t &cb)
 template<class callback_t>
 bool async_protocol_handler_config::for_connection(const boost::uuids::uuid &connection_id, const callback_t &cb)
 {
-  LOCK_RECURSIVE_MUTEX(m_connects_lock);
-  async_protocol_handler* aph = find_connection(connection_id);
+  async_protocol_handler* aph = nullptr;
+  {
+    LOCK_MUTEX(m_connects_lock);
+    aph = find_connection(connection_id);
+  }
   if (!aph)
     return false;
   if(!cb(aph->get_context_ref()))
