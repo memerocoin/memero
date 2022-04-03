@@ -57,7 +57,7 @@ void block_queue::add_blocks(uint64_t height, std::vector<cryptonote::block_comp
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   std::vector<crypto::hash> hashes;
   bool has_hashes = remove_span(height, &hashes);
-  blocks.insert(span(height, std::move(bcel), connection_id, addr, rate, size));
+  blocks.insert(batch(height, std::move(bcel), connection_id, addr, rate, size));
   if (has_hashes)
   {
     for (const crypto::hash &h: hashes)
@@ -73,7 +73,7 @@ void block_queue::add_blocks(uint64_t height, uint64_t nblocks, const boost::uui
 {
   LOG_ERROR_AND_THROW_UNLESS(nblocks > 0, "Empty span");
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  blocks.insert(span(height, nblocks, connection_id, addr, time));
+  blocks.insert(batch(height, nblocks, connection_id, addr, time));
 }
 
 void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
@@ -148,9 +148,9 @@ uint64_t block_queue::get_max_block_height() const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   uint64_t height = 0;
-  for (const auto &span: blocks)
+  for (const auto &batch: blocks)
   {
-    const uint64_t h = span.start_block_height + span.nblocks - 1;
+    const uint64_t h = batch.start_block_height + batch.nblocks - 1;
     if (h > height)
       height = h;
   }
@@ -164,7 +164,7 @@ void block_queue::print() const
     (
      "Block queue has "
      + std::to_string(blocks.size())
-     + " spans"
+     + " batches"
      );
 }
 
@@ -292,7 +292,7 @@ void block_queue::set_span_hashes(uint64_t start_height, const boost::uuids::uui
   {
     if (i->start_block_height == start_height && i->connection_id == connection_id)
     {
-      span s = *i;
+      batch s = *i;
       erase_block(i);
       s.hashes = std::move(hashes);
       for (const crypto::hash &h: s.hashes)
@@ -357,14 +357,14 @@ crypto::hash block_queue::get_last_known_hash(const boost::uuids::uuid &connecti
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   crypto::hash hash = crypto::null_hash;
   uint64_t highest_height = 0;
-  for (const auto &span: blocks)
+  for (const auto &batch: blocks)
   {
-    if (span.connection_id != connection_id)
+    if (batch.connection_id != connection_id)
       continue;
-    uint64_t h = span.start_block_height + span.nblocks - 1;
-    if (h > highest_height && span.hashes.size() == span.nblocks)
+    uint64_t h = batch.start_block_height + batch.nblocks - 1;
+    if (h > highest_height && batch.hashes.size() == batch.nblocks)
     {
-      hash = span.hashes.back();
+      hash = batch.hashes.back();
       highest_height = h;
     }
   }
@@ -373,15 +373,15 @@ crypto::hash block_queue::get_last_known_hash(const boost::uuids::uuid &connecti
 
 bool block_queue::has_spans(const boost::uuids::uuid &connection_id) const
 {
-  for (const auto &span: blocks)
+  for (const auto &batch: blocks)
   {
-    if (span.connection_id == connection_id)
+    if (batch.connection_id == connection_id)
       return true;
   }
   return false;
 }
 
-bool block_queue::foreach(std::function<bool(const span&)> f) const
+bool block_queue::foreach(std::function<bool(const batch&)> f) const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
   block_map::const_iterator i = blocks.begin();

@@ -46,7 +46,7 @@ namespace cryptonote
   class block_queue
   {
   public:
-    struct span
+    struct batch
     {
       uint64_t start_block_height;
       std::vector<crypto::hash> hashes;
@@ -58,7 +58,7 @@ namespace cryptonote
       std::chrono::time_point<std::chrono::system_clock> time;
       epee::net_utils::network_address origin{};
 
-      span
+      batch
       (
        uint64_t start_block_height
        , std::vector<cryptonote::block_complete_entry> blocks
@@ -77,7 +77,7 @@ namespace cryptonote
         , origin(addr)
       {}
 
-      span
+      batch
       (
        uint64_t start_block_height
        , uint64_t nblocks
@@ -93,9 +93,14 @@ namespace cryptonote
       {}
 
 
-      bool operator<(const span &s) const { return start_block_height < s.start_block_height; }
+      bool operator<(const batch &s) const
+      {
+        return start_block_height < s.start_block_height;
+      }
+
     };
-    typedef std::set<span> block_map;
+
+    using block_map = std::set<batch>;
 
   public:
     void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float block_rate, size_t data_size);
@@ -128,7 +133,7 @@ namespace cryptonote
     size_t get_data_size() const;
     crypto::hash get_last_known_hash(const boost::uuids::uuid &connection_id) const;
     bool has_spans(const boost::uuids::uuid &connection_id) const;
-    bool foreach(std::function<bool(const span&)> f) const;
+    bool foreach(std::function<bool(const batch&)> f) const;
     bool requested(const crypto::hash &hash) const;
     bool have(const crypto::hash &hash) const;
 
