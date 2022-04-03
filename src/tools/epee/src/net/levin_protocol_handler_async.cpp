@@ -43,46 +43,6 @@ namespace levin
     m_pcommands_handler->on_connection_close(pconn->m_connection_context);
   }
   //------------------------------------------------------------------------------------------
-  void async_protocol_handler_config::delete_connections(size_t count, bool incoming)
-  {
-    std::vector <boost::uuids::uuid> connections;
-    {
-      LOCK_RECURSIVE_MUTEX(m_connects_lock);
-      for (auto& c: m_connects)
-        {
-          if (c.second->m_connection_context.m_is_income == incoming)
-            connections.push_back(c.first);
-        }
-
-      while (count > 0 && connections.size() > 0)
-        {
-          try
-            {
-              auto i = connections.end() - 1;
-              async_protocol_handler *conn = m_connects.at(*i);
-              del_connection(conn);
-              conn->close();
-              connections.erase(i);
-            }
-          catch (const std::out_of_range &e)
-            {
-              LOG_WARNING("Connection not found in m_connects, continuing");
-            }
-          --count;
-        }
-    }
-  }
-  //------------------------------------------------------------------------------------------
-  void async_protocol_handler_config::del_out_connections(size_t count)
-  {
-    delete_connections(count, false);
-  }
-  //------------------------------------------------------------------------------------------
-  void async_protocol_handler_config::del_in_connections(size_t count)
-  {
-    delete_connections(count, true);
-  }
-  //------------------------------------------------------------------------------------------
   void async_protocol_handler_config::add_connection(async_protocol_handler* pconn)
   {
     {

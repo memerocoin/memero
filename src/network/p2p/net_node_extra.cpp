@@ -1118,13 +1118,6 @@ namespace nodetool
     {
       return false;
     }
-    else if (zone.m_current_number_of_out_peers > zone.m_config.m_net_config.max_out_connection_count)
-    {
-      zone.m_net_server.get_config_object().del_out_connections(1);
-      --(zone.m_current_number_of_out_peers); // atomic variable, update time = 1s
-      return false;
-    }
-
 
     LOG_DEBUG_MUTE
       (
@@ -2361,39 +2354,12 @@ namespace nodetool
   }
 
 
-  void node_server::change_max_out_public_peers(size_t count)
-  {
-    auto public_zone = m_network_zones.find(epee::net_utils::zone::public_);
-    if (public_zone != m_network_zones.end())
-    {
-      const auto current = public_zone->second.m_net_server.get_config_object().get_out_connections_count();
-      public_zone->second.m_config.m_net_config.max_out_connection_count = count;
-      if(current > count)
-        public_zone->second.m_net_server.get_config_object().del_out_connections(current - count);
-      m_payload_handler.set_max_out_peers(count);
-    }
-  }
-
-
   uint32_t node_server::get_max_out_public_peers() const
   {
     const auto public_zone = m_network_zones.find(epee::net_utils::zone::public_);
     if (public_zone == m_network_zones.end())
       return 0;
     return public_zone->second.m_config.m_net_config.max_out_connection_count;
-  }
-
-
-  void node_server::change_max_in_public_peers(size_t count)
-  {
-    auto public_zone = m_network_zones.find(epee::net_utils::zone::public_);
-    if (public_zone != m_network_zones.end())
-    {
-      const auto current = public_zone->second.m_net_server.get_config_object().get_in_connections_count();
-      public_zone->second.m_config.m_net_config.max_in_connection_count = count;
-      if(current > count)
-        public_zone->second.m_net_server.get_config_object().del_in_connections(current - count);
-    }
   }
 
 

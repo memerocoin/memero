@@ -130,8 +130,6 @@ public:
 
   async_protocol_handler_config():m_pcommands_handler(NULL), m_initial_max_packet_size(LEVIN_INITIAL_MAX_PACKET_SIZE), m_max_packet_size(LEVIN_DEFAULT_MAX_PACKET_SIZE), m_invoke_timeout(LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
   {}
-  void del_out_connections(size_t count);
-  void del_in_connections(size_t count);
 };
 
 

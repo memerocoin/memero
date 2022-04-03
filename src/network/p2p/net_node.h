@@ -253,9 +253,7 @@ namespace nodetool
     void get_public_peerlist(std::vector<peerlist_entry>& gray, std::vector<peerlist_entry>& white);
     void get_peerlist(std::vector<peerlist_entry>& gray, std::vector<peerlist_entry>& white);
 
-    void change_max_out_public_peers(size_t count);
     uint32_t get_max_out_public_peers() const;
-    void change_max_in_public_peers(size_t count);
     uint32_t get_max_in_public_peers() const;
     virtual bool block_host(epee::net_utils::network_address address, time_t seconds = P2P_IP_BLOCKTIME);
     virtual bool unblock_host(const epee::net_utils::network_address &address);
