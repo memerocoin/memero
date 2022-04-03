@@ -53,35 +53,20 @@ namespace cryptonote
 
     block_batch
     (
-     uint64_t start_block_height
-     , std::vector<cryptonote::block_complete_entry> blocks
+     const uint64_t start_block_height
+     , const std::span<const cryptonote::block_complete_entry> blocks
      , const boost::uuids::uuid &connection_id
      , const epee::net_utils::network_address &addr
-     , float block_rate
-     , size_t data_size
+     , const float block_rate
+     , const size_t data_size
      ):
       start_block_height(start_block_height)
-      , blocks(std::move(blocks))
+      , blocks({blocks.begin(), blocks.end()})
       , connection_id(connection_id)
       , nblocks(this->blocks.size())
       , block_rate(block_rate)
       , data_size(data_size)
       , time(std::chrono::time_point<std::chrono::system_clock>::min())
-      , origin(addr)
-    {}
-
-    block_batch
-    (
-     uint64_t start_block_height
-     , uint64_t nblocks
-     , const boost::uuids::uuid &connection_id
-     , const epee::net_utils::network_address &addr
-     , std::chrono::time_point<std::chrono::system_clock> time
-     ):
-      start_block_height(start_block_height)
-      , connection_id(connection_id)
-      , nblocks(nblocks)
-      , time(time)
       , origin(addr)
     {}
 
@@ -94,7 +79,17 @@ namespace cryptonote
     using batchV = std::list<block_batch>;
 
   public:
-    void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float block_rate, size_t data_size);
+
+    void add_blocks
+    (
+     const uint64_t height
+     , const std::span<const cryptonote::block_complete_entry> xs
+     , const boost::uuids::uuid &connection_id
+     , const epee::net_utils::network_address &addr
+     , const float rate
+     , const size_t size
+     );
+
     void remove_empty_batches_from_connection(const boost::uuids::uuid &connection_id, bool all = false);
     void remove_empty_batches_from_connections(const std::set<boost::uuids::uuid> &live_connections);
 

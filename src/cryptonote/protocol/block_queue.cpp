@@ -42,11 +42,18 @@ namespace cryptonote
 
   std::recursive_mutex mutex;
 
-  void block_queue::add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float rate, size_t size)
+  void block_queue::add_blocks
+  (
+   const uint64_t height
+   , const std::span<const cryptonote::block_complete_entry> xs
+   , const boost::uuids::uuid &connection_id
+   , const epee::net_utils::network_address &addr
+   , const float rate
+   , const size_t size
+   )
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
-    std::vector<crypto::hash> hashes;
-    batches.emplace_back(height, std::move(bcel), connection_id, addr, rate, size);
+    batches.emplace_back(height, xs, connection_id, addr, rate, size);
   }
 
 
