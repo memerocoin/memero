@@ -1852,13 +1852,12 @@ skip:
     std::vector<crypto::hash> hashes;
     std::chrono::time_point<std::chrono::system_clock> request_time;
     boost::uuids::uuid connection_id;
-    bool filled;
 
     const uint64_t blockchain_height = m_core.get_current_blockchain_height();
     if (context.m_remote_blockchain_height <= blockchain_height)
       return false;
     {
-      if (!m_block_queue.has_next_batch(blockchain_height, filled, request_time, connection_id))
+      if (!m_block_queue.has_next_batch(blockchain_height, request_time, connection_id))
       {
         LOG_DEBUG(context.to_str() + " we should download it as no peer reserved it");
         return true;
@@ -2101,7 +2100,7 @@ skip:
         std::vector<cryptonote::block_complete_entry> blocks;
         boost::uuids::uuid span_connection_id;
         epee::net_utils::network_address span_origin;
-        if (m_block_queue.get_next_batch(start_height, blocks, span_connection_id, span_origin, true))
+        if (m_block_queue.get_next_batch(start_height, blocks, span_connection_id, span_origin))
         {
           LOG_DEBUG_CC(context, "No other thread is adding blocks, resuming");
           LOG_PEER_STATE("will try to add blocks next");

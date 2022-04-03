@@ -205,7 +205,7 @@ namespace cryptonote
     (std::chrono::time_point<std::chrono::system_clock>&)i->time = t; // sod off, time doesn't influence sorting
   }
 
-  bool block_queue::get_next_batch(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr, bool filled) const
+  bool block_queue::get_next_batch(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr) const
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
     if (batches.empty())
@@ -213,7 +213,7 @@ namespace cryptonote
     batchV::const_iterator i = batches.begin();
     for (; i != batches.end(); ++i)
       {
-        if (!filled || !i->blocks.empty())
+        if (!i->blocks.empty())
           {
             height = i->start_block_height;
             bcel = i->blocks;
@@ -225,7 +225,7 @@ namespace cryptonote
     return false;
   }
 
-  bool block_queue::has_next_batch(uint64_t height, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const
+  bool block_queue::has_next_batch(uint64_t height, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
     if (batches.empty())
@@ -235,7 +235,6 @@ namespace cryptonote
       return false;
     if (i->start_block_height > height)
       return false;
-    filled = !i->blocks.empty();
     time = i->time;
     connection_id = i->connection_id;
     return true;
