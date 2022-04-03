@@ -1857,7 +1857,6 @@ skip:
     const uint64_t blockchain_height = m_core.get_current_blockchain_height();
     if (context.m_remote_blockchain_height <= blockchain_height)
       return false;
-    const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     {
       if (!m_block_queue.has_next_span(blockchain_height, filled, request_time, connection_id))
       {
