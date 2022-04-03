@@ -73,19 +73,11 @@ void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
 void block_queue::erase_block(batchV::iterator j)
 {
   LOG_ERROR_AND_THROW_UNLESS(j != batches.end(), "Invalid iterator");
-  for (const crypto::hash &h: j->hashes)
-  {
-    have_blocks.erase(h);
-  }
   batches.erase(j);
 }
 
 void block_queue::remove_hashes(const std::span<const crypto::hash> xs)
 {
-  for (const crypto::hash &h: xs)
-  {
-    have_blocks.erase(h);
-  }
 }
 
 void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections)
@@ -164,8 +156,7 @@ bool block_queue::requested(const crypto::hash &hash) const
 
 bool block_queue::have(const crypto::hash &hash) const
 {
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  return have_blocks.find(hash) != have_blocks.end();
+  return false;
 }
 
 std::pair<uint64_t, uint64_t> block_queue::reserve_span

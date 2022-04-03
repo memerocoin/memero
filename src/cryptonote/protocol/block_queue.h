@@ -140,8 +140,5 @@ namespace cryptonote
 
   public:
     batchV batches;
-
-  private:
-    std::unordered_set<crypto::hash> have_blocks;
   };
 }
