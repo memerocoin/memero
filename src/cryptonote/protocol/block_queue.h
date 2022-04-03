@@ -115,7 +115,12 @@ namespace cryptonote
      , std::chrono::time_point<std::chrono::system_clock> &time
      ) const;
 
-    void reset_next_batch_time(std::chrono::time_point<std::chrono::system_clock> t = std::chrono::system_clock::now());
+    void reset_next_batch_time
+    (
+     std::chrono::time_point<std::chrono::system_clock> t
+     = std::chrono::system_clock::now()
+     );
+
     bool get_next_batch(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr) const;
 
     bool has_next_batch(uint64_t height) const;

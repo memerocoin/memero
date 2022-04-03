@@ -178,16 +178,13 @@ namespace cryptonote
     return std::make_pair(i->start_block_height, i->blocks.size());
   }
 
-  void block_queue::reset_next_batch_time(std::chrono::time_point<std::chrono::system_clock> t)
+  void block_queue::reset_next_batch_time
+  (std::chrono::time_point<std::chrono::system_clock> t)
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
-    LOG_ERROR_AND_THROW_UNLESS(!batches.empty(), "No next span to reset time");
+    if (batches.empty()) return;
 
-    batchV::iterator i = batches.begin();
-    LOG_ERROR_AND_THROW_UNLESS(i != batches.end(), "No next span to reset time");
-
-    LOG_ERROR_AND_THROW_UNLESS(i->blocks.empty(), "Next span is not empty");
-    (std::chrono::time_point<std::chrono::system_clock>&)i->time = t; // sod off, time doesn't influence sorting
+    batches.front().time = t;
   }
 
   bool block_queue::get_next_batch(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr) const
