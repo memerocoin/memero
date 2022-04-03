@@ -76,10 +76,6 @@ void block_queue::erase_block(batchV::iterator j)
   batches.erase(j);
 }
 
-void block_queue::remove_hashes(const std::span<const crypto::hash> xs)
-{
-}
-
 void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);

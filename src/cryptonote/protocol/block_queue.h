@@ -101,7 +101,6 @@ namespace cryptonote
     void flush_spans(const boost::uuids::uuid &connection_id, bool all = false);
     void flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections);
 
-    void remove_hashes(const std::span<const crypto::hash> xs);
     bool remove_span(uint64_t start_block_height, std::vector<crypto::hash> *hashes = NULL);
 
     void remove_spans
