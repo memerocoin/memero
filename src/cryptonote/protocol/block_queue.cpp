@@ -30,12 +30,9 @@
 
 #include "block_queue.h"
 
-#include "cryptonote_protocol_defs.h"
-
 #include "tools/epee/include/syncobj.h"
 
 #include <boost/uuid/uuid_io.hpp>
-
 #include <numeric>
 
 
