@@ -954,7 +954,6 @@ bool t_rpc_command_executor::sync_info()
     for (const auto &s: res.spans)
       total_size += s.size;
     tools::success_msg_writer() << std::to_string(res.spans.size()) << " spans, " << total_size/1e6 << " MB";
-    tools::success_msg_writer() << res.overview;
     for (const auto &s: res.spans)
     {
       std::string address = epee::string_tools::pad_string(s.remote_address, 24);

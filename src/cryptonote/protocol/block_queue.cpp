@@ -157,25 +157,6 @@ uint64_t block_queue::get_max_block_height() const
   return height;
 }
 
-uint64_t block_queue::get_next_needed_height(uint64_t blockchain_height) const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  if (blocks.empty())
-    return blockchain_height;
-  uint64_t last_needed_height = blockchain_height;
-  bool first = true;
-  for (const auto &span: blocks)
-  {
-    if (span.start_block_height + span.nblocks - 1 < blockchain_height)
-      continue;
-    if (span.start_block_height != last_needed_height || (first && span.blocks.empty()))
-      return last_needed_height;
-    last_needed_height = span.start_block_height + span.nblocks;
-    first = false;
-  }
-  return last_needed_height;
-}
-
 void block_queue::print() const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
@@ -185,51 +166,6 @@ void block_queue::print() const
      + std::to_string(blocks.size())
      + " spans"
      );
-  // for (const auto &span: blocks) {
-  //   LOG_DEBUG_MUTE
-  //     (
-  //      "  "
-  //      + std::to_string(span.start_block_height)
-  //      + " - "
-  //      + std::to_string(span.start_block_height+span.nblocks-1)
-  //      + " ("
-  //      + std::to_string(span.nblocks)
-  //      + ") - "
-  //      + (span.blocks.empty() ? "scheduled" : "filled    ")
-  //      + "  "
-  //      + boost::uuids::to_string(span.connection_id)
-  //      // + " ("
-  //      // + std::to_string((unsigned)(span.rate*10/1024.f))/10.f))
-  //      // + " kB/s)"
-  //      );
-  // }
-}
-
-std::string block_queue::get_overview(uint64_t blockchain_height) const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  if (blocks.empty())
-    return "[]";
-  block_map::const_iterator i = blocks.begin();
-  std::string s = std::string("[");
-  uint64_t expected = blockchain_height;
-  while (i != blocks.end())
-  {
-    if (expected > i->start_block_height)
-    {
-      s += "<";
-    }
-    else
-    {
-      if (expected < i->start_block_height)
-        s += std::string(std::max((uint64_t)1, (i->start_block_height - expected) / (i->nblocks ? i->nblocks : 1)), '_');
-      s += i->blocks.empty() ? "." : i->start_block_height == blockchain_height ? "m" : "o";
-      expected = i->start_block_height + i->nblocks;
-    }
-    ++i;
-  }
-  s += "]";
-  return s;
 }
 
 inline bool block_queue::requested_internal(const crypto::hash &hash) const
@@ -377,21 +313,6 @@ bool block_queue::get_next_span(uint64_t &height, std::vector<cryptonote::block_
   return false;
 }
 
-bool block_queue::has_next_span(const boost::uuids::uuid &connection_id, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time) const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  if (blocks.empty())
-    return false;
-  block_map::const_iterator i = blocks.begin();
-  if (i == blocks.end())
-    return false;
-  if (i->connection_id != connection_id)
-    return false;
-  filled = !i->blocks.empty();
-  time = i->time;
-  return true;
-}
-
 bool block_queue::has_next_span(uint64_t height, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
@@ -414,32 +335,6 @@ size_t block_queue::get_data_size() const
   size_t size = 0;
   for (const auto &span: blocks)
     size += span.size;
-  return size;
-}
-
-size_t block_queue::get_num_filled_spans_prefix() const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-
-  if (blocks.empty())
-    return 0;
-  block_map::const_iterator i = blocks.begin();
-  size_t size = 0;
-  while (i != blocks.end() && !i->blocks.empty())
-  {
-    ++i;
-    ++size;
-  }
-  return size;
-}
-
-size_t block_queue::get_num_filled_spans() const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  size_t size = 0;
-  for (const auto &span: blocks)
-  if (!span.blocks.empty())
-    ++size;
   return size;
 }
 
@@ -516,38 +411,6 @@ float block_queue::get_speed(const boost::uuids::uuid &connection_id) const
      + std::to_string(best_rate)
      );
   return speed;
-}
-
-float block_queue::get_download_rate(const boost::uuids::uuid &connection_id) const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  float conn_rate = -1.f;
-  for (const auto &span: blocks)
-  {
-    if (span.blocks.empty())
-      continue;
-    if (span.connection_id != connection_id)
-      continue;
-    // note that the average below does not average over the whole set, but over the
-    // previous pseudo average and the latest rate: this gives much more importance
-    // to the latest measurements, which is fine here
-    if (conn_rate < 0.f)
-      conn_rate = span.rate;
-    else
-      conn_rate = (conn_rate + span.rate) / 2;
-  }
-
-  if (conn_rate < 0)
-    conn_rate = 0.0f;
-  LOG_TRACE
-    (
-     "Download rate for "
-     + boost::uuids::to_string(connection_id)
-     + ": "
-     + std::to_string(conn_rate)
-     + " b/s"
-     );
-  return conn_rate;
 }
 
 bool block_queue::foreach(std::function<bool(const span&)> f) const

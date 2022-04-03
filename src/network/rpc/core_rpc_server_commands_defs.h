@@ -1186,7 +1186,6 @@ namespace cryptonote
       uint64_t target_height;
       std::list<peer> peers;
       std::list<span> spans;
-      std::string overview;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
@@ -1194,7 +1193,6 @@ namespace cryptonote
         KV_SERIALIZE(target_height)
         KV_SERIALIZE(peers)
         KV_SERIALIZE(spans)
-        KV_SERIALIZE(overview)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;
