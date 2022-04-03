@@ -133,7 +133,6 @@ namespace cryptonote
     size_t get_data_size() const;
     crypto::hash get_last_known_hash(const boost::uuids::uuid &connection_id) const;
     bool has_spans(const boost::uuids::uuid &connection_id) const;
-    bool foreach(std::function<bool(const batch&)> f) const;
     bool requested(const crypto::hash &hash) const;
     bool have(const crypto::hash &hash) const;
 
@@ -141,8 +140,10 @@ namespace cryptonote
     void erase_block(block_map::iterator j);
     inline bool requested_internal(const crypto::hash &hash) const;
 
-  private:
+  public:
     block_map blocks;
+
+  private:
     std::unordered_set<crypto::hash> requested_hashes;
     std::unordered_set<crypto::hash> have_blocks;
   };

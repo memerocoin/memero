@@ -381,14 +381,4 @@ bool block_queue::has_spans(const boost::uuids::uuid &connection_id) const
   return false;
 }
 
-bool block_queue::foreach(std::function<bool(const batch&)> f) const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  block_map::const_iterator i = blocks.begin();
-  while (i != blocks.end())
-    if (!f(*i++))
-      return false;
-  return true;
-}
-
 }

@@ -1290,21 +1290,25 @@ namespace cryptonote
     for (const auto &c: m_p2p.get_payload_object().get_connections())
       res.peers.push_back({c});
     const cryptonote::block_queue &block_queue = m_p2p.get_payload_object().get_block_queue();
-    block_queue.foreach([&](const cryptonote::block_queue::span &span) {
-      const std::string span_connection_id = epee::string_tools::pod_to_hex(span.connection_id);
-      res.spans.push_back
-        (
-         {
-           span.start_block_height
-          , span.nblocks
-          , span_connection_id
-          , (uint32_t)(span.block_rate + 0.5f)
-          , span.data_size
-          , span.origin.str()
-         }
-         );
-      return true;
-    });
+    std::for_each
+      (
+       block_queue.blocks.begin()
+       , block_queue.blocks.end()
+       , [&](const cryptonote::block_queue::batch &x) {
+         const std::string span_connection_id =
+           epee::string_tools::pod_to_hex(x.connection_id);
+         res.spans.push_back
+           (
+            {
+              x.start_block_height
+              , x.nblocks
+              , span_connection_id
+              , (uint32_t)(x.block_rate + 0.5f)
+              , x.data_size
+              , x.origin.str()
+            }
+            );
+       });
 
     res.status = CORE_RPC_STATUS_OK;
     return true;
