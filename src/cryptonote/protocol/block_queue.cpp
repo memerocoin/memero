@@ -42,7 +42,7 @@
 namespace cryptonote
 {
 
-  std::mutex mutex;
+  std::mutex batch_mutex;
 
   void block_queue::add_blocks
   (
@@ -56,7 +56,7 @@ namespace cryptonote
   {
     if (xs.empty()) return;
 
-    LOCK_MUTEX(mutex);
+    LOCK_MUTEX(batch_mutex);
     batches.emplace_back(height, xs, connection_id, addr, rate, size);
   }
 
@@ -66,7 +66,7 @@ namespace cryptonote
    const boost::uuids::uuid connection_id
    )
   {
-    LOCK_MUTEX(mutex);
+    LOCK_MUTEX(batch_mutex);
     batchV new_batches;
 
     for (const auto& x: batches) {
@@ -84,7 +84,7 @@ namespace cryptonote
    , const uint64_t start_block_height
    )
   {
-    LOCK_MUTEX(mutex);
+    LOCK_MUTEX(batch_mutex);
     batchV new_batches;
 
     for (const auto& x: batches) {
@@ -114,7 +114,7 @@ namespace cryptonote
    , std::chrono::time_point<std::chrono::system_clock> time
    )
   {
-    LOCK_MUTEX(mutex);
+    LOCK_MUTEX(batch_mutex);
 
     LOG_DEBUG
       (
@@ -205,7 +205,7 @@ namespace cryptonote
   std::optional<std::pair<uint64_t, uint64_t>>
   block_queue::get_next_span_if_scheduled() const
   {
-    LOCK_MUTEX(mutex);
+    LOCK_MUTEX(batch_mutex);
     if (batches.empty()) return {};
 
     const auto& x = batches.front();
@@ -216,7 +216,7 @@ namespace cryptonote
   void block_queue::reset_next_batch_time
   (std::chrono::time_point<std::chrono::system_clock> t)
   {
-    LOCK_MUTEX(mutex);
+    LOCK_MUTEX(batch_mutex);
     if (batches.empty()) return;
 
     batches.front().time = t;
@@ -230,7 +230,7 @@ namespace cryptonote
    , epee::net_utils::network_address &addr
    ) const
   {
-    LOCK_MUTEX(mutex);
+    LOCK_MUTEX(batch_mutex);
 
     if (batches.empty())
       return false;
@@ -247,7 +247,7 @@ namespace cryptonote
 
   bool block_queue::has_next_batch(const uint64_t height) const
   {
-    LOCK_MUTEX(mutex);
+    LOCK_MUTEX(batch_mutex);
     if (batches.empty())
       return false;
 
