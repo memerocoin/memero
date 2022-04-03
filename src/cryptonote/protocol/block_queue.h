@@ -88,8 +88,10 @@ namespace cryptonote
      , const size_t size
      );
 
-    void remove_empty_batches_from_connection(const boost::uuids::uuid &connection_id, bool all = false);
-    void remove_empty_batches_from_connections(const std::set<boost::uuids::uuid> &live_connections);
+    void remove_batches_from_connection
+    (
+     const boost::uuids::uuid connection_id
+     );
 
     void remove_batches_from_connection
     (

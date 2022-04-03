@@ -1904,14 +1904,6 @@ skip:
 
   bool t_cryptonote_protocol_handler::request_missing_objects(cryptonote_connection_context& context, bool check_having_blocks, bool force_next_batch)
   {
-    // flush stale spans
-    std::set<boost::uuids::uuid> live_connections;
-    m_p2p->for_each_connection([&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t support_flags)->bool{
-      live_connections.insert(context.m_connection_id);
-      return true;
-    });
-    m_block_queue.remove_empty_batches_from_connections(live_connections);
-
     // if we don't need to get next span, and the block queue is full enough, wait a bit
     bool start_from_current_chain = false;
 
@@ -2598,7 +2590,11 @@ skip:
        + std::to_string(flush_all_spans)
        );
 
-    m_block_queue.remove_empty_batches_from_connection(context.m_connection_id, flush_all_spans);
+    if (flush_all_spans) {
+      m_block_queue
+        .remove_batches_from_connection(context.m_connection_id);
+    }
+
 
     // copy since dropping the connection will invalidate the context, and thus the address
     const auto remote_address = context.m_remote_address;
@@ -2630,7 +2626,7 @@ skip:
     });
     for (const boost::uuids::uuid &id: drop)
     {
-      m_block_queue.remove_empty_batches_from_connection(id, true);
+      m_block_queue.remove_batches_from_connection(id);
       m_p2p->for_connection(id, [&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t f)->bool{
         drop_connection(context, true, false);
         return true;
@@ -2685,8 +2681,6 @@ skip:
               m_ask_for_txpool_complement = true;
             }
         }
-
-      m_block_queue.remove_empty_batches_from_connection(context.m_connection_id, false);
     }
 
     LOG_PEER_STATE("closed");

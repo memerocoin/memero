@@ -52,50 +52,28 @@ namespace cryptonote
    , const size_t size
    )
   {
+    if (xs.empty()) return;
+
     const std::unique_lock<std::recursive_mutex> lock(mutex);
     batches.emplace_back(height, xs, connection_id, addr, rate, size);
   }
 
 
-  void block_queue::remove_empty_batches_from_connection(const boost::uuids::uuid &connection_id, bool all)
+  void block_queue::remove_batches_from_connection
+  (
+   const boost::uuids::uuid connection_id
+   )
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
-    batchV::iterator i = batches.begin();
-    while (i != batches.end())
-      {
-        if
-          (
-           i->connection_id == connection_id
-           && (all || i->blocks.size() == 0)
-           )
-          {
-            i = batches.erase(i);
-          }
-        else {
-          i++;
-        }
-      }
-  }
+    batchV new_batches;
 
-  void block_queue::remove_empty_batches_from_connections(const std::set<boost::uuids::uuid> &live_connections)
-  {
-    const std::unique_lock<std::recursive_mutex> lock(mutex);
-    batchV::iterator i = batches.begin();
-    while (i != batches.end())
-      {
-        if
-          (
-           i->blocks.empty()
-           && live_connections.find(i->connection_id)
-           == live_connections.end()
-           )
-          {
-            i = batches.erase(i);
-          }
-        else {
-          i++;
-        }
+    for (const auto& x: batches) {
+      if(x.connection_id != connection_id) {
+        new_batches.push_back(x);
       }
+    }
+
+    batches = new_batches;
   }
 
   void block_queue::remove_batches_from_connection
