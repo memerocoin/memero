@@ -54,14 +54,44 @@ namespace cryptonote
       boost::uuids::uuid connection_id;
       uint64_t nblocks;
       float rate;
-      size_t size;
+      size_t data_size;
       std::chrono::time_point<std::chrono::system_clock> time;
       epee::net_utils::network_address origin{};
 
-      span(uint64_t start_block_height, std::vector<cryptonote::block_complete_entry> blocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float rate, size_t size):
-        start_block_height(start_block_height), blocks(std::move(blocks)), connection_id(connection_id), nblocks(this->blocks.size()), rate(rate), size(size), time(std::chrono::time_point<std::chrono::system_clock>::min()), origin(addr) {}
-      span(uint64_t start_block_height, uint64_t nblocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, std::chrono::time_point<std::chrono::system_clock> time):
-        start_block_height(start_block_height), connection_id(connection_id), nblocks(nblocks), rate(0.0f), size(0), time(time), origin(addr) {}
+      span
+      (
+       uint64_t start_block_height
+       , std::vector<cryptonote::block_complete_entry> blocks
+       , const boost::uuids::uuid &connection_id
+       , const epee::net_utils::network_address &addr
+       , float rate
+       , size_t data_size
+       ):
+        start_block_height(start_block_height)
+        , blocks(std::move(blocks))
+        , connection_id(connection_id)
+        , nblocks(this->blocks.size())
+        , rate(rate)
+        , data_size(data_size)
+        , time(std::chrono::time_point<std::chrono::system_clock>::min())
+        , origin(addr)
+      {}
+
+      span
+      (
+       uint64_t start_block_height
+       , uint64_t nblocks
+       , const boost::uuids::uuid &connection_id
+       , const epee::net_utils::network_address &addr
+       , std::chrono::time_point<std::chrono::system_clock> time
+       ):
+        start_block_height(start_block_height)
+        , connection_id(connection_id)
+        , nblocks(nblocks)
+        , time(time)
+        , origin(addr)
+      {}
+
 
       bool operator<(const span &s) const { return start_block_height < s.start_block_height; }
     };

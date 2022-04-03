@@ -34,7 +34,7 @@
 
 #include <boost/uuid/uuid_io.hpp>
 
-
+#include <numeric>
 
 
 
@@ -332,10 +332,14 @@ bool block_queue::has_next_span(uint64_t height, bool &filled, std::chrono::time
 size_t block_queue::get_data_size() const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  size_t size = 0;
-  for (const auto &span: blocks)
-    size += span.size;
-  return size;
+  return std::transform_reduce
+    (
+     blocks.begin()
+     , blocks.end()
+     , 0
+     , std::plus<size_t>()
+     , [](const auto x) -> size_t { return x.data_size; }
+     );
 }
 
 crypto::hash block_queue::get_last_known_hash(const boost::uuids::uuid &connection_id) const
