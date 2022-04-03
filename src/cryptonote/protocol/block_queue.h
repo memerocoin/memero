@@ -33,16 +33,13 @@
 #include "tools/epee/include/net/net_utils_base.h"
 #include "math/hash/functional/hash.hpp"
 
+#include "cryptonote_protocol_defs.h"
+
 #include <unordered_set>
-
-
-
 
 
 namespace cryptonote
 {
-  struct block_complete_entry;
-
   class block_queue
   {
   public:
@@ -97,7 +94,6 @@ namespace cryptonote
 
   public:
     void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float block_rate, size_t data_size);
-    void add_blocks(uint64_t height, uint64_t nblocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now());
     void flush_batches(const boost::uuids::uuid &connection_id, bool all = false);
     void flush_empty_batches(const std::set<boost::uuids::uuid> &live_connections);
 
@@ -106,8 +102,6 @@ namespace cryptonote
      const boost::uuids::uuid connection_id
      , const uint64_t start_block_height
      );
-
-    uint64_t get_max_block_height() const;
 
     std::pair<uint64_t, uint64_t> reserve_batch
     (
