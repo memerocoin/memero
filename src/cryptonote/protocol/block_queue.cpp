@@ -104,15 +104,15 @@ namespace cryptonote
   std::optional<std::pair<uint64_t, uint64_t>>
   block_queue::reserve_blocks
   (
-   uint64_t first_block_height
-   , uint64_t last_block_height
-   , uint64_t max_blocks
+   const uint64_t first_block_height
+   , const uint64_t last_block_height
+   , const uint64_t max_blocks
    , const boost::uuids::uuid &connection_id
    , const epee::net_utils::network_address &addr
-   , uint64_t blockchain_height
+   , const uint64_t blockchain_height
    , const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes
-   , std::chrono::time_point<std::chrono::system_clock> time
-   )
+   , const std::chrono::time_point<std::chrono::system_clock> time
+   ) const
   {
     LOCK_MUTEX(batch_mutex);
 
@@ -214,7 +214,7 @@ namespace cryptonote
   }
 
   void block_queue::reset_next_batch_time
-  (std::chrono::time_point<std::chrono::system_clock> t)
+  (const std::chrono::time_point<std::chrono::system_clock> t)
   {
     LOCK_MUTEX(batch_mutex);
     if (batches.empty()) return;

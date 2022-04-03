@@ -98,23 +98,23 @@ namespace cryptonote
 
     std::optional<std::pair<uint64_t, uint64_t>> reserve_blocks
     (
-     uint64_t first_block_height
-     , uint64_t last_block_height
-     , uint64_t max_blocks
+     const uint64_t first_block_height
+     , const uint64_t last_block_height
+     , const uint64_t max_blocks
      , const boost::uuids::uuid &connection_id
      , const epee::net_utils::network_address &addr
-     , uint64_t blockchain_height
+     , const uint64_t blockchain_height
      , const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes
-     , std::chrono::time_point<std::chrono::system_clock> time
+     , const std::chrono::time_point<std::chrono::system_clock> time
      = std::chrono::system_clock::now()
-     );
+     ) const;
 
     std::optional<std::pair<uint64_t, uint64_t>>
     get_next_span_if_scheduled() const;
 
     void reset_next_batch_time
     (
-     std::chrono::time_point<std::chrono::system_clock> t
+     const std::chrono::time_point<std::chrono::system_clock> t
      = std::chrono::system_clock::now()
      );
 
@@ -126,7 +126,7 @@ namespace cryptonote
      , epee::net_utils::network_address &addr
      ) const;
 
-    bool has_next_batch(uint64_t height) const;
+    bool has_next_batch(const uint64_t height) const;
 
   };
 }
