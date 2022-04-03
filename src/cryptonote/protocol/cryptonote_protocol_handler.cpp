@@ -2004,6 +2004,7 @@ skip:
     LOG_DEBUG_MUTE(context << " request_missing_objects: check " << check_having_blocks << ", force_next_span " << force_next_span
         << ", m_needed_objects " << context.m_needed_objects.size() << " lrh " << context.m_last_response_height << ", chain "
            << m_core.get_current_blockchain_height());
+
     if(context.m_needed_objects.size() || force_next_span)
     {
       //we know objects that we need, request this objects
@@ -2057,7 +2058,16 @@ skip:
         }
 
         const uint64_t first_block_height = context.m_last_response_height - context.m_needed_objects.size() + 1;
-        span = m_block_queue.reserve_span(first_block_height, context.m_last_response_height, count_limit, context.m_connection_id, context.m_remote_address, context.m_remote_blockchain_height, context.m_needed_objects);
+        span = m_block_queue.reserve_span
+          (
+           first_block_height
+           , context.m_last_response_height
+           , count_limit
+           , context.m_connection_id
+           , context.m_remote_address
+           , context.m_remote_blockchain_height
+           , context.m_needed_objects
+           );
         LOG_DEBUG
           (
            context.to_str()

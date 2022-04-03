@@ -106,7 +106,20 @@ namespace cryptonote
     void remove_spans(const boost::uuids::uuid &connection_id, uint64_t start_block_height);
     uint64_t get_max_block_height() const;
     void print() const;
-    std::pair<uint64_t, uint64_t> reserve_span(uint64_t first_block_height, uint64_t last_block_height, uint64_t max_blocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, uint64_t blockchain_height, const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes, std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now());
+
+    std::pair<uint64_t, uint64_t> reserve_span
+    (
+     uint64_t first_block_height
+     , uint64_t last_block_height
+     , uint64_t max_blocks
+     , const boost::uuids::uuid &connection_id
+     , const epee::net_utils::network_address &addr
+     , uint64_t blockchain_height
+     , const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes
+     , std::chrono::time_point<std::chrono::system_clock> time
+     = std::chrono::system_clock::now()
+     );
+
     std::pair<uint64_t, uint64_t> get_next_span_if_scheduled(std::vector<crypto::hash> &hashes, boost::uuids::uuid &connection_id, std::chrono::time_point<std::chrono::system_clock> &time) const;
     void reset_next_span_time(std::chrono::time_point<std::chrono::system_clock> t = std::chrono::system_clock::now());
     void set_span_hashes(uint64_t start_height, const boost::uuids::uuid &connection_id, std::vector<crypto::hash> hashes);

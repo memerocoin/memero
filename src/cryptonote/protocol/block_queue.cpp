@@ -185,7 +185,17 @@ bool block_queue::have(const crypto::hash &hash) const
   return have_blocks.find(hash) != have_blocks.end();
 }
 
-std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_height, uint64_t last_block_height, uint64_t max_blocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, uint64_t blockchain_height, const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes, std::chrono::time_point<std::chrono::system_clock> time)
+std::pair<uint64_t, uint64_t> block_queue::reserve_span
+(
+ uint64_t first_block_height
+ , uint64_t last_block_height
+ , uint64_t max_blocks
+ , const boost::uuids::uuid &connection_id
+ , const epee::net_utils::network_address &addr
+ , uint64_t blockchain_height
+ , const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes
+ , std::chrono::time_point<std::chrono::system_clock> time
+ )
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
 
