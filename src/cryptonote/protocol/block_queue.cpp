@@ -52,7 +52,6 @@ void block_queue::add_blocks(uint64_t height, std::vector<cryptonote::block_comp
   {
     for (const crypto::hash &h: hashes)
     {
-      requested_hashes.insert(h);
       have_blocks.insert(h);
     }
     set_span_hashes(height, connection_id, hashes);
@@ -85,7 +84,6 @@ void block_queue::erase_block(batchV::iterator j)
   LOG_ERROR_AND_THROW_UNLESS(j != batches.end(), "Invalid iterator");
   for (const crypto::hash &h: j->hashes)
   {
-    requested_hashes.erase(h);
     have_blocks.erase(h);
   }
   batches.erase(j);
@@ -177,15 +175,16 @@ void block_queue::print() const
      );
 }
 
-inline bool block_queue::requested_internal(const crypto::hash &hash) const
-{
-  return requested_hashes.find(hash) != requested_hashes.end();
-}
-
 bool block_queue::requested(const crypto::hash &hash) const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  return requested_internal(hash);
+  for (const auto &x: batches)
+  {
+    for (const auto &h: x.hashes)
+      if (h == hash)
+        return true;
+  }
+  return false;
 }
 
 bool block_queue::have(const crypto::hash &hash) const
@@ -228,7 +227,7 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
   // skip everything we've already requested
   uint64_t span_start_height = last_block_height - block_hashes.size() + 1;
   std::vector<std::pair<crypto::hash, uint64_t>>::const_iterator i = block_hashes.begin();
-  while (i != block_hashes.end() && requested_internal((*i).first))
+  while (i != block_hashes.end() && requested((*i).first))
   {
     ++i;
     ++span_start_height;
@@ -243,7 +242,7 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span
   }
 
   i = std::next(block_hashes.begin(), span_start_height - block_hashes_start_height);
-  while (i != block_hashes.end() && requested_internal((*i).first))
+  while (i != block_hashes.end() && requested((*i).first))
   {
     ++i;
     ++span_start_height;
@@ -304,8 +303,6 @@ void block_queue::set_span_hashes(uint64_t start_height, const boost::uuids::uui
       batch s = *i;
       erase_block(i);
       s.hashes = std::move(hashes);
-      for (const crypto::hash &h: s.hashes)
-        requested_hashes.insert(h);
       batches.push_back(s);
       return;
     }

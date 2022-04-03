@@ -138,13 +138,11 @@ namespace cryptonote
 
   private:
     void erase_block(batchV::iterator j);
-    inline bool requested_internal(const crypto::hash &hash) const;
 
   public:
     batchV batches;
 
   private:
-    std::unordered_set<crypto::hash> requested_hashes;
     std::unordered_set<crypto::hash> have_blocks;
   };
 }
