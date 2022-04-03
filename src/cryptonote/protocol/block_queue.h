@@ -95,8 +95,8 @@ namespace cryptonote
 
   public:
     void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float block_rate, size_t data_size);
-    void flush_batches(const boost::uuids::uuid &connection_id, bool all = false);
-    void flush_empty_batches(const std::set<boost::uuids::uuid> &live_connections);
+    void flush_empty_connection(const boost::uuids::uuid &connection_id, bool all = false);
+    void flush_empty_connections(const std::set<boost::uuids::uuid> &live_connections);
 
     void remove_batches
     (

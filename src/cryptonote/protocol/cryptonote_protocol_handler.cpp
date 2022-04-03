@@ -1911,7 +1911,7 @@ skip:
       live_connections.insert(context.m_connection_id);
       return true;
     });
-    m_block_queue.flush_empty_batches(live_connections);
+    m_block_queue.flush_empty_connections(live_connections);
 
     // if we don't need to get next span, and the block queue is full enough, wait a bit
     bool start_from_current_chain = false;
@@ -2599,7 +2599,7 @@ skip:
        + std::to_string(flush_all_spans)
        );
 
-    m_block_queue.flush_batches(context.m_connection_id, flush_all_spans);
+    m_block_queue.flush_empty_connection(context.m_connection_id, flush_all_spans);
 
     // copy since dropping the connection will invalidate the context, and thus the address
     const auto remote_address = context.m_remote_address;
@@ -2631,7 +2631,7 @@ skip:
     });
     for (const boost::uuids::uuid &id: drop)
     {
-      m_block_queue.flush_batches(id, true);
+      m_block_queue.flush_empty_connection(id, true);
       m_p2p->for_connection(id, [&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t f)->bool{
         drop_connection(context, true, false);
         return true;
@@ -2687,7 +2687,7 @@ skip:
             }
         }
 
-      m_block_queue.flush_batches(context.m_connection_id, false);
+      m_block_queue.flush_empty_connection(context.m_connection_id, false);
     }
 
     LOG_PEER_STATE("closed");
