@@ -99,7 +99,8 @@ namespace cryptonote
   }
 
 
-  std::pair<uint64_t, uint64_t> block_queue::reserve_blocks
+  std::optional<std::pair<uint64_t, uint64_t>>
+  block_queue::reserve_blocks
   (
    uint64_t first_block_height
    , uint64_t last_block_height
@@ -122,12 +123,12 @@ namespace cryptonote
     if (last_block_height < first_block_height || max_blocks == 0)
       {
         LOG_DEBUG_MUTE("reserve_blocks: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
-        return std::make_pair(0, 0);
+        return {};
       }
     if (block_hashes.size() > last_block_height)
       {
         LOG_DEBUG_MUTE("reserve_blocks: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
-        return std::make_pair(0, 0);
+        return {};
       }
 
     // skip everything we've already requested
@@ -139,7 +140,7 @@ namespace cryptonote
     if (span_start_height >= block_hashes.size() + block_hashes_start_height)
       {
         LOG_DEBUG_MUTE("Out of hashes, cannot reserve");
-        return std::make_pair(0, 0);
+        return {};
       }
 
     i = std::next(block_hashes.begin(), span_start_height - block_hashes_start_height);
@@ -153,29 +154,28 @@ namespace cryptonote
     if (span_length == 0)
       {
         LOG_DEBUG_MUTE("span_length 0, cannot reserve");
-        return std::make_pair(0, 0);
+        return {};
       }
     LOG_DEBUG_MUTE("Reserving span " << span_start_height << " - " << (span_start_height + span_length - 1) << " for " << connection_id);
-    return std::make_pair(span_start_height, span_length);
+    return {std::make_pair(span_start_height, span_length)};
   }
 
-  std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled
+  std::optional<std::pair<uint64_t, uint64_t>>
+  block_queue::get_next_span_if_scheduled
   (
    boost::uuids::uuid &connection_id
    , std::chrono::time_point<std::chrono::system_clock> &time
    ) const
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
-    if (batches.empty())
-      return std::make_pair(0, 0);
-    batchV::const_iterator i = batches.begin();
-    if (i == batches.end())
-      return std::make_pair(0, 0);
-    if (!i->blocks.empty())
-      return std::make_pair(0, 0);
-    connection_id = i->connection_id;
-    time = i->time;
-    return std::make_pair(i->start_block_height, i->blocks.size());
+    if (batches.empty()) return {};
+
+    const auto& x = batches.front();
+
+    connection_id = x.connection_id;
+    time = x.time;
+
+    return {{x.start_block_height, x.blocks.size()}};
   }
 
   void block_queue::reset_next_batch_time

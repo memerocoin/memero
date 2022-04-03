@@ -96,7 +96,7 @@ namespace cryptonote
      , const uint64_t start_block_height
      );
 
-    std::pair<uint64_t, uint64_t> reserve_blocks
+    std::optional<std::pair<uint64_t, uint64_t>> reserve_blocks
     (
      uint64_t first_block_height
      , uint64_t last_block_height
@@ -109,7 +109,7 @@ namespace cryptonote
      = std::chrono::system_clock::now()
      );
 
-    std::pair<uint64_t, uint64_t> get_next_span_if_scheduled
+    std::optional<std::pair<uint64_t, uint64_t>> get_next_span_if_scheduled
     (
      boost::uuids::uuid &connection_id
      , std::chrono::time_point<std::chrono::system_clock> &time

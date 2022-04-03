@@ -1914,22 +1914,23 @@ skip:
       bool is_next = false;
       size_t count = 0;
       const size_t count_limit = constant::BLOCKS_SYNCHRONIZING_SIZE;
-      std::pair<uint64_t, uint64_t> span = std::make_pair(0, 0);
+      std::optional<std::pair<uint64_t, uint64_t>> maybe_span;
       if (force_next_batch)
       {
-        if (span.second == 0)
+        if (!maybe_span)
         {
           boost::uuids::uuid span_connection_id;
           std::chrono::time_point<std::chrono::system_clock> time;
-          span = m_block_queue.get_next_span_if_scheduled(span_connection_id, time);
-          if (span.second > 0)
+          maybe_span = m_block_queue.get_next_span_if_scheduled
+            (span_connection_id, time);
+          if (maybe_span)
           {
             is_next = true;
             m_block_queue.reset_next_batch_time();
           }
         }
       }
-      if (span.second == 0)
+      if (!maybe_span)
       {
         LOG_DEBUG(context.to_str() + " span size is 0");
         if (context.m_last_response_height + 1 < context.m_needed_objects.size())
@@ -1953,7 +1954,7 @@ skip:
         }
 
         const uint64_t first_block_height = context.m_last_response_height - context.m_needed_objects.size() + 1;
-        span = m_block_queue.reserve_blocks
+        maybe_span = m_block_queue.reserve_blocks
           (
            first_block_height
            , context.m_last_response_height
@@ -1963,6 +1964,8 @@ skip:
            , context.m_remote_blockchain_height
            , context.m_needed_objects
            );
+        if (maybe_span) {
+          const auto span = *maybe_span;
         LOG_DEBUG
           (
            context.to_str()
@@ -1973,8 +1976,9 @@ skip:
            + "/"
            + std::to_string(span.second)
            );
+        }
       }
-      if (span.second == 0 && !force_next_batch)
+      if ((!maybe_span) && !force_next_batch)
       {
         LOG_DEBUG
           (
@@ -1983,28 +1987,31 @@ skip:
            );
         boost::uuids::uuid span_connection_id;
         std::chrono::time_point<std::chrono::system_clock> time;
-        span = m_block_queue.get_next_span_if_scheduled
+        maybe_span = m_block_queue.get_next_span_if_scheduled
           (span_connection_id, time);
-        if (span.second > 0)
+        if (maybe_span)
         {
           is_next = true;
         }
       }
-      LOG_DEBUG
-        (
-         context.to_str()
-         + " span: "
-         + std::to_string(span.first)
-         + "/"
-         + std::to_string(span.second)
-         + " ("
-         + std::to_string(span.first)
-         + " - "
-         + std::to_string(span.first + span.second - 1)
-         + ")"
-         );
-      if (span.second > 0)
+      if (maybe_span)
       {
+        const auto span = *maybe_span;
+
+        LOG_DEBUG
+          (
+           context.to_str()
+           + " span: "
+           + std::to_string(span.first)
+           + "/"
+           + std::to_string(span.second)
+           + " ("
+           + std::to_string(span.first)
+           + " - "
+           + std::to_string(span.first + span.second - 1)
+           + ")"
+           );
+
         if (!is_next)
         {
           const uint64_t first_context_block_height = context.m_last_response_height - context.m_needed_objects.size() + 1;
