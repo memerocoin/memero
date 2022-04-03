@@ -45,7 +45,6 @@ namespace cryptonote
     uint64_t start_block_height;
     std::vector<cryptonote::block_complete_entry> blocks;
     boost::uuids::uuid connection_id;
-    uint64_t nblocks;
     float block_rate;
     size_t data_size;
     std::chrono::time_point<std::chrono::system_clock> time;
@@ -63,7 +62,6 @@ namespace cryptonote
       start_block_height(start_block_height)
       , blocks({blocks.begin(), blocks.end()})
       , connection_id(connection_id)
-      , nblocks(this->blocks.size())
       , block_rate(block_rate)
       , data_size(data_size)
       , time(std::chrono::time_point<std::chrono::system_clock>::min())

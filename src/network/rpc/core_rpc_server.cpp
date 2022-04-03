@@ -1301,7 +1301,7 @@ namespace cryptonote
            (
             {
               x.start_block_height
-              , x.nblocks
+              , x.blocks.size()
               , span_connection_id
               , (uint32_t)(x.block_rate + 0.5f)
               , x.data_size

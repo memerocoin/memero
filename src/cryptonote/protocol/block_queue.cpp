@@ -197,7 +197,7 @@ namespace cryptonote
       return std::make_pair(0, 0);
     connection_id = i->connection_id;
     time = i->time;
-    return std::make_pair(i->start_block_height, i->nblocks);
+    return std::make_pair(i->start_block_height, i->blocks.size());
   }
 
   void block_queue::reset_next_batch_time(std::chrono::time_point<std::chrono::system_clock> t)
