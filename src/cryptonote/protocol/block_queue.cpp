@@ -358,14 +358,4 @@ crypto::hash block_queue::get_last_known_hash(const boost::uuids::uuid &connecti
   return hash;
 }
 
-bool block_queue::has_spans(const boost::uuids::uuid &connection_id) const
-{
-  for (const auto &batch: batches)
-  {
-    if (batch.connection_id == connection_id)
-      return true;
-  }
-  return false;
-}
-
 }
