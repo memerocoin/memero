@@ -1292,8 +1292,8 @@ namespace cryptonote
     const cryptonote::block_queue &block_queue = m_p2p.get_payload_object().get_block_queue();
     std::for_each
       (
-       block_queue.blocks.begin()
-       , block_queue.blocks.end()
+       block_queue.batches.begin()
+       , block_queue.batches.end()
        , [&](const cryptonote::block_queue::batch &x) {
          const std::string span_connection_id =
            epee::string_tools::pod_to_hex(x.connection_id);

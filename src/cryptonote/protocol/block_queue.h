@@ -141,7 +141,7 @@ namespace cryptonote
     inline bool requested_internal(const crypto::hash &hash) const;
 
   public:
-    block_map blocks;
+    block_map batches;
 
   private:
     std::unordered_set<crypto::hash> requested_hashes;
