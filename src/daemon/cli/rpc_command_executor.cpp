@@ -936,24 +936,26 @@ bool t_rpc_command_executor::sync_info()
       current_download += p.info.current_download;
     tools::success_msg_writer() << "Downloading at " << current_download << " kB/s";
     tools::success_msg_writer() << std::to_string(res.peers.size()) << " peers";
-    tools::success_msg_writer() << "Remote Host                        Peer_ID   State           Height  DL kB/s, Queued Blocks / MB";
+    tools::success_msg_writer() << "Remote Host                        Peer_ID   State           Height  DL kB/s";
     for (const auto &p: res.peers)
     {
       std::string address = epee::string_tools::pad_string(p.info.address, 24);
-      uint64_t nblocks = 0, size = 0;
-      for (const auto &s: res.spans)
-        if (s.connection_id == p.info.connection_id)
-          nblocks += s.nblocks, size += s.size;
       tools::success_msg_writer() << address << "  " << p.info.peer_id << "  " <<
           epee::string_tools::pad_string(p.info.state, 16) << "  " <<
           p.info.height << "  "  <<
-          p.info.current_download << " kB/s, " << nblocks << " blocks / " << size/1e6 << " MB queued";
+        p.info.current_download << " kB/s";
     }
 
     uint64_t total_size = 0;
     for (const auto &s: res.spans)
       total_size += s.size;
-    tools::success_msg_writer() << std::to_string(res.spans.size()) << " spans, " << total_size/1e6 << " MB";
+
+    tools::success_msg_writer()
+      << std::to_string(res.spans.size())
+      << " spans, "
+      << total_size/1e6
+      << " MB";
+
     for (const auto &s: res.spans)
     {
       std::string address = epee::string_tools::pad_string(s.remote_address, 24);
