@@ -40,57 +40,58 @@
 
 namespace cryptonote
 {
+  struct block_batch
+  {
+    uint64_t start_block_height;
+    std::vector<cryptonote::block_complete_entry> blocks;
+    boost::uuids::uuid connection_id;
+    uint64_t nblocks;
+    float block_rate;
+    size_t data_size;
+    std::chrono::time_point<std::chrono::system_clock> time;
+    epee::net_utils::network_address origin{};
+
+    block_batch
+    (
+     uint64_t start_block_height
+     , std::vector<cryptonote::block_complete_entry> blocks
+     , const boost::uuids::uuid &connection_id
+     , const epee::net_utils::network_address &addr
+     , float block_rate
+     , size_t data_size
+     ):
+      start_block_height(start_block_height)
+      , blocks(std::move(blocks))
+      , connection_id(connection_id)
+      , nblocks(this->blocks.size())
+      , block_rate(block_rate)
+      , data_size(data_size)
+      , time(std::chrono::time_point<std::chrono::system_clock>::min())
+      , origin(addr)
+    {}
+
+    block_batch
+    (
+     uint64_t start_block_height
+     , uint64_t nblocks
+     , const boost::uuids::uuid &connection_id
+     , const epee::net_utils::network_address &addr
+     , std::chrono::time_point<std::chrono::system_clock> time
+     ):
+      start_block_height(start_block_height)
+      , connection_id(connection_id)
+      , nblocks(nblocks)
+      , time(time)
+      , origin(addr)
+    {}
+
+  };
+
   class block_queue
   {
   public:
-    struct batch
-    {
-      uint64_t start_block_height;
-      std::vector<cryptonote::block_complete_entry> blocks;
-      boost::uuids::uuid connection_id;
-      uint64_t nblocks;
-      float block_rate;
-      size_t data_size;
-      std::chrono::time_point<std::chrono::system_clock> time;
-      epee::net_utils::network_address origin{};
 
-      batch
-      (
-       uint64_t start_block_height
-       , std::vector<cryptonote::block_complete_entry> blocks
-       , const boost::uuids::uuid &connection_id
-       , const epee::net_utils::network_address &addr
-       , float block_rate
-       , size_t data_size
-       ):
-        start_block_height(start_block_height)
-        , blocks(std::move(blocks))
-        , connection_id(connection_id)
-        , nblocks(this->blocks.size())
-        , block_rate(block_rate)
-        , data_size(data_size)
-        , time(std::chrono::time_point<std::chrono::system_clock>::min())
-        , origin(addr)
-      {}
-
-      batch
-      (
-       uint64_t start_block_height
-       , uint64_t nblocks
-       , const boost::uuids::uuid &connection_id
-       , const epee::net_utils::network_address &addr
-       , std::chrono::time_point<std::chrono::system_clock> time
-       ):
-        start_block_height(start_block_height)
-        , connection_id(connection_id)
-        , nblocks(nblocks)
-        , time(time)
-        , origin(addr)
-      {}
-
-    };
-
-    using batchV = std::list<batch>;
+    using batchV = std::list<block_batch>;
 
   public:
     void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float block_rate, size_t data_size);

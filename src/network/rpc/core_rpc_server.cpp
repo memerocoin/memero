@@ -1294,7 +1294,7 @@ namespace cryptonote
       (
        block_queue.batches.begin()
        , block_queue.batches.end()
-       , [&](const cryptonote::block_queue::batch &x) {
+       , [&](const auto& x) {
          const std::string span_connection_id =
            epee::string_tools::pod_to_hex(x.connection_id);
          res.spans.push_back
