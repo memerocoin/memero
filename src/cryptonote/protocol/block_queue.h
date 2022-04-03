@@ -98,13 +98,13 @@ namespace cryptonote
     void flush_empty_connection(const boost::uuids::uuid &connection_id, bool all = false);
     void flush_empty_connections(const std::set<boost::uuids::uuid> &live_connections);
 
-    void remove_batches
+    void remove_connection
     (
      const boost::uuids::uuid connection_id
      , const uint64_t start_block_height
      );
 
-    std::pair<uint64_t, uint64_t> reserve_batch
+    std::pair<uint64_t, uint64_t> reserve_blocks
     (
      uint64_t first_block_height
      , uint64_t last_block_height

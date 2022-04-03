@@ -91,7 +91,7 @@ namespace cryptonote
       }
   }
 
-  void block_queue::remove_batches
+  void block_queue::remove_connection
   (
    const boost::uuids::uuid connection_id
    , const uint64_t start_block_height
@@ -114,7 +114,7 @@ namespace cryptonote
   }
 
 
-  std::pair<uint64_t, uint64_t> block_queue::reserve_batch
+  std::pair<uint64_t, uint64_t> block_queue::reserve_blocks
   (
    uint64_t first_block_height
    , uint64_t last_block_height
@@ -128,7 +128,7 @@ namespace cryptonote
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
 
-    LOG_DEBUG_MUTE("reserve_batch: first_block_height " << first_block_height
+    LOG_DEBUG_MUTE("reserve_blocks: first_block_height " << first_block_height
                    << ", last_block_height " << last_block_height
                    << ", max " << max_blocks
                    << ", blockchain_height " << blockchain_height
@@ -136,12 +136,12 @@ namespace cryptonote
                    );
     if (last_block_height < first_block_height || max_blocks == 0)
       {
-        LOG_DEBUG_MUTE("reserve_batch: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
+        LOG_DEBUG_MUTE("reserve_blocks: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
         return std::make_pair(0, 0);
       }
     if (block_hashes.size() > last_block_height)
       {
-        LOG_DEBUG_MUTE("reserve_batch: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
+        LOG_DEBUG_MUTE("reserve_blocks: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
         return std::make_pair(0, 0);
       }
 

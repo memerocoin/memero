@@ -1405,7 +1405,7 @@ namespace cryptonote
           if (blocks.empty())
           {
             LOG_ERROR(context.to_str() + "Next span has no blocks");
-            m_block_queue.remove_batches(span_connection_id, start_height);
+            m_block_queue.remove_connection(span_connection_id, start_height);
             continue;
           }
 
@@ -1416,7 +1416,7 @@ namespace cryptonote
           if (!r)
           {
             LOG_ERROR(context.to_str() + "Failed to parse block, but it should already have been parsed");
-            m_block_queue.remove_batches(span_connection_id, start_height);
+            m_block_queue.remove_connection(span_connection_id, start_height);
             continue;
           }
           const auto last_block_hash = r->second;
@@ -1434,7 +1434,7 @@ namespace cryptonote
                + ", blockchain height "
                + std::to_string(m_core.get_current_blockchain_height())
                );
-            m_block_queue.remove_batches(span_connection_id, start_height);
+            m_block_queue.remove_connection(span_connection_id, start_height);
             ++m_sync_old_spans_downloaded;
             continue;
           }
@@ -1443,7 +1443,7 @@ namespace cryptonote
           if (!maybeBlock)
           {
             LOG_ERROR(context.to_str() + "Failed to parse block, but it should already have been parsed");
-            m_block_queue.remove_batches(span_connection_id, start_height);
+            m_block_queue.remove_connection(span_connection_id, start_height);
             continue;
           }
           const auto& new_block = *maybeBlock;
@@ -1461,7 +1461,7 @@ namespace cryptonote
               // this can happen if a connection was sicced onto a late span, if it did not have those blocks,
               // since we don't know that at the sic time
               LOG_ERROR_CCONTEXT("Got block with unknown parent which was not requested - querying block hashes");
-              m_block_queue.remove_batches(span_connection_id, start_height);
+              m_block_queue.remove_connection(span_connection_id, start_height);
               context.m_needed_objects.clear();
               context.m_last_response_height = 0;
               goto skip;
@@ -1556,7 +1556,7 @@ namespace cryptonote
                   return 1;
                 }
                 // in case the peer had dropped beforehand, remove the span anyway so other threads can wake up and get it
-                m_block_queue.remove_batches(span_connection_id, start_height);
+                m_block_queue.remove_connection(span_connection_id, start_height);
                 return 1;
               }
             }
@@ -1584,7 +1584,7 @@ namespace cryptonote
               }
 
               // in case the peer had dropped beforehand, remove the span anyway so other threads can wake up and get it
-              m_block_queue.remove_batches(span_connection_id, start_height);
+              m_block_queue.remove_connection(span_connection_id, start_height);
               return 1;
             }
             if(bvc.m_marked_as_orphaned)
@@ -1604,7 +1604,7 @@ namespace cryptonote
               }
 
               // in case the peer had dropped beforehand, remove the span anyway so other threads can wake up and get it
-              m_block_queue.remove_batches(span_connection_id, start_height);
+              m_block_queue.remove_connection(span_connection_id, start_height);
               return 1;
             }
 
@@ -1618,7 +1618,7 @@ namespace cryptonote
             return 1;
           }
 
-          m_block_queue.remove_batches(span_connection_id, start_height);
+          m_block_queue.remove_connection(span_connection_id, start_height);
 
           const uint64_t current_blockchain_height = m_core.get_current_blockchain_height();
           if (current_blockchain_height > previous_height)
@@ -1966,7 +1966,7 @@ skip:
         }
 
         const uint64_t first_block_height = context.m_last_response_height - context.m_needed_objects.size() + 1;
-        span = m_block_queue.reserve_batch
+        span = m_block_queue.reserve_blocks
           (
            first_block_height
            , context.m_last_response_height
