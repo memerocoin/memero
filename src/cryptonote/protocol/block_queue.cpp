@@ -222,27 +222,31 @@ namespace cryptonote
     batches.front().time = t;
   }
 
-  bool block_queue::get_next_batch
-  (
-   uint64_t &height
-   , std::vector<cryptonote::block_complete_entry> &bcel
-   , boost::uuids::uuid &connection_id
-   , epee::net_utils::network_address &addr
-   ) const
+  std::optional
+  <
+    std::tuple
+    <
+      uint64_t
+      , std::vector<cryptonote::block_complete_entry>
+      , boost::uuids::uuid
+      , epee::net_utils::network_address
+      >>
+  block_queue::get_next_batch () const
   {
     LOCK_MUTEX(batch_mutex);
 
     if (batches.empty())
-      return false;
+      return {};
 
     const auto& x = batches.front();
 
-    height = x.start_block_height;
-    bcel = x.blocks;
-    connection_id = x.connection_id;
-    addr = x.origin;
-
-    return true;
+    return
+      {{
+          x.start_block_height
+          , x.blocks
+          , x.connection_id
+          , x.origin
+        }};
   }
 
   bool block_queue::has_next_batch(const uint64_t height) const

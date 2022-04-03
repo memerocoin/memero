@@ -118,13 +118,17 @@ namespace cryptonote
      = std::chrono::system_clock::now()
      );
 
-    bool get_next_batch
-    (
-     uint64_t &height
-     , std::vector<cryptonote::block_complete_entry> &bcel
-     , boost::uuids::uuid &connection_id
-     , epee::net_utils::network_address &addr
-     ) const;
+
+    std::optional
+    <
+      std::tuple
+      <
+        uint64_t
+        , std::vector<cryptonote::block_complete_entry>
+        , boost::uuids::uuid
+        , epee::net_utils::network_address
+        >>
+    get_next_batch () const;
 
     bool has_next_batch(const uint64_t height) const;
 

@@ -1392,15 +1392,17 @@ namespace cryptonote
         while (1)
         {
           const uint64_t previous_height = m_core.get_current_blockchain_height();
-          uint64_t start_height;
-          std::vector<cryptonote::block_complete_entry> blocks;
-          boost::uuids::uuid span_connection_id;
-          epee::net_utils::network_address span_origin;
-          if (!m_block_queue.get_next_batch(start_height, blocks, span_connection_id, span_origin))
+          const auto maybe_next_batch = m_block_queue.get_next_batch();
+
+          if (!maybe_next_batch)
           {
             LOG_DEBUG(context.to_str() + " no next span found, going back to download");
             break;
           }
+
+          const auto&
+            [start_height, blocks, span_connection_id, span_origin]
+            = *maybe_next_batch;
 
           if (blocks.empty())
           {
@@ -2085,11 +2087,9 @@ skip:
       const std::unique_lock<std::mutex> sync{m_sync_lock, std::try_to_lock};
       if (sync.owns_lock())
       {
-        uint64_t start_height;
-        std::vector<cryptonote::block_complete_entry> blocks;
-        boost::uuids::uuid span_connection_id;
-        epee::net_utils::network_address span_origin;
-        if (m_block_queue.get_next_batch(start_height, blocks, span_connection_id, span_origin))
+        const auto maybe_next_batch = m_block_queue.get_next_batch();
+
+        if (maybe_next_batch)
         {
           LOG_DEBUG_CC(context, "No other thread is adding blocks, resuming");
           LOG_PEER_STATE("will try to add blocks next");
