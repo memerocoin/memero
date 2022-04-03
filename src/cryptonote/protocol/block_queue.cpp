@@ -37,16 +37,6 @@
 #include <numeric>
 
 
-
-namespace std {
-  static_assert(sizeof(size_t) <= sizeof(boost::uuids::uuid), "boost::uuids::uuid too small");
-  template<> struct hash<boost::uuids::uuid> {
-    std::size_t operator()(const boost::uuids::uuid &_v) const {
-      return reinterpret_cast<const std::size_t &>(_v);
-    }
-  };
-}
-
 namespace cryptonote
 {
 
