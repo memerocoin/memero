@@ -114,36 +114,66 @@ namespace cryptonote
   {
     const std::unique_lock<std::recursive_mutex> lock(mutex);
 
-    LOG_DEBUG_MUTE("reserve_blocks: first_block_height " << first_block_height
-                   << ", last_block_height " << last_block_height
-                   << ", max " << max_blocks
-                   << ", blockchain_height " << blockchain_height
-                   << ", block hashes size " << block_hashes.size()
-                   );
+    LOG_DEBUG
+      (
+       "reserve_blocks: first_block_height "
+       + std::to_string(first_block_height)
+       + ", last_block_height "
+       + std::to_string(last_block_height)
+       + ", max "
+       + std::to_string(max_blocks)
+       + ", blockchain_height "
+       + std::to_string(blockchain_height)
+       + ", block hashes size "
+       + std::to_string(block_hashes.size())
+       );
+
     if (last_block_height < first_block_height || max_blocks == 0)
       {
-        LOG_DEBUG_MUTE("reserve_blocks: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
+        LOG_DEBUG
+          (
+           "reserve_blocks: early out: first_block_height "
+           + std::to_string(first_block_height)
+           + ", last_block_height "
+           + std::to_string(last_block_height)
+           + ", max_blocks "
+           + std::to_string(max_blocks)
+           );
         return {};
       }
     if (block_hashes.size() > last_block_height)
       {
-        LOG_DEBUG_MUTE("reserve_blocks: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
+        LOG_DEBUG
+          (
+           "reserve_blocks: more block hashes than fit within last_block_height: "
+           + std::to_string(block_hashes.size())
+           + " and "
+           + std::to_string(last_block_height)
+           );
         return {};
       }
 
     // skip everything we've already requested
-    uint64_t span_start_height = last_block_height - block_hashes.size() + 1;
-    std::vector<std::pair<crypto::hash, uint64_t>>::const_iterator i = block_hashes.begin();
+    const uint64_t span_start_height =
+      last_block_height - block_hashes.size() + 1;
 
-    LOG_DEBUG_MUTE("span_start_height: " <<span_start_height);
-    const uint64_t block_hashes_start_height = last_block_height - block_hashes.size() + 1;
+
+    LOG_DEBUG("span_start_height: " + std::to_string(span_start_height));
+
+    const uint64_t block_hashes_start_height =
+      last_block_height - block_hashes.size() + 1;
+
     if (span_start_height >= block_hashes.size() + block_hashes_start_height)
       {
-        LOG_DEBUG_MUTE("Out of hashes, cannot reserve");
+        LOG_DEBUG("Out of hashes, cannot reserve");
         return {};
       }
 
-    i = std::next(block_hashes.begin(), span_start_height - block_hashes_start_height);
+    auto i = std::next
+      (
+       block_hashes.begin()
+       , span_start_height - block_hashes_start_height
+       );
 
     uint64_t span_length = 0;
     while (i != block_hashes.end() && span_length < max_blocks)
@@ -151,12 +181,22 @@ namespace cryptonote
         ++i;
         ++span_length;
       }
+
     if (span_length == 0)
       {
         LOG_DEBUG_MUTE("span_length 0, cannot reserve");
         return {};
       }
-    LOG_DEBUG_MUTE("Reserving span " << span_start_height << " - " << (span_start_height + span_length - 1) << " for " << connection_id);
+
+    LOG_DEBUG
+      (
+       "Reserving span "
+       + std::to_string(span_start_height)
+       + " - "
+       + std::to_string(span_start_height + span_length - 1)
+       + " for "
+       + boost::uuids::to_string(connection_id)
+       );
     return {std::make_pair(span_start_height, span_length)};
   }
 
