@@ -1165,7 +1165,6 @@ namespace cryptonote
       uint64_t nblocks;
       std::string connection_id;
       uint32_t rate;
-      uint32_t speed;
       uint64_t size;
       std::string remote_address;
 
@@ -1174,7 +1173,6 @@ namespace cryptonote
         KV_SERIALIZE(nblocks)
         KV_SERIALIZE(connection_id)
         KV_SERIALIZE(rate)
-        KV_SERIALIZE(speed)
         KV_SERIALIZE(size)
         KV_SERIALIZE(remote_address)
       END_KV_SERIALIZE_MAP()

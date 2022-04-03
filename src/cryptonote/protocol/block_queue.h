@@ -128,7 +128,6 @@ namespace cryptonote
     size_t get_data_size() const;
     crypto::hash get_last_known_hash(const boost::uuids::uuid &connection_id) const;
     bool has_spans(const boost::uuids::uuid &connection_id) const;
-    float get_speed(const boost::uuids::uuid &connection_id) const;
     bool foreach(std::function<bool(const span&)> f) const;
     bool requested(const crypto::hash &hash) const;
     bool have(const crypto::hash &hash) const;

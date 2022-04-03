@@ -381,52 +381,6 @@ bool block_queue::has_spans(const boost::uuids::uuid &connection_id) const
   return false;
 }
 
-float block_queue::get_speed(const boost::uuids::uuid &connection_id) const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  std::unordered_map<boost::uuids::uuid, float> speeds;
-  for (const auto &span: blocks)
-  {
-    if (span.blocks.empty())
-      continue;
-    // note that the average below does not average over the whole set, but over the
-    // previous pseudo average and the latest rate: this gives much more importance
-    // to the latest measurements, which is fine here
-    std::unordered_map<boost::uuids::uuid, float>::iterator i = speeds.find(span.connection_id);
-    if (i == speeds.end())
-      speeds.insert(std::make_pair(span.connection_id, span.block_rate));
-    else
-      i->second = (i->second + span.block_rate) / 2;
-  }
-  float conn_rate = -1, best_rate = 0;
-  for (const auto &i: speeds)
-  {
-    if (i.first == connection_id)
-      conn_rate = i.second;
-    if (i.second > best_rate)
-      best_rate = i.second;
-  }
-
-  if (conn_rate <= 0)
-    return 1.0f; // not found, assume good speed
-  if (best_rate == 0)
-    return 1.0f; // everything dead ? Can't happen, but let's trap anyway
-
-  const float speed = conn_rate / best_rate;
-  LOG_TRACE
-    (
-     " Relative speed for "
-     + boost::uuids::to_string(connection_id)
-     + ": "
-     + std::to_string(speed)
-     + " ("
-     + std::to_string(conn_rate)
-     + "/"
-     + std::to_string(best_rate)
-     );
-  return speed;
-}
-
 bool block_queue::foreach(std::function<bool(const span&)> f) const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
