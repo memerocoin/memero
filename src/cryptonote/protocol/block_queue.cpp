@@ -62,18 +62,18 @@ void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
   batchV::iterator i = batches.begin();
   while (i != batches.end())
   {
-    batchV::iterator j = i++;
-    if (j->connection_id == connection_id && (all || j->blocks.size() == 0))
+    if
+      (
+       i->connection_id == connection_id
+       && (all || i->blocks.size() == 0)
+       )
     {
-      erase_block(j);
+      i = batches.erase(i);
+    }
+    else {
+      i++;
     }
   }
-}
-
-void block_queue::erase_block(batchV::iterator j)
-{
-  LOG_ERROR_AND_THROW_UNLESS(j != batches.end(), "Invalid iterator");
-  batches.erase(j);
 }
 
 void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections)
@@ -82,10 +82,17 @@ void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_con
   batchV::iterator i = batches.begin();
   while (i != batches.end())
   {
-    batchV::iterator j = i++;
-    if (j->blocks.empty() && live_connections.find(j->connection_id) == live_connections.end())
+    if
+      (
+       i->blocks.empty()
+       && live_connections.find(i->connection_id)
+       == live_connections.end()
+       )
     {
-      erase_block(j);
+      i = batches.erase(i);
+    }
+    else {
+      i++;
     }
   }
 }

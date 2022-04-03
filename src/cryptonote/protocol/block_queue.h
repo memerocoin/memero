@@ -133,9 +133,6 @@ namespace cryptonote
     bool get_next_span(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr, bool filled = true) const;
     bool has_next_span(uint64_t height, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const;
 
-  private:
-    void erase_block(batchV::iterator j);
-
   public:
     batchV batches;
   };
