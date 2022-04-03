@@ -262,9 +262,4 @@ bool block_queue::has_next_span(uint64_t height, bool &filled, std::chrono::time
   return true;
 }
 
-crypto::hash block_queue::get_last_known_hash(const boost::uuids::uuid &connection_id) const
-{
-  return {};
-}
-
 }
