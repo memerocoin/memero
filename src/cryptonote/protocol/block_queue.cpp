@@ -91,6 +91,14 @@ void block_queue::erase_block(batchV::iterator j)
   batches.erase(j);
 }
 
+void block_queue::remove_hashes(const std::span<const crypto::hash> xs)
+{
+  for (const crypto::hash &h: xs)
+  {
+    have_blocks.erase(h);
+  }
+}
+
 void block_queue::flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections)
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
@@ -121,18 +129,29 @@ bool block_queue::remove_span(uint64_t start_block_height, std::vector<crypto::h
   return false;
 }
 
-void block_queue::remove_spans(const boost::uuids::uuid &connection_id, uint64_t start_block_height)
+void block_queue::remove_spans
+(
+ const boost::uuids::uuid connection_id
+ , const uint64_t start_block_height
+ )
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);
-  for (batchV::iterator i = batches.begin(); i != batches.end(); )
-  {
-    batchV::iterator j = i++;
-    if (j->connection_id == connection_id && j->start_block_height <= start_block_height)
+  batchV new_batches;
+
+  for (const auto& x: batches) {
+    if (x.connection_id == connection_id
+        && x.start_block_height <= start_block_height)
     {
-      erase_block(j);
+      remove_hashes(x.hashes);
+    }
+    else {
+      new_batches.push_back(x);
     }
   }
+
+  batches = new_batches;
 }
+
 
 uint64_t block_queue::get_max_block_height() const
 {

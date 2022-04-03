@@ -101,8 +101,16 @@ namespace cryptonote
     void add_blocks(uint64_t height, uint64_t nblocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now());
     void flush_spans(const boost::uuids::uuid &connection_id, bool all = false);
     void flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections);
+
+    void remove_hashes(const std::span<const crypto::hash> xs);
     bool remove_span(uint64_t start_block_height, std::vector<crypto::hash> *hashes = NULL);
-    void remove_spans(const boost::uuids::uuid &connection_id, uint64_t start_block_height);
+
+    void remove_spans
+    (
+     const boost::uuids::uuid connection_id
+     , const uint64_t start_block_height
+     );
+
     uint64_t get_max_block_height() const;
     void print() const;
 
