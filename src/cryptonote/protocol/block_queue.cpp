@@ -339,19 +339,6 @@ bool block_queue::has_next_span(uint64_t height, bool &filled, std::chrono::time
   return true;
 }
 
-size_t block_queue::get_data_size() const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  return std::transform_reduce
-    (
-     batches.begin()
-     , batches.end()
-     , 0
-     , std::plus<size_t>()
-     , [](const auto x) -> size_t { return x.data_size; }
-     );
-}
-
 crypto::hash block_queue::get_last_known_hash(const boost::uuids::uuid &connection_id) const
 {
   const std::unique_lock<std::recursive_mutex> lock(mutex);

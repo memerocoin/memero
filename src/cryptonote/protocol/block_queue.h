@@ -124,7 +124,6 @@ namespace cryptonote
     void set_span_hashes(uint64_t start_height, const boost::uuids::uuid &connection_id, std::vector<crypto::hash> hashes);
     bool get_next_span(uint64_t &height, std::vector<cryptonote::block_complete_entry> &bcel, boost::uuids::uuid &connection_id, epee::net_utils::network_address &addr, bool filled = true) const;
     bool has_next_span(uint64_t height, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const;
-    size_t get_data_size() const;
     crypto::hash get_last_known_hash(const boost::uuids::uuid &connection_id) const;
     bool has_spans(const boost::uuids::uuid &connection_id) const;
     bool requested(const crypto::hash &hash) const;
