@@ -205,6 +205,10 @@
 
                 ; CMakeFlags_Lolnero =
                     ''
+                    ''
+
+                ; CMakeFlags_Lolnero_OpenCL =
+                    ''
                         -DUSE_OPENCL=ON
                     ''
 

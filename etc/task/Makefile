@@ -33,7 +33,7 @@ test-1-mining:
 --rpc-bind-port 44000 \
 --add-exclusive-node 127.0.0.1:40001 \
 --fix-difficulty 1000 \
---start-mining hpAhTqFSj91LL7FHxT6yUScBDBfA5bfiMAmC6A3KHBZc1jGv5t5LJMELYoFNjeNPoMJNeSnBiK9WmKNqxXsj9rWn1iNFeiTna
+--mining-address hpAhTqFSj91LL7FHxT6yUScBDBfA5bfiMAmC6A3KHBZc1jGv5t5LJMELYoFNjeNPoMJNeSnBiK9WmKNqxXsj9rWn1iNFeiTna
 
 test-2-mining:
 	../../build/bin/lolnerod-rpc \
@@ -45,7 +45,7 @@ test-2-mining:
 --rpc-bind-port 44001 \
 --add-exclusive-node 127.0.0.1:40000 \
 --fix-difficulty 1000 \
---start-mining hp9PEj54frgDUiAkSTsnmJXxoN2gengwfdg2RGThzUEo2ycy1bVvVMXf1nY2KMiGwzVkSGBR8KRd8LbSRYb6eny62DwZFVeyP
+--mining-address hp9PEj54frgDUiAkSTsnmJXxoN2gengwfdg2RGThzUEo2ycy1bVvVMXf1nY2KMiGwzVkSGBR8KRd8LbSRYb6eny62DwZFVeyP
 
 make-test-wallet:
 	../../build/bin/lolnero --new testnet/test1 --testnet \
