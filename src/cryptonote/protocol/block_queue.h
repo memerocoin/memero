@@ -53,7 +53,7 @@ namespace cryptonote
       std::vector<cryptonote::block_complete_entry> blocks;
       boost::uuids::uuid connection_id;
       uint64_t nblocks;
-      float rate;
+      float block_rate;
       size_t data_size;
       std::chrono::time_point<std::chrono::system_clock> time;
       epee::net_utils::network_address origin{};
@@ -64,14 +64,14 @@ namespace cryptonote
        , std::vector<cryptonote::block_complete_entry> blocks
        , const boost::uuids::uuid &connection_id
        , const epee::net_utils::network_address &addr
-       , float rate
+       , float block_rate
        , size_t data_size
        ):
         start_block_height(start_block_height)
         , blocks(std::move(blocks))
         , connection_id(connection_id)
         , nblocks(this->blocks.size())
-        , rate(rate)
+        , block_rate(block_rate)
         , data_size(data_size)
         , time(std::chrono::time_point<std::chrono::system_clock>::min())
         , origin(addr)
@@ -98,7 +98,7 @@ namespace cryptonote
     typedef std::set<span> block_map;
 
   public:
-    void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float rate, size_t size);
+    void add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float block_rate, size_t data_size);
     void add_blocks(uint64_t height, uint64_t nblocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now());
     void flush_spans(const boost::uuids::uuid &connection_id, bool all = false);
     void flush_stale_spans(const std::set<boost::uuids::uuid> &live_connections);

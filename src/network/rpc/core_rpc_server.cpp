@@ -1299,7 +1299,7 @@ namespace cryptonote
            span.start_block_height
           , span.nblocks
           , span_connection_id
-          , (uint32_t)(span.rate + 0.5f)
+          , (uint32_t)(span.block_rate + 0.5f)
           , speed
           , span.data_size
           , span.origin.str()

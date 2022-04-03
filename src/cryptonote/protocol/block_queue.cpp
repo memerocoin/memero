@@ -384,9 +384,9 @@ float block_queue::get_speed(const boost::uuids::uuid &connection_id) const
     // to the latest measurements, which is fine here
     std::unordered_map<boost::uuids::uuid, float>::iterator i = speeds.find(span.connection_id);
     if (i == speeds.end())
-      speeds.insert(std::make_pair(span.connection_id, span.rate));
+      speeds.insert(std::make_pair(span.connection_id, span.block_rate));
     else
-      i->second = (i->second + span.rate) / 2;
+      i->second = (i->second + span.block_rate) / 2;
   }
   float conn_rate = -1, best_rate = 0;
   for (const auto &i: speeds)
