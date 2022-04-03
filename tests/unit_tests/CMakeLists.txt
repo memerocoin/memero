@@ -103,7 +103,7 @@ add_executable(unit_tests_core
 #  epee_levin_protocol_handler_async.cpp
 #  parse_amount.cpp
 
-  block_queue.cpp
+  # block_queue.cpp
   difficulty.cpp
   epee_utils.cpp
   json_serialization.cpp

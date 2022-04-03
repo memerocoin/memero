@@ -133,17 +133,6 @@ uint64_t block_queue::get_max_block_height() const
   return height;
 }
 
-void block_queue::print() const
-{
-  const std::unique_lock<std::recursive_mutex> lock(mutex);
-  LOG_DEBUG_MUTE
-    (
-     "Block queue has "
-     + std::to_string(blocks.size())
-     + " batches"
-     );
-}
-
 std::pair<uint64_t, uint64_t> block_queue::reserve_batch
 (
  uint64_t first_block_height

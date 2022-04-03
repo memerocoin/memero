@@ -108,7 +108,6 @@ namespace cryptonote
      );
 
     uint64_t get_max_block_height() const;
-    void print() const;
 
     std::pair<uint64_t, uint64_t> reserve_batch
     (
