@@ -1607,7 +1607,7 @@ namespace net_utils
     //start async connect
     sock_.async_connect(remote_endpoint, [=, this](const boost::system::error_code& ec_)
       {
-        t_connection_context conn_context = AUTO_VAL_INIT(conn_context);
+        t_connection_context conn_context{};
         boost::system::error_code ignored_ec;
         boost::asio::ip::tcp::socket::endpoint_type lep = new_connection_l->socket().local_endpoint(ignored_ec);
         if(!ec_)

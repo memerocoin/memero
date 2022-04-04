@@ -64,7 +64,7 @@ namespace net_utils
     on_levin_traffic(context, true, true, false, buff_to_send.size(), command);
     int res = transport.invoke_async(command, epee::string_tools::string_to_blob(buff_to_send), conn_id, [cb, command](int code, const std::span<const uint8_t> buff, typename t_transport::connection_context& context)->bool
     {
-      t_result result_struct = AUTO_VAL_INIT(result_struct);
+      t_result result_struct{};
       if( code <=0 )
         {
           if (!buff.empty())

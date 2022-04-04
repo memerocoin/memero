@@ -41,7 +41,7 @@ static wallet::logic::type::wallet::transfer_container make_transfers_container(
   wallet::logic::type::wallet::transfer_container transfers;
   for (size_t n = 0; n < N; ++n)
   {
-    transfers.push_back(AUTO_VAL_INIT(wallet::logic::type::transfer::transfer_details()));
+    transfers.push_back(wallet::logic::type::transfer::transfer_details{});
     wallet::logic::type::transfer::transfer_details &td = transfers.back();
     td.m_block_height = 1000;
     td.m_spent = false;

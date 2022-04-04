@@ -80,13 +80,12 @@ namespace epee
     {
       const std::string req_id = "0";
       epee::json_rpc::error error_struct;
-      epee::json_rpc::request<t_request> req_t = AUTO_VAL_INIT(req_t);
+      epee::json_rpc::request<t_request> req_t{};
       req_t.jsonrpc = "2.0";
       req_t.id = req_id;
       req_t.method = std::move(method_name);
       req_t.params = request_struct;
-      epee::json_rpc::response<t_response, epee::json_rpc::error> resp_t =
-        AUTO_VAL_INIT(resp_t);
+      epee::json_rpc::response<t_response, epee::json_rpc::error> resp_t{};
 
       if(!epee::net_utils::invoke_http_json
          (host, port, uri, req_t, resp_t))
