@@ -455,7 +455,7 @@ namespace cryptonote
     }
     for(auto tx_blob_it = arg.b.txs.begin(); tx_blob_it!=arg.b.txs.end();tx_blob_it++)
     {
-      cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
+      cryptonote::tx_verification_context tvc{};
       m_core.handle_incoming_ringct(*tx_blob_it, tvc, relay_method::block, true);
       if(tvc.m_verifivation_failed)
       {
@@ -645,7 +645,7 @@ namespace cryptonote
                + tx_hash.to_str()
                + " not in pool, adding"
                );
-            cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
+            cryptonote::tx_verification_context tvc{};
             if(!m_core.handle_incoming_ringct(tx_blob, tvc, relay_method::block, true) || tvc.m_verifivation_failed)
             {
               LOG_PRINT_CCONTEXT_L1("Block verification failed: transaction verification failed, dropping connection");
@@ -802,7 +802,7 @@ namespace cryptonote
         if( bvc.m_added_to_main_chain )
         {
           //TODO: Add here announce protocol usage
-          NOTIFY_NEW_BLOCK::request reg_arg = AUTO_VAL_INIT(reg_arg);
+          NOTIFY_NEW_BLOCK::request reg_arg{};
           reg_arg.current_blockchain_height = arg.current_blockchain_height;
           reg_arg.b = b;
           relay_block(reg_arg, context);
@@ -2443,7 +2443,7 @@ skip:
 
   bool t_cryptonote_protocol_handler::relay_block(NOTIFY_NEW_BLOCK::request& arg, cryptonote_connection_context& exclude_context)
   {
-    NOTIFY_NEW_FLUFFY_BLOCK::request fluffy_arg = AUTO_VAL_INIT(fluffy_arg);
+    NOTIFY_NEW_FLUFFY_BLOCK::request fluffy_arg{};
     fluffy_arg.current_blockchain_height = arg.current_blockchain_height;
     std::vector<tx_blob_entry> fluffy_txs;
     fluffy_arg.b = arg.b;

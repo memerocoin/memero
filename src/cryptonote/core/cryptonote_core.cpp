@@ -922,7 +922,7 @@ namespace cryptonote
     if(bvc.m_added_to_main_chain)
     {
       cryptonote_connection_context exclude_context = {};
-      NOTIFY_NEW_BLOCK::request arg = AUTO_VAL_INIT(arg);
+      NOTIFY_NEW_BLOCK::request arg{};
       arg.current_blockchain_height = m_blockchain_storage.get_current_blockchain_height();
       std::vector<crypto::hash> missed_txs;
       std::vector<cryptonote::string_blob> txs;

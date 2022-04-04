@@ -509,7 +509,7 @@ block Blockchain::pop_block_from_blockchain()
   {
     if (!is_coinbase(tx))
     {
-      cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
+      cryptonote::tx_verification_context tvc{};
 
       // We assume that if they were in a block, the transactions are already
       // known to the network as a whole. However, if we had mined that block,
@@ -2405,7 +2405,7 @@ bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, cons
 bool Blockchain::add_block_as_invalid(const block& bl, const crypto::hash& h)
 {
   LOG_PRINT_L3("Blockchain::" + std::string(__func__));
-  block_extended_info bei = AUTO_VAL_INIT(bei);
+  block_extended_info bei{};
   bei.bl = bl;
   return add_block_as_invalid(bei, h);
 }
@@ -2856,7 +2856,7 @@ void Blockchain::return_tx_to_pool(std::vector<std::pair<transaction, string_blo
 {
   for (auto& tx : txs)
   {
-    cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
+    cryptonote::tx_verification_context tvc{};
     // We assume that if they were in a block, the transactions are already
     // known to the network as a whole. However, if we had mined that block,
     // that might not be always true. Unlikely though, and always relaying

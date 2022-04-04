@@ -353,7 +353,7 @@ namespace rpc
       return;
     }
 
-    tx_verification_context tvc = AUTO_VAL_INIT(tvc);
+    tx_verification_context tvc{};
 
     if(!m_core.handle_incoming_ringct({tx_blob, crypto::null_hash}, tvc, (relay ? relay_method::local : relay_method::none), false) || tvc.m_verifivation_failed)
     {
