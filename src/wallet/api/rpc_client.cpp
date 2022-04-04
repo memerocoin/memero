@@ -73,8 +73,8 @@ std::optional<std::string> RPC_Client::get_height(uint64_t &height) const
   if (m_offline)
     return std::optional<std::string>("offline");
 
-  cryptonote::COMMAND_RPC_GET_INFO::request req_t = AUTO_VAL_INIT(req_t);
-  cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
+  cryptonote::COMMAND_RPC_GET_INFO::request req_t{};
+  cryptonote::COMMAND_RPC_GET_INFO::response resp_t{};
 
   {
     bool r = invoke_http_json_rpc("get_info", req_t, resp_t);
@@ -91,8 +91,8 @@ std::optional<std::string> RPC_Client::get_target_height(uint64_t &height) const
   if (m_offline)
     return std::optional<std::string>("offline");
 
-  cryptonote::COMMAND_RPC_GET_INFO::request req_t = AUTO_VAL_INIT(req_t);
-  cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
+  cryptonote::COMMAND_RPC_GET_INFO::request req_t{};
+  cryptonote::COMMAND_RPC_GET_INFO::response resp_t{};
 
   {
     bool r = invoke_http_json_rpc("get_info", req_t, resp_t);
@@ -106,8 +106,8 @@ std::optional<std::string> RPC_Client::get_target_height(uint64_t &height) const
 
 bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution) const
 {
-  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request req = AUTO_VAL_INIT(req);
-  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response res = AUTO_VAL_INIT(res);
+  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request req{};
+  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response res{};
   req.amounts.push_back(0);
   req.from_height = 0;
   req.cumulative = true;
@@ -186,8 +186,8 @@ void RPC_Client::get_tx_outputs
        );
 
     // generate output indices to request
-    cryptonote::COMMAND_RPC_GET_OUTPUTS::request req = AUTO_VAL_INIT(req);
-    cryptonote::COMMAND_RPC_GET_OUTPUTS::response daemon_resp = AUTO_VAL_INIT(daemon_resp);
+    cryptonote::COMMAND_RPC_GET_OUTPUTS::request req{};
+    cryptonote::COMMAND_RPC_GET_OUTPUTS::response daemon_resp{};
 
     std::unique_ptr<wallet::logic::state::gamma_picker> gamma;
     if (has_rct_distribution)

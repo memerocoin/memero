@@ -593,7 +593,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   // we still keep a copy, since we want to keep dsts free of change for user feedback purposes
   std::vector<cryptonote::tx_destination_entry> splitted_dsts = dsts;
 
-  cryptonote::tx_destination_entry change_dts = AUTO_VAL_INIT(change_dts);
+  cryptonote::tx_destination_entry change_dts{};
   change_dts.amount = found_money - needed_money;
   if (change_dts.amount != 0)
   {

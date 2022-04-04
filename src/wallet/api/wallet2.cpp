@@ -1139,8 +1139,8 @@ void wallet2::parse_block_round(const cryptonote::string_blob &blob, cryptonote:
 //----------------------------------------------------------------------------------------------------
 void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, const std::list<crypto::hash> &short_chain_history, std::vector<cryptonote::block_complete_entry> &blocks, std::vector<cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::block_output_indices> &o_indices, uint64_t &current_height)
 {
-  cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::request req = AUTO_VAL_INIT(req);
-  cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::response res = AUTO_VAL_INIT(res);
+  cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::request req{};
+  cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::response res{};
   std::list<std::string> block_ids;
   std::transform
     (
@@ -1186,8 +1186,8 @@ void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, 
 //----------------------------------------------------------------------------------------------------
 void wallet2::pull_hashes(uint64_t start_height, uint64_t &blocks_start_height, const std::list<crypto::hash> &short_chain_history, std::vector<crypto::hash> &hashes)
 {
-  cryptonote::COMMAND_RPC_GET_HASHES_FAST::request req = AUTO_VAL_INIT(req);
-  cryptonote::COMMAND_RPC_GET_HASHES_FAST::response res = AUTO_VAL_INIT(res);
+  cryptonote::COMMAND_RPC_GET_HASHES_FAST::request req{};
+  cryptonote::COMMAND_RPC_GET_HASHES_FAST::response res{};
 
   std::list<std::string> block_ids;
   std::transform
@@ -2559,8 +2559,8 @@ bool wallet2::check_connection(uint32_t *version, uint32_t timeout)
 
   if (!m_rpc_version)
   {
-    cryptonote::COMMAND_RPC_GET_VERSION::request req_t = AUTO_VAL_INIT(req_t);
-    cryptonote::COMMAND_RPC_GET_VERSION::response resp_t = AUTO_VAL_INIT(resp_t);
+    cryptonote::COMMAND_RPC_GET_VERSION::request req_t{};
+    cryptonote::COMMAND_RPC_GET_VERSION::response resp_t{};
     bool r = m_rpc_client.invoke_http_json_rpc("get_version", req_t, resp_t);
     if(!r || resp_t.status != CORE_RPC_STATUS_OK) {
       if(version)
@@ -2709,8 +2709,8 @@ void wallet2::trim_hashchain()
   if (!m_blockchain.empty() && m_blockchain.size() == m_blockchain.offset())
   {
     LOG_INFO("Fixing empty hashchain");
-    cryptonote::COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT::request req = AUTO_VAL_INIT(req);
-    cryptonote::COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT::response res = AUTO_VAL_INIT(res);
+    cryptonote::COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT::request req{};
+    cryptonote::COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT::response res{};
 
     bool r;
     {
