@@ -67,30 +67,15 @@ add_library( epee
 
 target_link_libraries( epee
   epee_basic
-  epee_net_basic
-)
-
-add_library( epee_net_basic
-  src/net/net_parse_helpers.cpp
 )
 
 add_library( epee_net
-  src/net/http_protocol_handler.cpp
-  src/net/http_protocol_handler_helper.cpp
   src/net/http_abstract_invoke.cpp
-)
-
-target_link_libraries( epee_net
-  epee_net_basic
 )
 
 add_library( epee_net_p2p
   src/net/levin_protocol_handler_async.cpp
   src/net/levin_abstract_invoke2.cpp
-)
-
-target_link_libraries( epee_net_p2p
-  epee_net_basic
 )
 
 add_library( epee_storage

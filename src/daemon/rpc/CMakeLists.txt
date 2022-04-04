@@ -33,6 +33,28 @@ add_executable(lolnerod-rpc
   )
 
 target_link_libraries(lolnerod-rpc
+  beast
+
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  )
+
+
+set_property(TARGET lolnerod-rpc
+  PROPERTY
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+set_property(TARGET lolnerod-rpc
+  PROPERTY
+    OUTPUT_NAME "lolnerod-rpc")
+
+
+install(TARGETS lolnerod-rpc DESTINATION bin)
+
+add_library(beast
+  beast.cpp
+)
+
+target_link_libraries(beast
   cryptonote_core
   cryptonote_protocol
   cryptonote_tx
@@ -52,16 +74,3 @@ target_link_libraries(lolnerod-rpc
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
-
-
-set_property(TARGET lolnerod-rpc
-  PROPERTY
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-
-set_property(TARGET lolnerod-rpc
-  PROPERTY
-    OUTPUT_NAME "lolnerod-rpc")
-
-
-install(TARGETS lolnerod-rpc DESTINATION bin)
-

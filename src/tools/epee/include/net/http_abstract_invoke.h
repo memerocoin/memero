@@ -27,7 +27,8 @@
 
 #pragma once
 
-#include "http_server_handlers_map2.h"
+#include "http_base.h"
+#include "jsonrpc_structs.h"
 
 #include "tools/epee/include/storages/portable_storage_template_helper.h"
 

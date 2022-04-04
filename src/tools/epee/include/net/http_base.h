@@ -37,42 +37,6 @@ namespace net_utils
 {
   namespace http
   {
-
-    enum http_method{
-      http_method_options,
-      http_method_get,
-      http_method_post,
-      http_method_put,
-      http_method_head,
-      http_method_etc,
-      http_method_unknown
-    };
-
-    enum http_content_type
-      {
-        http_content_type_text_html,
-        http_content_type_image_gif,
-        http_content_type_other,
-        http_content_type_not_set
-      };
-
-    using fields_list = std::list<std::pair<std::string, std::string>>;
-
-    struct http_header_info
-    {
-      std::string m_connection;       //"Connection:"
-      std::string m_referer;          //"Referer:"
-      std::string m_content_length;   //"Content-Length:"
-      std::string m_content_type;     //"Content-Type:"
-      std::string m_transfer_encoding;//"Transfer-Encoding:"
-      std::string m_content_encoding; //"Content-Encoding:"
-      std::string m_host;             //"Host:"
-      std::string m_cookie;			//"Cookie:"
-      std::string m_user_agent;	//"User-Agent:"
-      std::string m_origin;           //"Origin:"
-      fields_list m_etc_fields;
-    };
-
     struct uri_content
     {
       std::string m_path;
@@ -81,44 +45,6 @@ namespace net_utils
       std::list<std::pair<std::string, std::string> > m_query_params;
     };
 
-    struct url_content
-    {
-      std::string schema;
-      std::string host;
-      std::string uri;
-      uint64_t port;
-      uri_content m_uri_content;
-    };
-
-
-    struct http_request_info
-    {
-      http_method			  m_http_method = http_method_unknown;
-      std::string       m_URI;
-      std::string       m_http_method_str;
-      std::string       m_full_request_str;
-      std::string       m_replace_html;
-      std::string       m_request_head;
-      int               m_http_ver_hi;
-      int               m_http_ver_lo;
-      http_header_info	m_header_info;
-      uri_content       m_uri_content;
-      size_t				    m_full_request_buf_size;
-      std::string			  m_body;
-    };
-
-
-    struct http_response_info
-    {
-      int	m_response_code;
-      std::string	m_response_comment;
-      fields_list	m_additional_fields;
-      std::string	m_body;
-      std::string	m_mime_tipe;
-      http_header_info m_header_info;
-      int m_http_ver_hi;
-      int m_http_ver_lo;
-    };
   }
 }
 }

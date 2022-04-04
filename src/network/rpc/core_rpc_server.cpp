@@ -70,12 +70,6 @@ namespace
 
 namespace cryptonote
 {
-  //-----------------------------------------------------------------------------------
-  void core_rpc_server::init_options(boost::program_options::options_description& desc)
-  {
-    command_line::add_arg(desc, rpc_server::arg_rpc_bind_port);
-    cryptonote::rpc_args::init_options(desc, true);
-  }
   //------------------------------------------------------------------------------------------------------------------------------
   core_rpc_server::core_rpc_server(
       core& cr
@@ -87,27 +81,6 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   core_rpc_server::~core_rpc_server()
   {
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::init
-  (
-   const boost::program_options::variables_map& vm
-   , const std::string& port
-   )
-  {
-    auto rpc_config = cryptonote::rpc_args::process(vm, true);
-    if (!rpc_config)
-      return false;
-
-    return epee::http_server_impl_base<core_rpc_server>::init
-      (
-       port
-       , rpc_config->bind_ip
-       , rpc_config->bind_ipv6_address
-       , rpc_config->use_ipv6
-       , rpc_config->require_ipv4
-       , rpc_config->access_control_origins
-       );
   }
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_info(const COMMAND_RPC_GET_INFO::request& req, COMMAND_RPC_GET_INFO::response& res)
@@ -125,7 +98,6 @@ namespace cryptonote
     uint64_t total_conn = m_p2p.get_public_connections_count();
     res.outgoing_connections_count = m_p2p.get_public_outgoing_connections_count();
     res.incoming_connections_count = (total_conn - res.outgoing_connections_count);
-    res.rpc_connections_count = get_connections_count();
     res.white_peerlist_size = m_p2p.get_public_white_peers_count();
     res.grey_peerlist_size = m_p2p.get_public_gray_peers_count();
 

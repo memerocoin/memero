@@ -29,6 +29,8 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 #include "daemon.h"
 
+#include "beast.hpp"
+
 #include "network/p2p/net_node.h"
 #include "network/rpc/core_rpc_server.h"
 #include "network/rpc/rpc_args.h"
@@ -42,10 +44,12 @@ namespace daemonize {
   constexpr std::string_view protocol_str = "protocol";
   constexpr std::string_view core_str = "core";
   constexpr std::string_view p2p_str = "P2P";
-  constexpr std::string_view rpc_str = "RPC";
 
   const std::string rpc_description =
     "Lolnero daemon RPC server";
+
+  const std::string beast_rpc_description =
+    "Lolnero Beast daemon RPC server";
 
   const std::string p2p_description =
     "Lolnero daemon P2P server";
@@ -71,14 +75,6 @@ namespace daemonize {
       deinit_done_msg(protocol_str);
     } catch (...) {
       deinit_error_msg(protocol_str);
-    }
-
-    deinit_msg(rpc_str);
-    try {
-      rpc.deinit();
-      deinit_done_msg(rpc_str);
-    } catch (...) {
-      deinit_error_msg(rpc_str);
     }
 
     deinit_msg(p2p_str);
@@ -144,8 +140,10 @@ namespace daemonize {
        , cryptonote::rpc_server::arg_rpc_bind_port
        );
 
-    init_msg(rpc_str);
-    init_report(rpc.init(vm, rpc_port), rpc_str);
+    m_rpc_port = rpc_port;
+
+    // init_msg(rpc_str);
+    // init_report(rpc.init(vm, rpc_port), rpc_str);
 
     init_msg(protocol_str);
     init_report(protocol.init(vm), protocol_str);
@@ -159,17 +157,6 @@ namespace daemonize {
   {
     try
       {
-        LOG_GLOBAL
-          ("Starting " + rpc_description + " ...");
-        LOG_ERROR_AND_THROW_UNLESS
-          (
-           rpc.run(2, false)
-           , "Failed to start "
-           + rpc_description
-           );
-
-        LOG_INFO(rpc_description + " started");
-
         tools::signal_handler_install([this](int type) {
           LOG_INFO("Daemon interrupted with signal: " + std::to_string(type));
 
@@ -178,16 +165,39 @@ namespace daemonize {
           p2p.send_stop_signal();
         });
 
+
+        LOG_GLOBAL
+          (
+           "Starting "
+           + beast_rpc_description
+           + " on port: "
+           + m_rpc_port + " ..."
+           );
+
+        boost::asio::io_context ioc{1};
+
+        std::thread beast_thread([&]() {
+          cryptonote::start_beast
+            (
+             "127.0.0.1"
+             , m_rpc_port
+             , ioc
+             , rpc
+             );
+        });
+        LOG_INFO(beast_rpc_description + " started");
+
         // blocks until p2p goes down
         LOG_GLOBAL("Starting " + p2p_description + " ...");
         p2p.run();
         LOG_GLOBAL(p2p_description + " stopped");
 
-        // exiting
-        LOG_INFO("Stopping " + rpc_description + " ...");
-        rpc.send_stop_signal();
-        rpc.wait_server_stop();
-        LOG_GLOBAL(rpc_description + " stopped");
+        // stop everything
+
+        LOG_INFO("Stopping " + beast_rpc_description + " ...");
+        ioc.stop();
+        beast_thread.join();
+        LOG_GLOBAL(beast_rpc_description + " stopped");
 
         protocol.stop();
         core.stop();
@@ -211,7 +221,10 @@ namespace daemonize {
   {
     cryptonote::core::init_options(option_spec);
     nodetool::node_server::init_options(option_spec);
-    cryptonote::core_rpc_server::init_options(option_spec);
+
+    command_line::add_arg
+      (option_spec, cryptonote::rpc_server::arg_rpc_bind_port);
+    cryptonote::rpc_args::init_options(option_spec, true);
   }
 
 } // namespace daemonize
