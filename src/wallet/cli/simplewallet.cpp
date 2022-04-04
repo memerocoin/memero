@@ -1065,7 +1065,7 @@ bool simple_wallet::start_mining(const std::vector<std::string>& args)
     fail_msg_writer() << ("wallet is null");
     return true;
   }
-  COMMAND_RPC_START_MINING::request req = AUTO_VAL_INIT(req);
+  COMMAND_RPC_START_MINING::request req{};
   req.miner_address = m_wallet->get_account().get_public_address_str(m_wallet->nettype());
 
   bool ok = true;
@@ -1499,14 +1499,14 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
       // convert relative offsets of ring member keys into absolute offsets (indices) associated with the amount
       std::vector<uint64_t> absolute_offsets = cryptonote::relative_output_offsets_to_absolute(in_key.output_relative_offsets);
       // get block heights from which those ring member keys originated
-      COMMAND_RPC_GET_OUTPUTS::request req = AUTO_VAL_INIT(req);
+      COMMAND_RPC_GET_OUTPUTS::request req{};
       req.outputs.resize(absolute_offsets.size());
       for (size_t j = 0; j < absolute_offsets.size(); ++j)
       {
         req.outputs[j].amount = in_key.amount;
         req.outputs[j].index = absolute_offsets[j];
       }
-      COMMAND_RPC_GET_OUTPUTS::response res = AUTO_VAL_INIT(res);
+      COMMAND_RPC_GET_OUTPUTS::response res{};
       req.get_txid = true;
 
       bool r = m_wallet->get_rpc_client().invoke_http_json("/get_tx_outputs", req, res);

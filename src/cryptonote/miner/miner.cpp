@@ -105,7 +105,7 @@ namespace cryptonote
   bool miner::request_block_template()
   {
     block bl;
-    diff_t di = AUTO_VAL_INIT(di);
+    diff_t di{};
     uint64_t expected_reward;
     //only used for RPC calls - could possibly be useful here too?
 

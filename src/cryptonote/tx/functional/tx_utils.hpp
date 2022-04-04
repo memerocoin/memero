@@ -78,7 +78,7 @@ namespace cryptonote
     uint64_t amount = 0;                    //money
     bool is_subaddress = false;
 
-    tx_destination_entry() : addr(AUTO_VAL_INIT(addr)) { }
+    tx_destination_entry() = default;
 
     tx_destination_entry
     (
