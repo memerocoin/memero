@@ -210,8 +210,6 @@ namespace net_utils
 
     const std::atomic<bool>& get_stop_signal() const noexcept { return m_stop_signal_sent; }
 
-    void set_threads_prefix(const std::string& prefix_name);
-
     bool deinit_server(){return true;}
 
     size_t get_threads_count(){return m_threads_count;}

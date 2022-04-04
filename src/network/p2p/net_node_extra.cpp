@@ -630,8 +630,6 @@ namespace nodetool
 
     //configure self
 
-    public_zone.m_net_server.set_threads_prefix("P2P"); // all zones use these threads/asio::io_service
-
     // from here onwards, it's online stuff
     if (m_offline)
       return res;

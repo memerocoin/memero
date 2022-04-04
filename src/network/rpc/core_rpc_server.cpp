@@ -95,8 +95,6 @@ namespace cryptonote
    , const std::string& port
    )
   {
-    m_net_server.set_threads_prefix("RPC");
-
     auto rpc_config = cryptonote::rpc_args::process(vm, true);
     if (!rpc_config)
       return false;

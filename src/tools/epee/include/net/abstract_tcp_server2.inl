@@ -1067,24 +1067,6 @@ namespace net_utils
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  void boosted_tcp_server<t_protocol_handler>::set_threads_prefix(const std::string& prefix_name)
-  {
-    m_thread_name_prefix = prefix_name;
-		auto it = server_type_map.find(m_thread_name_prefix);
-		if (it==server_type_map.end()) throw std::runtime_error("Unknown prefix/server type:" + std::string(prefix_name));
-    auto connection_type = it->second; // the value of type
-    LOG_INFO
-      (
-       "Set server type to: "
-       + epee::net_utils::to_string(connection_type)
-       + " from name: "
-       + m_thread_name_prefix
-       + ", prefix_name = "
-       + prefix_name
-       );
-  }
-  //---------------------------------------------------------------------------------
-  template<class t_protocol_handler>
   void boosted_tcp_server<t_protocol_handler>::set_connection_filter(i_connection_filter* pfilter)
   {
     assert(m_state != nullptr); // always set in constructor
