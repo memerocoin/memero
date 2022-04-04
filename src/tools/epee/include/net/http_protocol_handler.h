@@ -100,7 +100,7 @@ namespace net_utils
 			virtual bool handle_request(const http::http_request_info& query_info, http_response_info& response);
 
 		private:
-			enum machine_state{
+			enum http_state{
 				http_state_retriving_comand_line,
 				http_state_retriving_header,
 				http_state_retriving_body,
@@ -137,7 +137,7 @@ namespace net_utils
 
 			std::string m_root_path;
 			std::string m_cache;
-			machine_state m_state;
+			http_state m_state;
 			body_transfer_type m_body_transfer_type;
 		
 	bool m_is_stop_handling;
