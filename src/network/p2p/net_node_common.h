@@ -54,7 +54,6 @@ namespace nodetool
     virtual bool block_host(epee::net_utils::network_address address, time_t seconds = 0)=0;
     virtual bool unblock_host(const epee::net_utils::network_address &address)=0;
     virtual std::map<std::string, time_t> get_blocked_hosts()=0;
-    virtual std::map<epee::net_utils::ipv4_network_subnet, time_t> get_blocked_subnets()=0;
     virtual bool add_host_fail(const epee::net_utils::network_address &address, unsigned int score = 1)=0;
   };
 
@@ -105,10 +104,6 @@ namespace nodetool
     virtual std::map<std::string, time_t> get_blocked_hosts()
     {
       return std::map<std::string, time_t>();
-    }
-    virtual std::map<epee::net_utils::ipv4_network_subnet, time_t> get_blocked_subnets()
-    {
-      return std::map<epee::net_utils::ipv4_network_subnet, time_t>();
     }
     virtual bool add_host_fail(const epee::net_utils::network_address &address, unsigned int score)
     {

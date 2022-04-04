@@ -26,8 +26,6 @@
 
 #include "tools/epee/include/misc_os_dependent.h"
 
-#include <boost/lexical_cast.hpp>
-
 namespace epee
 {
 namespace misc_utils

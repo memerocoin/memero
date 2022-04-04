@@ -1062,17 +1062,6 @@ namespace cryptonote
         res.bans.push_back(b);
       }
     }
-    std::map<epee::net_utils::ipv4_network_subnet, time_t> blocked_subnets = m_p2p.get_blocked_subnets();
-    for (std::map<epee::net_utils::ipv4_network_subnet, time_t>::const_iterator i = blocked_subnets.begin(); i != blocked_subnets.end(); ++i)
-    {
-      if (i->second > now) {
-        COMMAND_RPC_GETBANS::ban b;
-        b.host = i->first.host_str();
-        b.ip = 0;
-        b.seconds = i->second - now;
-        res.bans.push_back(b);
-      }
-    }
 
     res.status = CORE_RPC_STATUS_OK;
     return true;
@@ -1111,20 +1100,6 @@ namespace cryptonote
     {
       epee::net_utils::network_address na;
 
-      // try subnet first
-      if (!i->host.empty())
-      {
-        auto ns_parsed = net::get_ipv4_subnet_address(i->host);
-        if (ns_parsed)
-        {
-          if (i->ban)
-            m_p2p.block_subnet(*ns_parsed, i->seconds);
-          else
-            m_p2p.unblock_subnet(*ns_parsed);
-          continue;
-        }
-      }
-
       // then host
       if (!i->host.empty())
       {
@@ -1132,7 +1107,7 @@ namespace cryptonote
         if (!na_parsed)
         {
           error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
-          error_resp.message = "Unsupported host/subnet type";
+          error_resp.message = "Unsupported host";
           return false;
         }
         na = std::move(*na_parsed);
