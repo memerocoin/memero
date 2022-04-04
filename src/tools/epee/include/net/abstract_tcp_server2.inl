@@ -211,7 +211,14 @@ namespace net_utils
        + std::to_string(get_state().sock_count)
        );
 
-    if(static_cast<shared_state&>(get_state()).pfilter && !static_cast<shared_state&>(get_state()).pfilter->is_remote_host_allowed(context.m_remote_address))
+    if
+      (
+       static_cast<shared_state&>(get_state())
+       .pfilter &&
+       !static_cast<shared_state&>(get_state())
+       .pfilter->is_remote_host_allowed
+       (context.m_remote_address)
+       )
     {
       _dbg2
         (

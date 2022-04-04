@@ -89,23 +89,27 @@ namespace cryptonote
   {
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::init(
-      const boost::program_options::variables_map& vm
-      , const std::string& port
-    )
+  bool core_rpc_server::init
+  (
+   const boost::program_options::variables_map& vm
+   , const std::string& port
+   )
   {
     m_net_server.set_threads_prefix("RPC");
-    m_net_server.set_connection_filter(&m_p2p);
 
     auto rpc_config = cryptonote::rpc_args::process(vm, true);
     if (!rpc_config)
       return false;
 
-    return epee::http_server_impl_base<core_rpc_server, connection_context>::init(
-      std::move(port), std::move(rpc_config->bind_ip),
-      std::move(rpc_config->bind_ipv6_address), std::move(rpc_config->use_ipv6), std::move(rpc_config->require_ipv4),
-      std::move(rpc_config->access_control_origins)
-    );
+    return epee::http_server_impl_base<core_rpc_server>::init
+      (
+       port
+       , rpc_config->bind_ip
+       , rpc_config->bind_ipv6_address
+       , rpc_config->use_ipv6
+       , rpc_config->require_ipv4
+       , rpc_config->access_control_origins
+       );
   }
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_info(const COMMAND_RPC_GET_INFO::request& req, COMMAND_RPC_GET_INFO::response& res)
