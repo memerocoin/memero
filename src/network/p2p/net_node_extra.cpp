@@ -162,6 +162,37 @@ namespace nodetool
       }
     }
 
+    // manually loop in subnets
+    if (address.get_type_id() == epee::net_utils::address_type::ipv4)
+    {
+      auto ipv4_address = address.template as<epee::net_utils::ipv4_network_address>();
+      std::map<epee::net_utils::ipv4_network_subnet, time_t>::iterator it;
+      for (it = m_blocked_subnets.begin(); it != m_blocked_subnets.end(); )
+      {
+        if (now >= it->second)
+        {
+          it = m_blocked_subnets.erase(it);
+          LOG_CATEGORY_COLOR
+            (
+             epee::LogLevel::Info
+             , epee::GLOBAL_CATEGORY
+             , epee::cyan
+             , "Subnet "
+             + it->first.host_str()
+             + " unblocked."
+             );
+          continue;
+        }
+        if (it->first.matches(ipv4_address))
+        {
+          if (t)
+            *t = it->second - now;
+          return false;
+        }
+        ++it;
+      }
+    }
+
     // not found in hosts or subnets, allowed
     return true;
   }
@@ -237,6 +268,74 @@ namespace nodetool
        , epee::cyan
        , "Host "
        + address.host_str()
+       + " unblocked."
+       );
+    return true;
+  }
+  //-----------------------------------------------------------------------------------
+
+  bool node_server::block_subnet(const epee::net_utils::ipv4_network_subnet &subnet, time_t seconds)
+  {
+    const time_t now = time(nullptr);
+
+    LOCK_RECURSIVE_MUTEX(m_blocked_hosts_lock);
+    time_t limit;
+    if (now > std::numeric_limits<time_t>::max() - seconds)
+      limit = std::numeric_limits<time_t>::max();
+    else
+      limit = now + seconds;
+    m_blocked_subnets[subnet] = limit;
+
+    // drop any connection to that subnet. This should only have to look into
+    // the zone related to the connection, but really make sure everything is
+    // swept ...
+    std::vector<boost::uuids::uuid> conns;
+    for(auto& zone : m_network_zones)
+    {
+      zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
+      {
+        if (cntxt.m_remote_address.get_type_id() != epee::net_utils::ipv4_network_address::get_type_id())
+          return true;
+        auto ipv4_address = cntxt.m_remote_address.template as<epee::net_utils::ipv4_network_address>();
+        if (subnet.matches(ipv4_address))
+        {
+          conns.push_back(cntxt.m_connection_id);
+        }
+        return true;
+      });
+      for (const auto &c: conns)
+        zone.second.m_net_server.get_config_object().close(c);
+
+      conns.clear();
+    }
+
+    LOG_CATEGORY_COLOR
+      (
+       epee::LogLevel::Info
+       , epee::GLOBAL_CATEGORY
+       , epee::cyan
+       , "Subnet "
+       + subnet.host_str()
+       + " blocked."
+       );
+    return true;
+  }
+  //-----------------------------------------------------------------------------------
+
+  bool node_server::unblock_subnet(const epee::net_utils::ipv4_network_subnet &subnet)
+  {
+    LOCK_RECURSIVE_MUTEX(m_blocked_hosts_lock);
+    auto i = m_blocked_subnets.find(subnet);
+    if (i == m_blocked_subnets.end())
+      return false;
+    m_blocked_subnets.erase(i);
+    LOG_CATEGORY_COLOR
+      (
+       epee::LogLevel::Info
+       , epee::GLOBAL_CATEGORY
+       , epee::cyan
+       , "Subnet "
+       + subnet.host_str()
        + " unblocked."
        );
     return true;

@@ -28,6 +28,7 @@
 
 #pragma once
 
+
 #include "enums.h"
 
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
@@ -38,13 +39,21 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/address_v6.hpp>
 
+#include <iostream>
+
+
+
+
 
 #ifndef MAKE_IP
 #define MAKE_IP( a1, a2, a3, a4 )	(a1|(a2<<8)|(a3<<16)|(((uint32_t)a4)<<24))
 #endif
 
-#define GET_IO_SERVICE(s) \
-  ((boost::asio::io_context&)(s).get_executor().context())
+#if BOOST_VERSION >= 107000
+#define GET_IO_SERVICE(s) ((boost::asio::io_context&)(s).get_executor().context())
+#else
+#define GET_IO_SERVICE(s) ((s).get_io_service())
+#endif
 
 namespace net
 {
@@ -101,11 +110,50 @@ namespace net_utils
     END_KV_SERIALIZE_MAP()
   };
 
-  class ipv6_network_address
-  {
-  protected:
-    boost::asio::ip::address_v6 m_address;
-    uint16_t m_port;
+	class ipv4_network_subnet
+	{
+		uint32_t m_ip;
+		uint8_t m_mask;
+
+	public:
+		constexpr ipv4_network_subnet() noexcept
+			: ipv4_network_subnet(0, 0)
+		{}
+
+		constexpr ipv4_network_subnet(uint32_t ip, uint8_t mask) noexcept
+			: m_ip(ip), m_mask(mask) {}
+
+		bool equal(const ipv4_network_subnet& other) const noexcept;
+		bool less(const ipv4_network_subnet& other) const noexcept;
+		constexpr bool is_same_host(const ipv4_network_subnet& other) const noexcept
+		{ return subnet() == other.subnet(); }
+                bool matches(const ipv4_network_address &address) const;
+
+		constexpr uint32_t subnet() const noexcept { return m_ip & ~(0xffffffffull << m_mask); }
+		std::string str() const;
+		std::string host_str() const;
+		bool is_loopback() const;
+		bool is_local() const;
+		static constexpr address_type get_type_id() noexcept { return address_type::invalid; }
+		static constexpr zone get_zone() noexcept { return zone::public_; }
+		static constexpr bool is_blockable() noexcept { return true; }
+
+		BEGIN_KV_SERIALIZE_MAP()
+			KV_SERIALIZE(m_ip)
+			KV_SERIALIZE(m_mask)
+		END_KV_SERIALIZE_MAP()
+	};
+
+	inline bool operator==(const ipv4_network_subnet& lhs, const ipv4_network_subnet& rhs) noexcept
+	{ return lhs.equal(rhs); }
+	inline bool operator<(const ipv4_network_subnet& lhs, const ipv4_network_subnet& rhs) noexcept
+	{ return lhs.less(rhs); }
+
+	class ipv6_network_address
+	{
+	protected:
+		boost::asio::ip::address_v6 m_address;
+		uint16_t m_port;
 
   public:
     ipv6_network_address()

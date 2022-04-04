@@ -31,6 +31,8 @@
 
 #include "net_utils_base.h"
 
+#include "tools/epee/functional/span.hpp"
+
 #include <span>
 
 namespace epee
