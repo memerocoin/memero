@@ -319,208 +319,208 @@ TEST(StringTools, GetIpInt32)
   EXPECT_EQ(htonl(0xff0aff00), ip);
 }
 
-TEST(NetUtils, IPv4NetworkAddress)
-{
-  static_assert(epee::net_utils::ipv4_network_address::get_type_id() == epee::net_utils::address_type::ipv4, "bad ipv4 type id");
+// TEST(NetUtils, IPv4NetworkAddress)
+// {
+//   static_assert(epee::net_utils::ipv4_network_address::get_type_id() == epee::net_utils::address_type::ipv4, "bad ipv4 type id");
 
-  const auto ip1 = boost::endian::native_to_big(0x330012FFu);
-  const auto ip_loopback = boost::endian::native_to_big(0x7F000001u);
-  const auto ip_local = boost::endian::native_to_big(0x0A000000u);
+//   const auto ip1 = boost::endian::native_to_big(0x330012FFu);
+//   const auto ip_loopback = boost::endian::native_to_big(0x7F000001u);
+//   const auto ip_local = boost::endian::native_to_big(0x0A000000u);
 
-  epee::net_utils::ipv4_network_address address1{ip1, 65535};
-  CHECK_EQUAL(address1, address1);
-  EXPECT_STREQ("51.0.18.255:65535", address1.str().c_str());
-  EXPECT_STREQ("51.0.18.255", address1.host_str().c_str());
-  EXPECT_FALSE(address1.is_loopback());
-  EXPECT_FALSE(address1.is_local());
-  EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
-  EXPECT_EQ(ip1, address1.ip());
-  EXPECT_EQ(65535, address1.port());
-  EXPECT_TRUE(epee::net_utils::ipv4_network_address{std::move(address1)} == address1);
-  EXPECT_TRUE(epee::net_utils::ipv4_network_address{address1} == address1);
+//   epee::net_utils::ipv4_network_address address1{ip1, 65535};
+//   CHECK_EQUAL(address1, address1);
+//   EXPECT_STREQ("51.0.18.255:65535", address1.str().c_str());
+//   EXPECT_STREQ("51.0.18.255", address1.host_str().c_str());
+//   EXPECT_FALSE(address1.is_loopback());
+//   EXPECT_FALSE(address1.is_local());
+//   EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
+//   EXPECT_EQ(ip1, address1.ip());
+//   EXPECT_EQ(65535, address1.port());
+//   EXPECT_TRUE(epee::net_utils::ipv4_network_address{std::move(address1)} == address1);
+//   EXPECT_TRUE(epee::net_utils::ipv4_network_address{address1} == address1);
 
-  const epee::net_utils::ipv4_network_address loopback{ip_loopback, 0};
-  CHECK_EQUAL(loopback, loopback);
-  CHECK_LESS_ENDIAN(address1, loopback);
-  EXPECT_STREQ("127.0.0.1:0", loopback.str().c_str());
-  EXPECT_STREQ("127.0.0.1", loopback.host_str().c_str());
-  EXPECT_TRUE(loopback.is_loopback());
-  EXPECT_FALSE(loopback.is_local());
-  EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
-  EXPECT_EQ(ip_loopback, loopback.ip());
-  EXPECT_EQ(0, loopback.port());
+//   const epee::net_utils::ipv4_network_address loopback{ip_loopback, 0};
+//   CHECK_EQUAL(loopback, loopback);
+//   CHECK_LESS_ENDIAN(address1, loopback);
+//   EXPECT_STREQ("127.0.0.1:0", loopback.str().c_str());
+//   EXPECT_STREQ("127.0.0.1", loopback.host_str().c_str());
+//   EXPECT_TRUE(loopback.is_loopback());
+//   EXPECT_FALSE(loopback.is_local());
+//   EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
+//   EXPECT_EQ(ip_loopback, loopback.ip());
+//   EXPECT_EQ(0, loopback.port());
 
-  const epee::net_utils::ipv4_network_address local{ip_local, 8080};
-  CHECK_EQUAL(local, local);
-  CHECK_LESS(local, address1);
-  CHECK_LESS(local, loopback);
-  EXPECT_FALSE(local.is_loopback());
-  EXPECT_TRUE(local.is_local());
+//   const epee::net_utils::ipv4_network_address local{ip_local, 8080};
+//   CHECK_EQUAL(local, local);
+//   CHECK_LESS(local, address1);
+//   CHECK_LESS(local, loopback);
+//   EXPECT_FALSE(local.is_loopback());
+//   EXPECT_TRUE(local.is_local());
 
-  epee::net_utils::ipv4_network_address address2{ip1, 55};
-  CHECK_EQUAL(address2, address2);
-  CHECK_LESS_ENDIAN(address2, loopback);
-  CHECK_LESS(local, address2);
-  EXPECT_STREQ("51.0.18.255:55", address2.str().c_str());
-  EXPECT_STREQ("51.0.18.255", address2.host_str().c_str());
+//   epee::net_utils::ipv4_network_address address2{ip1, 55};
+//   CHECK_EQUAL(address2, address2);
+//   CHECK_LESS_ENDIAN(address2, loopback);
+//   CHECK_LESS(local, address2);
+//   EXPECT_STREQ("51.0.18.255:55", address2.str().c_str());
+//   EXPECT_STREQ("51.0.18.255", address2.host_str().c_str());
 
 
-  address2 = std::move(address1);
-  CHECK_EQUAL(address2, address1);
+//   address2 = std::move(address1);
+//   CHECK_EQUAL(address2, address1);
 
-  address2 = local;
-  CHECK_EQUAL(address2, local);
-  CHECK_LESS(address2, address1);
+//   address2 = local;
+//   CHECK_EQUAL(address2, local);
+//   CHECK_LESS(address2, address1);
 
-  {
-    std::stringstream stream;
-    {
-      boost::archive::binary_oarchive ostream{stream};
-      ostream << address1;
-    }
-    {
-      boost::archive::binary_iarchive istream{stream};
-      istream >> address2;
-    }
-  }
-  CHECK_EQUAL(address1, address2);
-  EXPECT_EQ(ip1, address2.ip());
-  EXPECT_EQ(65535, address2.port());
-}
+//   {
+//     std::stringstream stream;
+//     {
+//       boost::archive::binary_oarchive ostream{stream};
+//       ostream << address1;
+//     }
+//     {
+//       boost::archive::binary_iarchive istream{stream};
+//       istream >> address2;
+//     }
+//   }
+//   CHECK_EQUAL(address1, address2);
+//   EXPECT_EQ(ip1, address2.ip());
+//   EXPECT_EQ(65535, address2.port());
+// }
 
-TEST(NetUtils, NetworkAddress)
-{
-  const auto ip1 = boost::endian::native_to_big(0x330012FFu);
-  const auto ip_loopback = boost::endian::native_to_big(0x7F000001u);
-  const auto ip_local = boost::endian::native_to_big(0x0A000000u);
+// TEST(NetUtils, NetworkAddress)
+// {
+//   const auto ip1 = boost::endian::native_to_big(0x330012FFu);
+//   const auto ip_loopback = boost::endian::native_to_big(0x7F000001u);
+//   const auto ip_local = boost::endian::native_to_big(0x0A000000u);
 
-  struct custom_address {
-    constexpr static bool equal(const custom_address&) noexcept { return false; }
-    constexpr static bool less(const custom_address&) noexcept { return false; }
-    constexpr static bool is_same_host(const custom_address&) noexcept { return false; }
-    constexpr static bool is_loopback() noexcept { return false; }
-    constexpr static bool is_local() noexcept { return false; }
-    static std::string str() { return {}; }
-    static std::string host_str() { return {}; }
-    constexpr static epee::net_utils::address_type get_type_id() noexcept { return epee::net_utils::address_type(-1); }
-    constexpr static epee::net_utils::zone get_zone() noexcept { return epee::net_utils::zone::invalid; }
-    constexpr static bool is_blockable() noexcept { return false; }
-  };
+//   struct custom_address {
+//     constexpr static bool equal(const custom_address&) noexcept { return false; }
+//     constexpr static bool less(const custom_address&) noexcept { return false; }
+//     constexpr static bool is_same_host(const custom_address&) noexcept { return false; }
+//     constexpr static bool is_loopback() noexcept { return false; }
+//     constexpr static bool is_local() noexcept { return false; }
+//     static std::string str() { return {}; }
+//     static std::string host_str() { return {}; }
+//     constexpr static epee::net_utils::address_type get_type_id() noexcept { return epee::net_utils::address_type(-1); }
+//     constexpr static epee::net_utils::zone get_zone() noexcept { return epee::net_utils::zone::invalid; }
+//     constexpr static bool is_blockable() noexcept { return false; }
+//   };
 
-  const epee::net_utils::network_address empty;
-  CHECK_EQUAL(empty, empty);
-  EXPECT_TRUE(empty.is_same_host(empty));
-  EXPECT_STREQ("<none>", empty.str().c_str());
-  EXPECT_STREQ("<none>", empty.host_str().c_str());
-  EXPECT_FALSE(empty.is_loopback());
-  EXPECT_FALSE(empty.is_local());
-  EXPECT_EQ(epee::net_utils::address_type::invalid, empty.get_type_id());
-  EXPECT_EQ(epee::net_utils::zone::invalid, empty.get_zone());
-  EXPECT_FALSE(empty.is_blockable());
-  EXPECT_THROW(empty.as<custom_address>(), std::bad_cast);
+//   const epee::net_utils::network_address empty;
+//   CHECK_EQUAL(empty, empty);
+//   EXPECT_TRUE(empty.is_same_host(empty));
+//   EXPECT_STREQ("<none>", empty.str().c_str());
+//   EXPECT_STREQ("<none>", empty.host_str().c_str());
+//   EXPECT_FALSE(empty.is_loopback());
+//   EXPECT_FALSE(empty.is_local());
+//   EXPECT_EQ(epee::net_utils::address_type::invalid, empty.get_type_id());
+//   EXPECT_EQ(epee::net_utils::zone::invalid, empty.get_zone());
+//   EXPECT_FALSE(empty.is_blockable());
+//   EXPECT_THROW(empty.as<custom_address>(), std::bad_cast);
 
-  epee::net_utils::network_address address1{
-    epee::net_utils::ipv4_network_address{ip1, 65535}
-  };
-  CHECK_EQUAL(address1, address1);
-  CHECK_EQUAL(epee::net_utils::network_address{address1}, address1);
-  CHECK_LESS(empty, address1);
-  EXPECT_TRUE(address1.is_same_host(address1));
-  EXPECT_FALSE(empty.is_same_host(address1));
-  EXPECT_FALSE(address1.is_same_host(empty));
-  EXPECT_STREQ("51.0.18.255:65535", address1.str().c_str());
-  EXPECT_STREQ("51.0.18.255", address1.host_str().c_str());
-  EXPECT_FALSE(address1.is_loopback());
-  EXPECT_FALSE(address1.is_local());
-  EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
-  EXPECT_EQ(epee::net_utils::zone::public_, address1.get_zone());
-  EXPECT_TRUE(address1.is_blockable());
-  EXPECT_NO_THROW(address1.as<epee::net_utils::ipv4_network_address>());
-  EXPECT_THROW(address1.as<custom_address>(), std::bad_cast);
+//   epee::net_utils::network_address address1{
+//     epee::net_utils::ipv4_network_address{ip1, 65535}
+//   };
+//   CHECK_EQUAL(address1, address1);
+//   CHECK_EQUAL(epee::net_utils::network_address{address1}, address1);
+//   CHECK_LESS(empty, address1);
+//   EXPECT_TRUE(address1.is_same_host(address1));
+//   EXPECT_FALSE(empty.is_same_host(address1));
+//   EXPECT_FALSE(address1.is_same_host(empty));
+//   EXPECT_STREQ("51.0.18.255:65535", address1.str().c_str());
+//   EXPECT_STREQ("51.0.18.255", address1.host_str().c_str());
+//   EXPECT_FALSE(address1.is_loopback());
+//   EXPECT_FALSE(address1.is_local());
+//   EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
+//   EXPECT_EQ(epee::net_utils::zone::public_, address1.get_zone());
+//   EXPECT_TRUE(address1.is_blockable());
+//   EXPECT_NO_THROW(address1.as<epee::net_utils::ipv4_network_address>());
+//   EXPECT_THROW(address1.as<custom_address>(), std::bad_cast);
 
-  const epee::net_utils::network_address loopback{
-    epee::net_utils::ipv4_network_address{ip_loopback, 0}
-  };
-  CHECK_EQUAL(loopback, loopback);
-  CHECK_LESS(empty, loopback);
-  CHECK_LESS_ENDIAN(address1, loopback);
-  EXPECT_TRUE(loopback.is_same_host(loopback));
-  EXPECT_FALSE(loopback.is_same_host(address1));
-  EXPECT_FALSE(address1.is_same_host(loopback));
-  EXPECT_STREQ("127.0.0.1:0", loopback.str().c_str());
-  EXPECT_STREQ("127.0.0.1", loopback.host_str().c_str());
-  EXPECT_TRUE(loopback.is_loopback());
-  EXPECT_FALSE(loopback.is_local());
-  EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
-  EXPECT_EQ(epee::net_utils::zone::public_, address1.get_zone());
-  EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
+//   const epee::net_utils::network_address loopback{
+//     epee::net_utils::ipv4_network_address{ip_loopback, 0}
+//   };
+//   CHECK_EQUAL(loopback, loopback);
+//   CHECK_LESS(empty, loopback);
+//   CHECK_LESS_ENDIAN(address1, loopback);
+//   EXPECT_TRUE(loopback.is_same_host(loopback));
+//   EXPECT_FALSE(loopback.is_same_host(address1));
+//   EXPECT_FALSE(address1.is_same_host(loopback));
+//   EXPECT_STREQ("127.0.0.1:0", loopback.str().c_str());
+//   EXPECT_STREQ("127.0.0.1", loopback.host_str().c_str());
+//   EXPECT_TRUE(loopback.is_loopback());
+//   EXPECT_FALSE(loopback.is_local());
+//   EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
+//   EXPECT_EQ(epee::net_utils::zone::public_, address1.get_zone());
+//   EXPECT_EQ(epee::net_utils::ipv4_network_address::get_type_id(), address1.get_type_id());
 
-  const epee::net_utils::network_address local{
-    epee::net_utils::ipv4_network_address{ip_local, 8080}
-  };
-  CHECK_EQUAL(local, local);
-  CHECK_LESS(local, loopback);
-  CHECK_LESS(local, address1);
-  EXPECT_FALSE(local.is_loopback());
-  EXPECT_TRUE(local.is_local());
+//   const epee::net_utils::network_address local{
+//     epee::net_utils::ipv4_network_address{ip_local, 8080}
+//   };
+//   CHECK_EQUAL(local, local);
+//   CHECK_LESS(local, loopback);
+//   CHECK_LESS(local, address1);
+//   EXPECT_FALSE(local.is_loopback());
+//   EXPECT_TRUE(local.is_local());
 
-  epee::net_utils::network_address address2{
-    epee::net_utils::ipv4_network_address{ip1, 55}
-  };
-  CHECK_EQUAL(address2, address2);
-  CHECK_LESS(address2, address1);
-  CHECK_LESS(local, address2);
-  CHECK_LESS_ENDIAN(address2, loopback);
-  EXPECT_TRUE(address1.is_same_host(address2));
-  EXPECT_TRUE(address2.is_same_host(address1));
-  EXPECT_STREQ("51.0.18.255:55", address2.str().c_str());
-  EXPECT_STREQ("51.0.18.255", address2.host_str().c_str());
+//   epee::net_utils::network_address address2{
+//     epee::net_utils::ipv4_network_address{ip1, 55}
+//   };
+//   CHECK_EQUAL(address2, address2);
+//   CHECK_LESS(address2, address1);
+//   CHECK_LESS(local, address2);
+//   CHECK_LESS_ENDIAN(address2, loopback);
+//   EXPECT_TRUE(address1.is_same_host(address2));
+//   EXPECT_TRUE(address2.is_same_host(address1));
+//   EXPECT_STREQ("51.0.18.255:55", address2.str().c_str());
+//   EXPECT_STREQ("51.0.18.255", address2.host_str().c_str());
 
-  address2 = std::move(address1);
-  CHECK_EQUAL(address1, address1);
-  CHECK_EQUAL(empty, address1);
-  CHECK_LESS(address1, address2);
-  EXPECT_FALSE(address1.is_same_host(address2));
-  EXPECT_FALSE(address2.is_same_host(address1));
-  EXPECT_STREQ("51.0.18.255:65535", address2.str().c_str());
-  EXPECT_STREQ("51.0.18.255", address2.host_str().c_str());
-  EXPECT_FALSE(address1.is_loopback());
-  EXPECT_FALSE(address1.is_local());
-  EXPECT_THROW(address1.as<epee::net_utils::ipv4_network_address>(), std::bad_cast);
-  EXPECT_NO_THROW(address2.as<epee::net_utils::ipv4_network_address>());
+//   address2 = std::move(address1);
+//   CHECK_EQUAL(address1, address1);
+//   CHECK_EQUAL(empty, address1);
+//   CHECK_LESS(address1, address2);
+//   EXPECT_FALSE(address1.is_same_host(address2));
+//   EXPECT_FALSE(address2.is_same_host(address1));
+//   EXPECT_STREQ("51.0.18.255:65535", address2.str().c_str());
+//   EXPECT_STREQ("51.0.18.255", address2.host_str().c_str());
+//   EXPECT_FALSE(address1.is_loopback());
+//   EXPECT_FALSE(address1.is_local());
+//   EXPECT_THROW(address1.as<epee::net_utils::ipv4_network_address>(), std::bad_cast);
+//   EXPECT_NO_THROW(address2.as<epee::net_utils::ipv4_network_address>());
 
-  address2 = local;
-  CHECK_EQUAL(address2, local);
-  CHECK_LESS(address1, address2);
-  EXPECT_TRUE(address2.is_same_host(local));
-  EXPECT_TRUE(local.is_same_host(address2));
-  EXPECT_FALSE(address2.is_same_host(address1));
-  EXPECT_FALSE(address1.is_same_host(address2));
+//   address2 = local;
+//   CHECK_EQUAL(address2, local);
+//   CHECK_LESS(address1, address2);
+//   EXPECT_TRUE(address2.is_same_host(local));
+//   EXPECT_TRUE(local.is_same_host(address2));
+//   EXPECT_FALSE(address2.is_same_host(address1));
+//   EXPECT_FALSE(address1.is_same_host(address2));
 
-  {
-    std::stringstream stream;
-    {
-      boost::archive::binary_oarchive ostream{stream};
-      ostream << address2;
-    }
-    {
-      boost::archive::binary_iarchive istream{stream};
-      istream >> address1;
-    }
-  }
-  CHECK_EQUAL(address1, address2);
-  EXPECT_TRUE(address1.is_same_host(address2));
-  EXPECT_TRUE(address2.is_same_host(address1));
-  EXPECT_NO_THROW(address1.as<epee::net_utils::ipv4_network_address>());
+//   {
+//     std::stringstream stream;
+//     {
+//       boost::archive::binary_oarchive ostream{stream};
+//       ostream << address2;
+//     }
+//     {
+//       boost::archive::binary_iarchive istream{stream};
+//       istream >> address1;
+//     }
+//   }
+//   CHECK_EQUAL(address1, address2);
+//   EXPECT_TRUE(address1.is_same_host(address2));
+//   EXPECT_TRUE(address2.is_same_host(address1));
+//   EXPECT_NO_THROW(address1.as<epee::net_utils::ipv4_network_address>());
 
-  address1 = custom_address{};
-  CHECK_EQUAL(address1, address1);
-  CHECK_LESS(address2, address1);
-  EXPECT_FALSE(address1.is_same_host(loopback));
-  EXPECT_FALSE(loopback.is_same_host(address1));
-  EXPECT_THROW(address1.as<epee::net_utils::ipv4_network_address>(), std::bad_cast);
-  EXPECT_NO_THROW(address1.as<custom_address>());
-}
+//   address1 = custom_address{};
+//   CHECK_EQUAL(address1, address1);
+//   CHECK_LESS(address2, address1);
+//   EXPECT_FALSE(address1.is_same_host(loopback));
+//   EXPECT_FALSE(loopback.is_same_host(address1));
+//   EXPECT_THROW(address1.as<epee::net_utils::ipv4_network_address>(), std::bad_cast);
+//   EXPECT_NO_THROW(address1.as<custom_address>());
+// }
 
 static bool is_local(const char *s)
 {

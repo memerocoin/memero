@@ -58,243 +58,227 @@ namespace net_utils
 {
   uint32_t make_address_v4_from_v6(const boost::asio::ip::address_v6& a);
 
-	class ipv4_network_address
-	{
-		uint32_t m_ip;
-		uint16_t m_port;
+  class ipv4_network_address
+  {
+    uint32_t m_ip;
+    uint16_t m_port;
 
-	public:
-		constexpr ipv4_network_address() noexcept
-			: ipv4_network_address(0, 0)
-		{}
+  public:
+    constexpr ipv4_network_address() noexcept
+    : ipv4_network_address(0, 0)
+    {}
 
-		constexpr ipv4_network_address(uint32_t ip, uint16_t port) noexcept
-			: m_ip(ip), m_port(port) {}
+    constexpr ipv4_network_address(uint32_t ip, uint16_t port) noexcept
+      : m_ip(ip), m_port(port) {}
 
-		bool equal(const ipv4_network_address& other) const noexcept;
-		bool less(const ipv4_network_address& other) const noexcept;
-		constexpr bool is_same_host(const ipv4_network_address& other) const noexcept
-		{ return ip() == other.ip(); }
+    bool equal(const ipv4_network_address& other) const noexcept;
+    bool less(const ipv4_network_address& other) const noexcept;
+    constexpr bool is_same_host(const ipv4_network_address& other) const noexcept
+    { return ip() == other.ip(); }
 
-		constexpr uint32_t ip() const noexcept { return m_ip; }
-		constexpr uint16_t port() const noexcept { return m_port; }
-		std::string str() const;
-		std::string host_str() const;
-		bool is_loopback() const;
-		bool is_local() const;
-		static constexpr address_type get_type_id() noexcept { return address_type::ipv4; }
-		static constexpr zone get_zone() noexcept { return zone::public_; }
-		static constexpr bool is_blockable() noexcept { return true; }
+    constexpr uint32_t ip() const noexcept { return m_ip; }
+    constexpr uint16_t port() const noexcept { return m_port; }
+    std::string str() const;
+    std::string host_str() const;
+    bool is_loopback() const;
+    bool is_local() const;
+    static constexpr address_type get_type_id() noexcept { return address_type::ipv4; }
+    static constexpr zone get_zone() noexcept { return zone::public_; }
+    static constexpr bool is_blockable() noexcept { return true; }
 
-		BEGIN_KV_SERIALIZE_MAP()
-			if (is_store)
-			{
-				uint32_t ip = SWAP32LE(this->m_ip);
-				epee::serialization::selector<is_store>::serialize(ip, stg, hparent_section, "m_ip");
-			}
-			else
-			{
-				KV_SERIALIZE(m_ip)
-				const_cast<ipv4_network_address*>(this)->m_ip = SWAP32LE(this->m_ip);
-			}
-			KV_SERIALIZE(m_port)
-		END_KV_SERIALIZE_MAP()
-	};
+    BEGIN_KV_SERIALIZE_MAP()
+        if (is_store)
+        {
+            uint32_t ip = SWAP32LE(this->m_ip);
+            epee::serialization::selector<is_store>::serialize(ip, stg, hparent_section, "m_ip");
+        }
+        else
+        {
+            KV_SERIALIZE(m_ip)
+            const_cast<ipv4_network_address*>(this)->m_ip = SWAP32LE(this->m_ip);
+        }
+        KV_SERIALIZE(m_port)
+    END_KV_SERIALIZE_MAP()
+  };
 
-	class ipv6_network_address
-	{
-	protected:
-		boost::asio::ip::address_v6 m_address;
-		uint16_t m_port;
+  class ipv6_network_address
+  {
+  protected:
+    boost::asio::ip::address_v6 m_address;
+    uint16_t m_port;
 
-	public:
-		ipv6_network_address()
-			: ipv6_network_address(boost::asio::ip::address_v6::loopback(), 0)
-		{}
+  public:
+    ipv6_network_address()
+      : ipv6_network_address(boost::asio::ip::address_v6::loopback(), 0)
+    {}
 
-		ipv6_network_address(const boost::asio::ip::address_v6& ip, uint16_t port)
-			: m_address(ip), m_port(port)
-		{
-		}
+    ipv6_network_address(const boost::asio::ip::address_v6& ip, uint16_t port)
+      : m_address(ip), m_port(port)
+    {
+    }
 
-		bool equal(const ipv6_network_address& other) const noexcept;
-		bool less(const ipv6_network_address& other) const noexcept;
-		bool is_same_host(const ipv6_network_address& other) const noexcept
-		{ return m_address == other.m_address; }
+    bool equal(const ipv6_network_address& other) const noexcept;
+    bool less(const ipv6_network_address& other) const noexcept;
+    bool is_same_host(const ipv6_network_address& other) const noexcept
+    { return m_address == other.m_address; }
 
-		boost::asio::ip::address_v6 ip() const noexcept { return m_address; }
-		uint16_t port() const noexcept { return m_port; }
-		std::string str() const;
-		std::string host_str() const;
-		bool is_loopback() const;
-		bool is_local() const;
-		static constexpr address_type get_type_id() noexcept { return address_type::ipv6; }
-		static constexpr zone get_zone() noexcept { return zone::public_; }
-		static constexpr bool is_blockable() noexcept { return true; }
+    boost::asio::ip::address_v6 ip() const noexcept { return m_address; }
+    uint16_t port() const noexcept { return m_port; }
+    std::string str() const;
+    std::string host_str() const;
+    bool is_loopback() const;
+    bool is_local() const;
+    static constexpr address_type get_type_id() noexcept { return address_type::ipv6; }
+    static constexpr zone get_zone() noexcept { return zone::public_; }
+    static constexpr bool is_blockable() noexcept { return true; }
 
-		static const uint8_t ID = 2;
-		BEGIN_KV_SERIALIZE_MAP()
-			boost::asio::ip::address_v6::bytes_type bytes = this->m_address.to_bytes();
-			epee::serialization::selector<is_store>::serialize_t_val_as_blob(bytes, stg, hparent_section, "addr");
-			const_cast<boost::asio::ip::address_v6&>(this->m_address) = boost::asio::ip::address_v6(bytes);
-			KV_SERIALIZE(m_port)
-		END_KV_SERIALIZE_MAP()
-	};
+    static const uint8_t ID = 2;
+    BEGIN_KV_SERIALIZE_MAP()
+        boost::asio::ip::address_v6::bytes_type bytes = this->m_address.to_bytes();
+        epee::serialization::selector<is_store>::serialize_t_val_as_blob(bytes, stg, hparent_section, "addr");
+        const_cast<boost::asio::ip::address_v6&>(this->m_address) = boost::asio::ip::address_v6(bytes);
+        KV_SERIALIZE(m_port)
+    END_KV_SERIALIZE_MAP()
+  };
 
-	inline bool operator==(const ipv6_network_address& lhs, const ipv6_network_address& rhs) noexcept
-	{ return lhs.equal(rhs); }
-	inline bool operator!=(const ipv6_network_address& lhs, const ipv6_network_address& rhs) noexcept
-	{ return !lhs.equal(rhs); }
-	inline bool operator<(const ipv6_network_address& lhs, const ipv6_network_address& rhs) noexcept
-	{ return lhs.less(rhs); }
-	inline bool operator<=(const ipv6_network_address& lhs, const ipv6_network_address& rhs) noexcept
-	{ return !rhs.less(lhs); }
-	inline bool operator>(const ipv6_network_address& lhs, const ipv6_network_address& rhs) noexcept
-	{ return rhs.less(lhs); }
-	inline bool operator>=(const ipv6_network_address& lhs, const ipv6_network_address& rhs) noexcept
-	{ return !lhs.less(rhs); }
+  inline bool operator==(const ipv6_network_address& lhs, const ipv6_network_address& rhs) noexcept
+  { return lhs.equal(rhs); }
+  inline bool operator<(const ipv6_network_address& lhs, const ipv6_network_address& rhs) noexcept
+  { return lhs.less(rhs); }
 
-	class network_address
-	{
-		struct interface
-		{
-                        virtual ~interface() {};
+  class network_address
+  {
+    struct interface
+    {
+      virtual ~interface() {};
 
-			virtual bool equal(const interface&) const = 0;
-			virtual bool less(const interface&) const = 0;
-			virtual bool is_same_host(const interface&) const = 0;
+      virtual bool equal(const interface&) const = 0;
+      virtual bool less(const interface&) const = 0;
+      virtual bool is_same_host(const interface&) const = 0;
 
-			virtual std::string str() const = 0;
-			virtual std::string host_str() const = 0;
-			virtual bool is_loopback() const = 0;
-			virtual bool is_local() const = 0;
-			virtual address_type get_type_id() const = 0;
-			virtual zone get_zone() const = 0;
-			virtual bool is_blockable() const = 0;
-		};
+      virtual std::string str() const = 0;
+      virtual std::string host_str() const = 0;
+      virtual bool is_loopback() const = 0;
+      virtual bool is_local() const = 0;
+      virtual address_type get_type_id() const = 0;
+      virtual zone get_zone() const = 0;
+      virtual bool is_blockable() const = 0;
+    };
 
-		template<typename T>
-		struct implementation final : interface
-		{
-			T value;
+    template<typename T>
+    struct implementation final : interface
+    {
+      T value;
 
-			implementation(const T& src) : value(src) {}
-			~implementation() = default;
+      implementation(const T& src) : value(src) {}
+      ~implementation() = default;
 
-			// Type-checks for cast are done in cpp
-			static const T& cast(const interface& src) noexcept
-			{ return static_cast<const implementation<T>&>(src).value; }
+      // Type-checks for cast are done in cpp
+      static const T& cast(const interface& src) noexcept
+      { return static_cast<const implementation<T>&>(src).value; }
 
-			virtual bool equal(const interface& other) const override
-			{ return value.equal(cast(other)); }
+      virtual bool equal(const interface& other) const override
+      { return value.equal(cast(other)); }
 
-			virtual bool less(const interface& other) const override
-			{ return value.less(cast(other)); }
+      virtual bool less(const interface& other) const override
+      { return value.less(cast(other)); }
 
-			virtual bool is_same_host(const interface& other) const override
-			{ return value.is_same_host(cast(other)); }
+      virtual bool is_same_host(const interface& other) const override
+      { return value.is_same_host(cast(other)); }
 
-			virtual std::string str() const override { return value.str(); }
-			virtual std::string host_str() const override { return value.host_str(); }
-			virtual bool is_loopback() const override { return value.is_loopback(); }
-			virtual bool is_local() const override { return value.is_local(); }
-			virtual address_type get_type_id() const override { return value.get_type_id(); }
-			virtual zone get_zone() const override { return value.get_zone(); }
-			virtual bool is_blockable() const override { return value.is_blockable(); }
-		};
+      virtual std::string str() const override { return value.str(); }
+      virtual std::string host_str() const override { return value.host_str(); }
+      virtual bool is_loopback() const override { return value.is_loopback(); }
+      virtual bool is_local() const override { return value.is_local(); }
+      virtual address_type get_type_id() const override { return value.get_type_id(); }
+      virtual zone get_zone() const override { return value.get_zone(); }
+      virtual bool is_blockable() const override { return value.is_blockable(); }
+    };
 
-		std::shared_ptr<interface> self;
+    std::shared_ptr<interface> self;
 
-		template<typename Type>
-		Type& as_mutable() const
-		{
-			// types `implmentation<Type>` and `implementation<const Type>` are unique
-			using Type_ = typename std::remove_const<Type>::type;
-			network_address::interface* const self_ = self.get(); // avoid clang warning in typeid
-			if (!self_ || typeid(implementation<Type_>) != typeid(*self_))
-				throw std::bad_cast{};
-			return static_cast<implementation<Type_>*>(self_)->value;
-		}
+    template<typename Type>
+    Type& as_mutable() const
+    {
+      // types `implmentation<Type>` and `implementation<const Type>` are unique
+      using Type_ = typename std::remove_const<Type>::type;
+      network_address::interface* const self_ = self.get(); // avoid clang warning in typeid
+      if (!self_ || typeid(implementation<Type_>) != typeid(*self_))
+        throw std::bad_cast{};
+      return static_cast<implementation<Type_>*>(self_)->value;
+    }
 
-		template<typename T, typename t_storage>
-		bool serialize_addr(std::false_type, t_storage& stg, typename t_storage::hsection hparent)
-		{
-			T addr{};
-			if (!epee::serialization::selector<false>::serialize(addr, stg, hparent, "addr"))
-				return false;
-			*this = std::move(addr);
-			return true;
-		}
+    template<typename T, typename t_storage>
+    bool serialize_addr(std::false_type, t_storage& stg, typename t_storage::hsection hparent)
+    {
+      T addr{};
+      if (!epee::serialization::selector<false>::serialize(addr, stg, hparent, "addr"))
+        return false;
+      *this = std::move(addr);
+      return true;
+    }
 
-		template<typename T, typename t_storage>
-		bool serialize_addr(std::true_type, t_storage& stg, typename t_storage::hsection hparent) const
-		{
-			return epee::serialization::selector<true>::serialize(as<T>(), stg, hparent, "addr");
-		}
+    template<typename T, typename t_storage>
+    bool serialize_addr(std::true_type, t_storage& stg, typename t_storage::hsection hparent) const
+    {
+      return epee::serialization::selector<true>::serialize(as<T>(), stg, hparent, "addr");
+    }
 
-	public:
-		network_address() : self(nullptr) {}
-		template<typename T>
-		network_address(const T& src)
-			: self(std::make_shared<implementation<T>>(src)) {}
-		bool equal(const network_address &other) const;
-		bool less(const network_address &other) const;
-		bool is_same_host(const network_address &other) const;
-		std::string str() const { return self ? self->str() : "<none>"; }
-		std::string host_str() const { return self ? self->host_str() : "<none>"; }
-		bool is_loopback() const { return self ? self->is_loopback() : false; }
-		bool is_local() const { return self ? self->is_local() : false; }
-		address_type get_type_id() const { return self ? self->get_type_id() : address_type::invalid; }
-		zone get_zone() const { return self ? self->get_zone() : zone::invalid; }
-		bool is_blockable() const { return self ? self->is_blockable() : false; }
-		template<typename Type> const Type &as() const { return as_mutable<const Type>(); }
+  public:
+    network_address() : self(nullptr) {}
+    template<typename T>
+    network_address(const T& src)
+      : self(std::make_shared<implementation<T>>(src)) {}
+    bool equal(const network_address &other) const;
+    bool less(const network_address &other) const;
+    bool is_same_host(const network_address &other) const;
+    std::string str() const { return self ? self->str() : "<none>"; }
+    std::string host_str() const { return self ? self->host_str() : "<none>"; }
+    bool is_loopback() const { return self ? self->is_loopback() : false; }
+    bool is_local() const { return self ? self->is_local() : false; }
+    address_type get_type_id() const { return self ? self->get_type_id() : address_type::invalid; }
+    zone get_zone() const { return self ? self->get_zone() : zone::invalid; }
+    bool is_blockable() const { return self ? self->is_blockable() : false; }
+    template<typename Type> const Type &as() const { return as_mutable<const Type>(); }
 
-		BEGIN_KV_SERIALIZE_MAP()
-			// need to `#include "net/[i2p|tor]_address.h"` when serializing `network_address`
-			static constexpr std::integral_constant<bool, is_store> is_store_{};
+    BEGIN_KV_SERIALIZE_MAP()
+    // need to `#include "net/[i2p|tor]_address.h"` when serializing `network_address`
+    static constexpr std::integral_constant<bool, is_store> is_store_{};
 
-			std::uint8_t type = std::uint8_t(is_store ? this->get_type_id() : address_type::invalid);
-			if (!epee::serialization::selector<is_store>::serialize(type, stg, hparent_section, "type"))
-				return false;
+    std::uint8_t type = std::uint8_t(is_store ? this->get_type_id() : address_type::invalid);
+    if (!epee::serialization::selector<is_store>::serialize(type, stg, hparent_section, "type"))
+      return false;
 
-			switch (address_type(type))
-			{
-				case address_type::ipv4:
-					return this->template serialize_addr<ipv4_network_address>(is_store_, stg, hparent_section);
-				case address_type::ipv6:
-					return this->template serialize_addr<ipv6_network_address>(is_store_, stg, hparent_section);
-				case address_type::tor:
-					return this->template serialize_addr<net::tor_address>(is_store_, stg, hparent_section);
-				case address_type::i2p:
-					return this->template serialize_addr<net::i2p_address>(is_store_, stg, hparent_section);
-				case address_type::invalid:
-				default:
-					break;
-			}
+    switch (address_type(type))
+      {
+      case address_type::ipv4:
+        return this->template serialize_addr<ipv4_network_address>(is_store_, stg, hparent_section);
+      case address_type::ipv6:
+        return this->template serialize_addr<ipv6_network_address>(is_store_, stg, hparent_section);
+      case address_type::tor:
+        return this->template serialize_addr<net::tor_address>(is_store_, stg, hparent_section);
+      case address_type::i2p:
+        return this->template serialize_addr<net::i2p_address>(is_store_, stg, hparent_section);
+      case address_type::invalid:
+      default:
+        break;
+      }
 
     LOG_ERROR("Unsupported network address type: " + std::to_string((unsigned)type));
-			return false;
-		END_KV_SERIALIZE_MAP()
-	};
+    return false;
+    END_KV_SERIALIZE_MAP()
+  };
 
-	inline bool operator==(const network_address& lhs, const network_address& rhs)
-	{ return lhs.equal(rhs); }
-	inline bool operator!=(const network_address& lhs, const network_address& rhs)
-	{ return !lhs.equal(rhs); }
-	inline bool operator<(const network_address& lhs, const network_address& rhs)
-	{ return lhs.less(rhs); }
-	inline bool operator<=(const network_address& lhs, const network_address& rhs)
-	{ return !rhs.less(lhs); }
-	inline bool operator>(const network_address& lhs, const network_address& rhs)
-	{ return rhs.less(lhs); }
-	inline bool operator>=(const network_address& lhs, const network_address& rhs)
-	{ return !lhs.less(rhs); }
+  inline bool operator==(const network_address& lhs, const network_address& rhs)
+  { return lhs.equal(rhs); }
+  inline bool operator<(const network_address& lhs, const network_address& rhs)
+  { return lhs.less(rhs); }
 
-	/************************************************************************/
-	/*                                                                      */
-	/************************************************************************/
-	struct connection_context_base
-	{
+  /************************************************************************/
+  /*                                                                      */
+  /************************************************************************/
+  struct connection_context_base
+  {
     const boost::uuids::uuid m_connection_id;
     const network_address m_remote_address;
     const bool     m_is_income;
@@ -308,36 +292,39 @@ namespace net_utils
     double m_max_speed_down;
     double m_max_speed_up;
 
-    connection_context_base(boost::uuids::uuid connection_id,
-                            const network_address &remote_address, bool is_income,
-                            time_t last_recv = 0, time_t last_send = 0,
-                            uint64_t recv_cnt = 0, uint64_t send_cnt = 0):
-                                            m_connection_id(connection_id),
-                                            m_remote_address(remote_address),
-                                            m_is_income(is_income),
-                                            m_started(time(NULL)),
-                                            m_last_recv(last_recv),
-                                            m_last_send(last_send),
-                                            m_recv_cnt(recv_cnt),
-                                            m_send_cnt(send_cnt),
-                                            m_current_speed_down(0),
-                                            m_current_speed_up(0),
-                                            m_max_speed_down(0),
-                                            m_max_speed_up(0)
+    connection_context_base
+    (
+     boost::uuids::uuid connection_id,
+     const network_address &remote_address, bool is_income,
+     time_t last_recv = 0, time_t last_send = 0,
+     uint64_t recv_cnt = 0, uint64_t send_cnt = 0):
+      m_connection_id(connection_id),
+      m_remote_address(remote_address),
+      m_is_income(is_income),
+      m_started(time(NULL)),
+      m_last_recv(last_recv),
+      m_last_send(last_send),
+      m_recv_cnt(recv_cnt),
+      m_send_cnt(send_cnt),
+      m_current_speed_down(0),
+      m_current_speed_up(0),
+      m_max_speed_down(0),
+      m_max_speed_up(0)
     {}
 
-    connection_context_base(): m_connection_id(),
-                               m_remote_address(),
-                               m_is_income(false),
-                               m_started(time(NULL)),
-                               m_last_recv(0),
-                               m_last_send(0),
-                               m_recv_cnt(0),
-                               m_send_cnt(0),
-                               m_current_speed_down(0),
-                               m_current_speed_up(0),
-                               m_max_speed_down(0),
-                               m_max_speed_up(0)
+    connection_context_base():
+      m_connection_id(),
+      m_remote_address(),
+      m_is_income(false),
+      m_started(time(NULL)),
+      m_last_recv(0),
+      m_last_send(0),
+      m_recv_cnt(0),
+      m_send_cnt(0),
+      m_current_speed_down(0),
+      m_current_speed_up(0),
+      m_max_speed_down(0),
+      m_max_speed_up(0)
     {}
 
     connection_context_base(const connection_context_base& a): connection_context_base()
@@ -352,7 +339,7 @@ namespace net_utils
     }
 
 
-  std::string to_str() const;
+    std::string to_str() const;
 
   private:
     template<class t_protocol_handler>
@@ -363,14 +350,14 @@ namespace net_utils
       new(this) connection_context_base(connection_id, remote_address, is_income);
     }
 
-	};
+  };
 
-	/************************************************************************/
-	/*                                                                      */
-	/************************************************************************/
-	struct i_service_endpoint
-	{
-		virtual bool do_send(const epee::blob::data message)=0;
+  /************************************************************************/
+  /*                                                                      */
+  /************************************************************************/
+  struct i_service_endpoint
+  {
+    virtual bool do_send(const epee::blob::data message)=0;
     virtual bool close()=0;
     virtual bool send_done()=0;
     virtual bool call_run_once_service_io()=0;
@@ -381,7 +368,7 @@ namespace net_utils
     virtual bool release()=0;
   protected:
     virtual ~i_service_endpoint() noexcept(false) {}
-	};
+  };
 
 
   //some helpers
@@ -411,16 +398,16 @@ namespace net_utils
    );
 
 
-#define LOG_PRINT_CCONTEXT_L0(message) \
+#define LOG_PRINT_CCONTEXT_L0(message)          \
   LOG_PRINT_L0(context.to_str() + message)
 
-#define LOG_PRINT_CCONTEXT_L1(message) \
+#define LOG_PRINT_CCONTEXT_L1(message)          \
   LOG_PRINT_L1(context.to_str() + message)
 
-#define LOG_PRINT_CCONTEXT_L2(message) \
+#define LOG_PRINT_CCONTEXT_L2(message)          \
   LOG_PRINT_L2(context.to_str() + message)
 
-#define LOG_ERROR_CCONTEXT(message) \
+#define LOG_ERROR_CCONTEXT(message)             \
   LOG_ERROR(context.to_str() + message)
 
 }
