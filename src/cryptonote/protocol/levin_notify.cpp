@@ -139,25 +139,6 @@ namespace levin
 
   namespace detail
   {
-    struct zone
-    {
-      explicit zone(boost::asio::io_service& io_service, std::shared_ptr<connections> p2p, bool is_public)
-        : p2p(std::move(p2p)),
-          next_epoch(io_service),
-          flush_txs(io_service),
-          strand(io_service),
-          flush_time(std::chrono::steady_clock::time_point::max()),
-          connection_count(0)
-      {
-      }
-
-      const std::shared_ptr<connections> p2p;
-      boost::asio::steady_timer next_epoch;
-      boost::asio::steady_timer flush_txs;
-      boost::asio::io_service::strand strand;
-      std::chrono::steady_clock::time_point flush_time; //!< Next expected Dandelion++ fluff flush
-      std::atomic<std::size_t> connection_count; //!< Only update in strand, can be read at any time
-    };
   } // detail
 
   namespace
