@@ -52,12 +52,7 @@ namespace cryptonote {
       return {};
     }
 
-    std::string res_str;
-    if(!epee::serialization::store_t_to_json(res, res_str)) {
-      return {};
-    }
-
-    return res_str;
+    return epee::serialization::store_t_to_json(res);
   }
 
 
@@ -288,9 +283,8 @@ namespace cryptonote {
           fail_resp.error.code = -32602;
           fail_resp.error.message = "Invalid params";
 
-          std::string res_str;
-          epee::serialization::store_t_to_json(fail_resp, res_str);
-          beast::ostream(response_.body()) << res_str;
+          beast::ostream(response_.body())
+          << epee::serialization::store_t_to_json(fail_resp);
 
           return;
         }
@@ -326,16 +320,14 @@ namespace cryptonote {
 
       if (!res)
         {
-          std::string res_str;
-          epee::serialization::store_t_to_json(fail_resp, res_str);
-          beast::ostream(response_.body()) << res_str;
+          beast::ostream(response_.body())
+            << epee::serialization::store_t_to_json(fail_resp);
 
           return;
         }
 
-      std::string res_str;
-      epee::serialization::store_t_to_json(resp, res_str);
-      beast::ostream(response_.body()) << res_str;
+      beast::ostream(response_.body())
+        << epee::serialization::store_t_to_json(resp);
     }
 
 
@@ -350,9 +342,8 @@ namespace cryptonote {
         rsp.error.code = -32700;
         rsp.error.message = "Parse error";
 
-        std::string res_str;
-        epee::serialization::store_t_to_json(rsp, res_str);
-        beast::ostream(response_.body()) << res_str;
+        beast::ostream(response_.body())
+          << epee::serialization::store_t_to_json(rsp);
 
         return;
       }
@@ -369,9 +360,8 @@ namespace cryptonote {
           rsp.error.code = -32600;
           rsp.error.message = "Invalid Request";
 
-          std::string res_str;
-          epee::serialization::store_t_to_json(rsp, res_str);
-          beast::ostream(response_.body()) << res_str;
+          beast::ostream(response_.body())
+            << epee::serialization::store_t_to_json(rsp);
 
           return;
         }
