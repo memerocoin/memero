@@ -187,72 +187,6 @@ namespace cryptonote {
         ;
     }
 
-    template<class t_request, class t_response, typename T>
-    void process_json_rpc
-    (
-     epee::serialization::portable_storage ps
-     , T f
-     ) {
-      epee::json_rpc::request<t_request> req{};
-
-      if(!req.load(ps))
-        {
-          epee::json_rpc::error_response fail_resp{};
-          fail_resp.jsonrpc = "2.0";
-          fail_resp.id = req.id;
-          fail_resp.error.code = -32602;
-          fail_resp.error.message = "Invalid params";
-
-          std::string res_str;
-          epee::serialization::store_t_to_json(fail_resp, res_str);
-          beast::ostream(response_.body()) << res_str;
-
-          return;
-        }
-
-      epee::json_rpc::response
-        <
-          t_response
-        , epee::json_rpc::dummy_error
-        > resp;
-
-      resp.jsonrpc = "2.0";
-      resp.id = req.id;
-
-      epee::json_rpc::error_response fail_resp{};
-      fail_resp.jsonrpc = "2.0";
-      fail_resp.id = req.id;
-
-      // LOG_VERBOSE("Calling RPC method " + callback_name);
-      bool res = false;
-
-      try {
-        res = f(req.params, resp.result, fail_resp.error);
-      }
-      catch (const std::exception &e) {
-        LOG_ERROR
-          (
-           "Failed to "
-           + std::string("on_sync_info")
-           + "(): "
-           + std::string(e.what())
-           );
-      }
-
-      if (!res)
-        {
-          std::string res_str;
-          epee::serialization::store_t_to_json(fail_resp, res_str);
-          beast::ostream(response_.body()) << res_str;
-
-          return;
-        }
-
-      std::string res_str;
-      epee::serialization::store_t_to_json(resp, res_str);
-      beast::ostream(response_.body()) << res_str;
-    }
-
     void rpc_response()
     {
       const std::string body_ = request_.body();
@@ -338,118 +272,191 @@ namespace cryptonote {
 
       else if(request_.target() == "/json_rpc")
         {
-          epee::serialization::portable_storage ps;
-          if(!ps.load_from_json(body_)) {
-            epee::json_rpc::error_response rsp{};
-            rsp.jsonrpc = "2.0";
-            rsp.error.code = -32700;
-            rsp.error.message = "Parse error";
-
-            std::string res_str;
-            epee::serialization::store_t_to_json(rsp, res_str);
-            beast::ostream(response_.body()) << res_str;
-
-            return;
-          }
-
-          epee::serialization::storage_entry id_;
-          id_ = epee::serialization::storage_entry(std::string());
-          ps.get_value("id", id_, nullptr);
-
-          std::string callback_name;
-          if(!ps.get_value("method", callback_name, nullptr))
-            {
-              epee::json_rpc::error_response rsp;
-              rsp.jsonrpc = "2.0";
-              rsp.error.code = -32600;
-              rsp.error.message = "Invalid Request";
-
-              std::string res_str;
-              epee::serialization::store_t_to_json(rsp, res_str);
-              beast::ostream(response_.body()) << res_str;
-
-              return;
-            }
-
-#define JSON_RPC(method, callback, request_t)                         \
-          else if(callback_name == method) {                          \
-            process_json_rpc<request_t::request, request_t::response> \
-              (                                                       \
-               ps                                                     \
-               , std::bind                                            \
-               (                                                      \
-                &core_rpc_server::callback                            \
-                , &rpc_                                               \
-                , std::placeholders::_1                               \
-                , std::placeholders::_2                               \
-                , std::placeholders::_3));                            \
-          } 
-
-          JSON_RPC("sync_info"
-                   , on_sync_info
-                   , COMMAND_RPC_SYNC_INFO)
-
-          JSON_RPC("get_block_header_by_hash"
-                   , on_get_block_header_by_hash
-                   , COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH)
-
-          JSON_RPC("get_block_header_by_height"
-                   , on_get_block_header_by_height
-                   , COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT)
-
-          JSON_RPC("get_block"
-                   , on_get_block
-                   , COMMAND_RPC_GET_BLOCK)
-
-          JSON_RPC("get_connections"
-                   ,on_get_connections
-                   , COMMAND_RPC_GET_CONNECTIONS)
-
-          JSON_RPC("get_info"
-                   , on_get_info_json
-                   , COMMAND_RPC_GET_INFO)
-
-          JSON_RPC("set_bans"
-                   , on_set_bans
-                   , COMMAND_RPC_SETBANS)
-
-          JSON_RPC("get_bans"
-                   , on_get_bans
-                   , COMMAND_RPC_GETBANS)
-
-          JSON_RPC("banned"
-                   , on_banned
-                   , COMMAND_RPC_BANNED)
-
-          JSON_RPC("flush_txpool"
-                   , on_flush_txpool
-                   , COMMAND_RPC_FLUSH_TRANSACTION_POOL)
-
-          JSON_RPC("get_version"
-                   , on_get_version
-                   , COMMAND_RPC_GET_VERSION)
-
-          JSON_RPC("get_coinbase_tx_sum"
-                   , on_get_coinbase_tx_sum
-                   , COMMAND_RPC_GET_COINBASE_TX_SUM)
-
-          JSON_RPC("relay_tx"
-                   , on_relay_tx
-                   , COMMAND_RPC_RELAY_TX)
-
-          JSON_RPC("get_output_distribution"
-                   , on_get_output_distribution
-                   , COMMAND_RPC_GET_OUTPUT_DISTRIBUTION)
-
-          JSON_RPC("flush_cache"
-                   , on_flush_cache
-                   , COMMAND_RPC_FLUSH_CACHE)
-
+          json_rpc_response(std::move(body_));
         }
       else
         {
           response_.result(http::status::not_found);
         }
+    }
+
+
+    template<class t_request, class t_response, typename T>
+    void process_json_rpc
+    (
+     epee::serialization::portable_storage ps
+     , T f
+     ) {
+      epee::json_rpc::request<t_request> req{};
+
+      if(!req.load(ps))
+        {
+          epee::json_rpc::error_response fail_resp{};
+          fail_resp.jsonrpc = "2.0";
+          fail_resp.id = req.id;
+          fail_resp.error.code = -32602;
+          fail_resp.error.message = "Invalid params";
+
+          std::string res_str;
+          epee::serialization::store_t_to_json(fail_resp, res_str);
+          beast::ostream(response_.body()) << res_str;
+
+          return;
+        }
+
+      epee::json_rpc::response
+        <
+          t_response
+        , epee::json_rpc::dummy_error
+        > resp;
+
+      resp.jsonrpc = "2.0";
+      resp.id = req.id;
+
+      epee::json_rpc::error_response fail_resp{};
+      fail_resp.jsonrpc = "2.0";
+      fail_resp.id = req.id;
+
+      // LOG_VERBOSE("Calling RPC method " + callback_name);
+      bool res = false;
+
+      try {
+        res = f(req.params, resp.result, fail_resp.error);
+      }
+      catch (const std::exception &e) {
+        LOG_ERROR
+          (
+           "Failed to "
+           + std::string("on_sync_info")
+           + "(): "
+           + std::string(e.what())
+           );
+      }
+
+      if (!res)
+        {
+          std::string res_str;
+          epee::serialization::store_t_to_json(fail_resp, res_str);
+          beast::ostream(response_.body()) << res_str;
+
+          return;
+        }
+
+      std::string res_str;
+      epee::serialization::store_t_to_json(resp, res_str);
+      beast::ostream(response_.body()) << res_str;
+    }
+
+
+    void json_rpc_response(const std::string body_)
+    {
+      epee::serialization::portable_storage ps;
+      if(!ps.load_from_json(body_)) {
+        epee::json_rpc::error_response rsp{};
+        rsp.jsonrpc = "2.0";
+        rsp.error.code = -32700;
+        rsp.error.message = "Parse error";
+
+        std::string res_str;
+        epee::serialization::store_t_to_json(rsp, res_str);
+        beast::ostream(response_.body()) << res_str;
+
+        return;
+      }
+
+      epee::serialization::storage_entry id_;
+      id_ = epee::serialization::storage_entry(std::string());
+      ps.get_value("id", id_, nullptr);
+
+      std::string callback_name;
+      if(!ps.get_value("method", callback_name, nullptr))
+        {
+          epee::json_rpc::error_response rsp;
+          rsp.jsonrpc = "2.0";
+          rsp.error.code = -32600;
+          rsp.error.message = "Invalid Request";
+
+          std::string res_str;
+          epee::serialization::store_t_to_json(rsp, res_str);
+          beast::ostream(response_.body()) << res_str;
+
+          return;
+        }
+
+#define JSON_RPC(method, callback, request_t)                     \
+      else if(callback_name == method) {                          \
+        process_json_rpc<request_t::request, request_t::response> \
+          (                                                       \
+           ps                                                     \
+           , std::bind                                            \
+           (                                                      \
+            &core_rpc_server::callback                            \
+            , &rpc_                                               \
+            , std::placeholders::_1                               \
+            , std::placeholders::_2                               \
+            , std::placeholders::_3));                            \
+      } 
+
+      JSON_RPC("sync_info"
+              , on_sync_info
+              , COMMAND_RPC_SYNC_INFO)
+
+      JSON_RPC("get_block_header_by_hash"
+               , on_get_block_header_by_hash
+               , COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH)
+
+      JSON_RPC("get_block_header_by_height"
+               , on_get_block_header_by_height
+               , COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT)
+
+      JSON_RPC("get_block"
+               , on_get_block
+               , COMMAND_RPC_GET_BLOCK)
+
+      JSON_RPC("get_connections"
+               ,on_get_connections
+               , COMMAND_RPC_GET_CONNECTIONS)
+
+      JSON_RPC("get_info"
+               , on_get_info_json
+               , COMMAND_RPC_GET_INFO)
+
+      JSON_RPC("set_bans"
+               , on_set_bans
+               , COMMAND_RPC_SETBANS)
+
+      JSON_RPC("get_bans"
+               , on_get_bans
+               , COMMAND_RPC_GETBANS)
+
+      JSON_RPC("banned"
+               , on_banned
+               , COMMAND_RPC_BANNED)
+
+      JSON_RPC("flush_txpool"
+               , on_flush_txpool
+               , COMMAND_RPC_FLUSH_TRANSACTION_POOL)
+
+      JSON_RPC("get_version"
+               , on_get_version
+               , COMMAND_RPC_GET_VERSION)
+
+      JSON_RPC("get_coinbase_tx_sum"
+               , on_get_coinbase_tx_sum
+               , COMMAND_RPC_GET_COINBASE_TX_SUM)
+
+      JSON_RPC("relay_tx"
+               , on_relay_tx
+               , COMMAND_RPC_RELAY_TX)
+
+      JSON_RPC("get_output_distribution"
+               , on_get_output_distribution
+               , COMMAND_RPC_GET_OUTPUT_DISTRIBUTION)
+
+      JSON_RPC("flush_cache"
+                 , on_flush_cache
+                 , COMMAND_RPC_FLUSH_CACHE)
+
     }
 
 
