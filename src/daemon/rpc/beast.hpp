@@ -33,29 +33,4 @@ namespace cryptonote {
    , core_rpc_server& rpc
    );
 
-  template<class t_request, class t_response, typename T>
-  std::optional<std::string> handle_json
-  (
-   std::string x
-   , T f
-   ) {
-    t_request req;
-    epee::serialization::load_t_from_json(req, x);
-
-    t_response res;
-    const bool r = f(req, res);
-
-    if (!r) {
-      return {};
-    }
-
-    std::string res_str;
-    if(!epee::serialization::store_t_to_json(res, res_str)) {
-      return {};
-    }
-
-    return res_str;
-  }
-
-
 }
