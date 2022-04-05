@@ -55,7 +55,6 @@ namespace cryptonote
      core& cr
      , nodetool::node_server& p2p
      );
-    ~core_rpc_server();
 
     network_type nettype() const { return m_core.get_nettype(); }
 
