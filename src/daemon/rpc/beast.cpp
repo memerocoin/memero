@@ -191,12 +191,9 @@ namespace cryptonote {
     {
       const std::string body_ = request_.body();
 
-      if(request_.target() == "/echo")
+      if(request_.target() == "/json_rpc")
         {
-          beast::ostream(response_.body())
-            << body_
-            << "\n"
-            ;
+          json_rpc_response(std::move(body_));
         }
 
 #define JSON(uri, callback, request_t)                          \
@@ -269,11 +266,6 @@ namespace cryptonote {
            , on_get_transactions
            , COMMAND_RPC_GET_TRANSACTIONS)
 
-
-      else if(request_.target() == "/json_rpc")
-        {
-          json_rpc_response(std::move(body_));
-        }
       else
         {
           response_.result(http::status::not_found);
