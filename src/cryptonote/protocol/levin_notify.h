@@ -48,15 +48,13 @@ namespace levin
 
     struct zone
     {
-      explicit zone(boost::asio::io_service& io_service, std::shared_ptr<connections> p2p, bool is_public)
+      explicit zone(std::shared_ptr<connections> p2p, bool is_public)
         : p2p(std::move(p2p)),
-          strand(io_service),
           connection_count(0)
       {
       }
 
       const std::shared_ptr<connections> p2p;
-      boost::asio::io_service::strand strand;
       std::atomic<std::size_t> connection_count; //!< Only update in strand, can be read at any time
     };
   } // detail
@@ -70,7 +68,7 @@ namespace levin
     notify() = default;
 
     //! Construct an instance with available notification `zones`.
-    explicit notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, bool is_public);
+    explicit notify(std::shared_ptr<connections> p2p, bool is_public);
 
     notify(const notify&) = delete;
     notify(notify&&) = default;

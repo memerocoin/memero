@@ -71,8 +71,8 @@ namespace levin
 
   } // anonymous
 
-  notify::notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, const bool is_public)
-    : zone_(std::make_shared<detail::zone>(service, std::move(p2p), is_public))
+  notify::notify(std::shared_ptr<connections> p2p, const bool is_public)
+    : zone_(std::make_shared<detail::zone>(std::move(p2p), is_public))
   {
     if (!zone_->p2p)
       throw std::logic_error{"cryptonote::levin::notify cannot have nullptr p2p argument"};
