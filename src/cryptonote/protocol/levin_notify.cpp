@@ -29,62 +29,12 @@
 
 #include "network/p2p/net_node.h" // circular dependency
 
-#include "math/crypto/controller/random.hpp"
-
-#include <random>
-
-
-
 namespace cryptonote
 {
 namespace levin
 {
   namespace
   {
-    /* A custom duration is used for the poisson distribution because of the
-       variance. If 5 seconds is given to `std::poisson_distribution`, 95% of
-       the values fall between 1-9s in 1s increments (not granular enough). If
-       5000 milliseconds is given, 95% of the values fall between 4859ms-5141ms
-       in 1ms increments (not enough time variance). Providing 20 quarter
-       seconds yields 95% of the values between 3s-7.25s in 1/4s increments. */
-    using fluff_stepsize = std::chrono::duration<std::chrono::milliseconds::rep, std::ratio<1, 20>>;
-    constexpr auto fluff_average_in = constant::CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE;
-
-    /*! Bitcoin Core is using 1/2 average seconds for outgoing connections
-        compared to incoming. The thinking is that the user controls outgoing
-        connections (Dandelion++ makes similar assumptions in its stem
-        algorithm). The randomization yields 95% values between 1s-4s in
-	1/4s increments. */
-    constexpr const fluff_stepsize fluff_average_out{fluff_stepsize{fluff_average_in} / 2};
-
-    class random_poisson
-    {
-      std::poisson_distribution<fluff_stepsize::rep> dist;
-    public:
-      explicit random_poisson(fluff_stepsize average)
-        : dist(average.count() < 0 ? 0 : average.count())
-      {}
-
-      fluff_stepsize operator()()
-      {
-        crypto::random_device rand{};
-        return fluff_stepsize{dist(rand)};
-      }
-    };
-
-    /*! Select a randomized duration from 0 to `range`. The precision will be to
-        the systems `steady_clock`. As an example, supplying 3 seconds to this
-        function will select a duration from [0, 3] seconds, and the increments
-        for the selection will be determined by the `steady_clock` precision
-        (typically nanoseconds).
-
-        \return A randomized duration from 0 to `range`. */
-    std::chrono::steady_clock::duration random_duration(std::chrono::steady_clock::duration range)
-    {
-      using rep = std::chrono::steady_clock::rep;
-      return std::chrono::steady_clock::duration{crypto::rand_range(rep(0), range.count())};
-    }
-
     std::string make_tx_payload(const std::span<const string_blob> txs)
     {
       NOTIFY_NEW_TRANSACTIONS::request request{};
@@ -120,9 +70,6 @@ namespace levin
     if (!zone_->p2p)
       throw std::logic_error{"cryptonote::levin::notify cannot have nullptr p2p argument"};
   }
-
-  notify::~notify() noexcept
-  {}
 
   bool notify::send_txs(const std::vector<string_blob> txs, const boost::uuids::uuid& source)
   {

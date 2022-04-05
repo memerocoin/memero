@@ -50,35 +50,24 @@ namespace levin
     {
       explicit zone(boost::asio::io_service& io_service, std::shared_ptr<connections> p2p, bool is_public)
         : p2p(std::move(p2p)),
-          next_epoch(io_service),
-          flush_txs(io_service),
           strand(io_service),
-          flush_time(std::chrono::steady_clock::time_point::max()),
           connection_count(0)
       {
       }
 
       const std::shared_ptr<connections> p2p;
-      boost::asio::steady_timer next_epoch;
-      boost::asio::steady_timer flush_txs;
       boost::asio::io_service::strand strand;
-      std::chrono::steady_clock::time_point flush_time; //!< Next expected Dandelion++ fluff flush
       std::atomic<std::size_t> connection_count; //!< Only update in strand, can be read at any time
     };
   } // detail
 
 
-  //! Provides tx notification privacy
   class notify
   {
     std::shared_ptr<detail::zone> zone_;
 
   public:
-
-    //! Construct an instance that cannot notify.
-    notify() noexcept
-      : zone_(nullptr)
-    {}
+    notify() = default;
 
     //! Construct an instance with available notification `zones`.
     explicit notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, bool is_public);
@@ -86,32 +75,9 @@ namespace levin
     notify(const notify&) = delete;
     notify(notify&&) = default;
 
-    ~notify() noexcept;
-
     notify& operator=(const notify&) = delete;
     notify& operator=(notify&&) = default;
 
-    //! Run the logic for the next epoch immediately. Only use in testing.
-    void run_epoch();
-
-    //! Run the logic for flushing all Dandelion++ fluff queued txs. Only use in testing.
-    void run_fluff();
-
-    /*! Send txs using `cryptonote_protocol_defs.h` payload format wrapped in a
-        levin header. The message will be sent in a "discreet" manner if
-        enabled - if `!noise.empty()` then the `command`/`payload` will be
-        queued to send at the next available noise interval. Otherwise, a
-        Dandelion++ fluff algorithm will be used.
-
-        \note Eventually Dandelion++ stem sending will be used here when
-          enabled.
-
-        \param txs The transactions that need to be serialized and relayed.
-        \param source The source of the notification. `is_nil()` indicates this
-          node is the source. Dandelion++ will use this to map a source to a
-          particular stem.
-
-      \return True iff the notification is queued for sending. */
     bool send_txs(const std::vector<string_blob> txs, const boost::uuids::uuid& source);
   };
 } // levin
