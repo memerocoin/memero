@@ -133,17 +133,18 @@ namespace daemonize {
     init_msg(p2p_str);
     init_report(p2p.init(vm), p2p_str);
 
-    const std::string rpc_port =
-      command_line::get_arg
-      (
-       vm
-       , cryptonote::rpc_server::arg_rpc_bind_port
-       );
+    const auto maybe_rpc_address = cryptonote::rpc_server::parse_args(vm);
+    if (maybe_rpc_address) {
+      const auto [rpc_ip, rpc_port] = *maybe_rpc_address;
 
-    m_rpc_port = rpc_port;
+      const auto rpc_ip_str = command_line::get_arg
+        (
+         vm 
+         , cryptonote::rpc_server::arg_rpc_bind_ip
+         );
 
-    // init_msg(rpc_str);
-    // init_report(rpc.init(vm, rpc_port), rpc_str);
+      m_rpc_address = {{rpc_ip, rpc_port, rpc_ip_str}};
+    }
 
     init_msg(protocol_str);
     init_report(protocol.init(vm), protocol_str);
@@ -166,21 +167,29 @@ namespace daemonize {
         });
 
 
+        boost::asio::io_context ioc{1};
+
+        if (!m_rpc_address) return false;
+
+        const auto [rpc_ip, rpc_port, rpc_ip_str] = *m_rpc_address;
+
         LOG_GLOBAL
           (
            "Starting "
            + beast_rpc_description
-           + " on port: "
-           + m_rpc_port + " ..."
+           + " on "
+           + rpc_ip_str
+           + ":"
+           + std::to_string(rpc_port)
+           + " ..."
            );
 
-        boost::asio::io_context ioc{1};
-
         std::thread beast_thread([&]() {
+          const auto [rpc_ip, rpc_port, rpc_ip_str] = *m_rpc_address;
           cryptonote::start_beast
             (
-             "127.0.0.1"
-             , m_rpc_port
+             rpc_ip_str
+             , rpc_port
              , ioc
              , rpc
              );
@@ -217,14 +226,22 @@ namespace daemonize {
   }
 
   void t_daemon::init_options
-  (boost::program_options::options_description & option_spec)
+  (boost::program_options::options_description & xs)
   {
-    cryptonote::core::init_options(option_spec);
-    nodetool::node_server::init_options(option_spec);
+    cryptonote::core::init_options(xs);
+    nodetool::node_server::init_options(xs);
 
     command_line::add_arg
-      (option_spec, cryptonote::rpc_server::arg_rpc_bind_port);
-    cryptonote::rpc_args::init_options(option_spec, true);
+      (
+       xs
+       , cryptonote::rpc_server::arg_rpc_bind_ip
+       );
+
+    command_line::add_arg
+      (
+       xs
+       , cryptonote::rpc_server::arg_rpc_bind_port
+       );
   }
 
 } // namespace daemonize

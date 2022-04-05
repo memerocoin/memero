@@ -54,6 +54,7 @@ namespace daemonize {
     nodetool::node_server p2p;
     cryptonote::core_rpc_server rpc;
     cryptonote::t_cryptonote_protocol_handler protocol;
-    std::string m_rpc_port;
+
+    std::optional<std::tuple<uint32_t, uint16_t, std::string>> m_rpc_address;
   };
 }

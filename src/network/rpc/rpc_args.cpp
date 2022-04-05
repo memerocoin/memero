@@ -31,86 +31,46 @@
 #include "tools/epee/functional/hex.hpp"
 #include "tools/epee/include/string_tools.h"
 
+#include "tools/common/command_line.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/system/error_code.hpp>
 
 namespace cryptonote
 {
-  rpc_args::descriptors::descriptors()
-     : rpc_bind_ip({"rpc-bind-ip", rpc_args::tr("Specify IP to bind RPC server"), "127.0.0.1"})
-     , rpc_bind_ipv6_address({"rpc-bind-ipv6-address", rpc_args::tr("Specify IPv6 address to bind RPC server"), "::1"})
-     , rpc_use_ipv6({"rpc-use-ipv6", rpc_args::tr("Allow IPv6 for RPC"), false})
-     , rpc_ignore_ipv4({"rpc-ignore-ipv4", rpc_args::tr("Ignore unsuccessful IPv4 bind for RPC"), false})
-     , rpc_access_control_origins({"rpc-access-control-origins", rpc_args::tr("Specify a comma separated list of origins to allow cross origin resource sharing"), ""})
-  {}
-
-  const char* rpc_args::tr(const char* str) { return str; }
-
-  void rpc_args::init_options(boost::program_options::options_description& desc, const bool any_cert_option)
+namespace rpc_server {
+  std::optional<std::pair<uint32_t, uint16_t>>
+  parse_args(const boost::program_options::variables_map & vm)
   {
-    const descriptors arg{};
-    command_line::add_arg(desc, arg.rpc_bind_ip);
-    command_line::add_arg(desc, arg.rpc_bind_ipv6_address);
-    command_line::add_arg(desc, arg.rpc_use_ipv6);
-    command_line::add_arg(desc, arg.rpc_ignore_ipv4);
-    command_line::add_arg(desc, arg.rpc_access_control_origins);
+    const auto rpc_ip_str = command_line::get_arg
+      (
+       vm 
+       , cryptonote::rpc_server::arg_rpc_bind_ip
+       );
+
+    const auto rpc_port_str = command_line::get_arg
+      (
+       vm 
+       , cryptonote::rpc_server::arg_rpc_bind_port
+       );
+
+    uint32_t rpc_ip;
+    uint16_t rpc_port;
+
+    using namespace epee::string_tools;
+    if (!get_ip_int32_from_string(rpc_ip, rpc_ip_str))
+      {
+        std::cerr << "Invalid IP: " << rpc_ip_str << std::endl;
+        return {};
+      }
+    if (!get_xtype_from_string(rpc_port, rpc_port_str))
+      {
+        std::cerr << "Invalid port: " << rpc_port_str << std::endl;
+        return {};
+      }
+
+    return {{rpc_ip, rpc_port}};
   }
 
-  std::optional<rpc_args> rpc_args::process(const boost::program_options::variables_map& vm, const bool any_cert_option)
-  {
-    const descriptors arg{};
-    rpc_args config{};
-
-    config.bind_ip = command_line::get_arg(vm, arg.rpc_bind_ip);
-    config.bind_ipv6_address = command_line::get_arg(vm, arg.rpc_bind_ipv6_address);
-    config.use_ipv6 = command_line::get_arg(vm, arg.rpc_use_ipv6);
-    config.require_ipv4 = !command_line::get_arg(vm, arg.rpc_ignore_ipv4);
-    if (!config.bind_ip.empty())
-    {
-      // always parse IP here for error consistency
-      boost::system::error_code ec{};
-      if (ec)
-      {
-        LOG_ERROR
-          (
-           "Invalid IP address given for --"
-           + std::string(arg.rpc_bind_ip.name)
-           );
-        return std::nullopt;
-      }
-    }
-    if (!config.bind_ipv6_address.empty())
-    {
-      // allow square braces, but remove them here if present
-      if (config.bind_ipv6_address.find('[') != std::string::npos)
-      {
-        config.bind_ipv6_address = config.bind_ipv6_address.substr(1, config.bind_ipv6_address.size() - 2);
-      }
-
-
-      // always parse IP here for error consistency
-      boost::system::error_code ec{};
-      if (ec)
-      {
-        LOG_ERROR
-          (
-           "Invalid IP address given for --"
-           + std::string(arg.rpc_bind_ipv6_address.name)
-           );
-        return std::nullopt;
-      }
-    }
-
-    auto access_control_origins_input = command_line::get_arg(vm, arg.rpc_access_control_origins);
-    if (!access_control_origins_input.empty())
-    {
-      std::vector<std::string> access_control_origins;
-      boost::split(access_control_origins, access_control_origins_input, boost::is_any_of(","));
-      std::for_each(access_control_origins.begin(), access_control_origins.end(), std::bind(&boost::trim<std::string>, std::placeholders::_1, std::locale::classic()));
-      config.access_control_origins = std::move(access_control_origins);
-    }
-
-    return {std::move(config)};
-  }
-
-}
+} // rpc_server
+} // cryptonote

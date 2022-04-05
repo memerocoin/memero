@@ -37,45 +37,20 @@
 
 namespace cryptonote
 {
-  //! Processes command line arguments related to server-side RPC
-  struct rpc_args
-  {
-    // non-static construction prevents initialization order issues
-    struct descriptors
-    {
-      descriptors();
-      descriptors(const descriptors&) = delete;
-      descriptors(descriptors&&) = delete;
-      descriptors& operator=(const descriptors&) = delete;
-      descriptors& operator=(descriptors&&) = delete;
-
-      const command_line::arg_descriptor<std::string> rpc_bind_ip;
-      const command_line::arg_descriptor<std::string> rpc_bind_ipv6_address;
-      const command_line::arg_descriptor<bool> rpc_use_ipv6;
-      const command_line::arg_descriptor<bool> rpc_ignore_ipv4;
-      const command_line::arg_descriptor<std::string> rpc_access_control_origins;
-    };
-
-    // `allow_any_cert` bool toggles `--rpc-ssl-allow-any-cert` configuration
-
-    static const char* tr(const char* str);
-    static void init_options(boost::program_options::options_description& desc, const bool any_cert_option = false);
-
-    //! \return Arguments specified by user, or `std::nullopt` if error
-    static std::optional<rpc_args> process(const boost::program_options::variables_map& vm, const bool any_cert_option = false);
-
-    std::string bind_ip;
-    std::string bind_ipv6_address;
-    bool use_ipv6;
-    bool require_ipv4;
-    std::vector<std::string> access_control_origins;
-  };
-
   namespace rpc_server {
     const command_line::arg_descriptor<std::string> arg_rpc_bind_port = {
       "rpc-bind-port"
       , "Port for RPC server"
       , std::to_string(::cryptonote::mainnet.RPC_DEFAULT_PORT)
     };
+
+    const command_line::arg_descriptor<std::string> arg_rpc_bind_ip = {
+       "rpc-bind-ip"
+       , "Specify IP to bind RPC server"
+       , "127.0.0.1"
+    };
+
+    std::optional<std::pair<uint32_t, uint16_t>>
+    parse_args(const boost::program_options::variables_map & vm);
   }
 }

@@ -28,7 +28,7 @@ namespace cryptonote {
   void start_beast
   (
    const std::string_view ip
-   , const std::string_view rpc_port
+   , const uint16_t port
    , boost::asio::io_context& ioc
    , core_rpc_server& rpc
    );

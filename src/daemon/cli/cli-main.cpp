@@ -66,11 +66,10 @@ int main(int argc, char const * argv[])
   command_line::add_arg(visible_options, command_line::arg_help);
   command_line::add_arg(visible_options, command_line::arg_version);
 
-  const cryptonote::rpc_args::descriptors arg{};
   command_line::add_arg
     (
      visible_options
-     , arg.rpc_bind_ip
+     , cryptonote::rpc_server::arg_rpc_bind_ip
      );
 
   command_line::add_arg
@@ -130,28 +129,12 @@ int main(int argc, char const * argv[])
     return 1;
   }
 
-  const auto rpc_ip_str = command_line::get_arg(vm, arg.rpc_bind_ip);
-  const auto rpc_port_str = command_line::get_arg
-    (
-     vm
-     , cryptonote::rpc_server::arg_rpc_bind_port
-     );
+  const auto maybe_rpc_address = cryptonote::rpc_server::parse_args(vm);
 
-  uint32_t rpc_ip;
-  uint16_t rpc_port;
-  {
-    using namespace epee::string_tools;
-    if (!get_ip_int32_from_string(rpc_ip, rpc_ip_str))
-      {
-        std::cerr << "Invalid IP: " << rpc_ip_str << std::endl;
-        return 1;
-      }
-    if (!get_xtype_from_string(rpc_port, rpc_port_str))
-      {
-        std::cerr << "Invalid port: " << rpc_port_str << std::endl;
-        return 1;
-      }
-  }
+  if (!maybe_rpc_address) return 1;
+
+  const auto [rpc_ip, rpc_port] = *maybe_rpc_address;
+      
 
   try {
     daemonize::t_command_server

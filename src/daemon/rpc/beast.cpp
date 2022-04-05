@@ -510,14 +510,11 @@ namespace cryptonote {
   void start_beast
   (
    const std::string_view ip
-   , const std::string_view rpc_port
+   , const uint16_t port
    , boost::asio::io_context& ioc
    , core_rpc_server& rpc
    ) {
     const auto address = boost::asio::ip::make_address(ip);
-
-    const uint16_t port =
-      static_cast<uint16_t>(std::atoi(rpc_port.data()));
 
     tcp::acceptor acceptor{ioc, {address, port}};
     tcp::socket socket{ioc};
