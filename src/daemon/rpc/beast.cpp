@@ -189,11 +189,10 @@ namespace cryptonote {
 
     void json_response()
     {
-      const std::string body_ = request_.body();
 
       if(request_.target() == "/json_rpc")
         {
-          json_rpc_response(std::move(body_));
+          json_rpc_response();
         }
 
 #define JSON(uri, callback, request_t)                          \
@@ -340,8 +339,10 @@ namespace cryptonote {
     }
 
 
-    void json_rpc_response(const std::string body_)
+    void json_rpc_response()
     {
+      const std::string body_ = request_.body();
+
       epee::serialization::portable_storage ps;
       if(!ps.load_from_json(body_)) {
         epee::json_rpc::error_response rsp{};
