@@ -112,7 +112,7 @@ namespace levin
           particular stem.
 
       \return True iff the notification is queued for sending. */
-    bool send_txs(std::vector<string_blob> txs, const boost::uuids::uuid& source);
+    bool send_txs(const std::vector<string_blob> txs, const boost::uuids::uuid& source);
   };
 } // levin
 } // net

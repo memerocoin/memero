@@ -85,10 +85,10 @@ namespace levin
       return std::chrono::steady_clock::duration{crypto::rand_range(rep(0), range.count())};
     }
 
-    std::string make_tx_payload(std::vector<string_blob>&& txs)
+    std::string make_tx_payload(const std::span<const string_blob> txs)
     {
       NOTIFY_NEW_TRANSACTIONS::request request{};
-      request.txs = std::move(txs);
+      request.txs = std::vector<string_blob>{txs.begin(), txs.end()};
 
       std::string fullBlob;
       if (!epee::serialization::store_t_to_binary(request, fullBlob))
@@ -97,9 +97,14 @@ namespace levin
       return fullBlob;
     }
 
-    bool make_payload_send_txs(connections& p2p, std::vector<string_blob>&& txs, const boost::uuids::uuid& destination)
+    bool make_payload_send_txs
+    (
+     connections& p2p
+     , const std::span<const string_blob> txs
+     , const boost::uuids::uuid& destination
+     )
     {
-      const cryptonote::string_blob blob = make_tx_payload(std::move(txs));
+      const cryptonote::string_blob blob = make_tx_payload(txs);
       p2p.for_connection(destination, [&blob](detail::p2p_context& context) {
         on_levin_traffic(context, true, true, false, blob.size(), NOTIFY_NEW_TRANSACTIONS::ID);
         return true;
@@ -202,7 +207,7 @@ namespace levin
         for (auto& connection : connections)
         {
           std::sort(connection.first.begin(), connection.first.end()); // don't leak receive order
-          make_payload_send_txs(*zone_->p2p, std::move(connection.first), connection.second);
+          make_payload_send_txs(*zone_->p2p, connection.first, connection.second);
         }
 
         if (next_flush != std::chrono::steady_clock::time_point::max())
@@ -311,7 +316,7 @@ namespace levin
     zone_->flush_txs.cancel();
   }
 
-  bool notify::send_txs(std::vector<string_blob> txs, const boost::uuids::uuid& source)
+  bool notify::send_txs(const std::vector<string_blob> txs, const boost::uuids::uuid& source)
   {
     if (txs.empty())
       return true;
@@ -319,11 +324,23 @@ namespace levin
     if (!zone_)
       return false;
 
-    {
-      zone_->strand.dispatch(fluff_notify{zone_, std::move(txs), source});
-    }
+    zone_->p2p->foreach_connection
+      ([&] (detail::p2p_context& context)
+      {
+        if
+          (
+           context.handshake_complete()
+           && source != context.m_connection_id
+           )
+          {
+            make_payload_send_txs
+              (*zone_->p2p, txs, context.m_connection_id);
+          }
+        return true;
+      });
 
     return true;
   }
+
 } // levin
 } // net
