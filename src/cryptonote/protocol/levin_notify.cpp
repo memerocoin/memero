@@ -297,14 +297,6 @@ namespace levin
   notify::~notify() noexcept
   {}
 
-  notify::status notify::get_status() const noexcept
-  {
-    if (!zone_)
-      return {};
-
-    return {};
-  }
-
   void notify::run_epoch()
   {
     if (!zone_)

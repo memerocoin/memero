@@ -74,9 +74,6 @@ namespace levin
     std::shared_ptr<detail::zone> zone_;
 
   public:
-    struct status
-    {
-    };
 
     //! Construct an instance that cannot notify.
     notify() noexcept
@@ -93,9 +90,6 @@ namespace levin
 
     notify& operator=(const notify&) = delete;
     notify& operator=(notify&&) = default;
-
-    //! \return Status information for zone selection.
-    status get_status() const noexcept;
 
     //! Run the logic for the next epoch immediately. Only use in testing.
     void run_epoch();
