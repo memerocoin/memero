@@ -39,8 +39,8 @@ namespace cryptonote {
   template<class t_request, class t_response, typename T>
   std::optional<std::string> handle_json
   (
-   std::string x
-   , T f
+   const std::string x
+   , const T f
    ) {
     t_request req;
     epee::serialization::load_t_from_json(req, x);
@@ -162,7 +162,7 @@ namespace cryptonote {
     }
 
     template<class t_request, class t_response, typename T>
-    void process_json(T f) {
+    void process_json(const T f) {
       const std::string body_ = request_.body();
       const std::optional<std::string> maybe_res = handle_json
         <
@@ -276,7 +276,7 @@ namespace cryptonote {
     void process_json_rpc
     (
      epee::serialization::portable_storage ps
-     , T f
+     , const T f
      ) {
       epee::json_rpc::request<t_request> req{};
 
@@ -525,8 +525,9 @@ namespace cryptonote {
    , core_rpc_server& rpc
    ) {
     const auto address = boost::asio::ip::make_address(ip);
-    unsigned short port =
-      static_cast<unsigned short>(std::atoi(rpc_port.data()));
+
+    const uint16_t port =
+      static_cast<uint16_t>(std::atoi(rpc_port.data()));
 
     tcp::acceptor acceptor{ioc, {address, port}};
     tcp::socket socket{ioc};
