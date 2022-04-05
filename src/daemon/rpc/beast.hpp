@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 #include "network/rpc/core_rpc_server.h"
-#include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
 #include <boost/asio.hpp>
 
