@@ -70,7 +70,11 @@ namespace levin
     notify& operator=(const notify&) = delete;
     notify& operator=(notify&&) = default;
 
-    bool send_txs(const std::vector<string_blob> txs, const boost::uuids::uuid& source);
+    bool send_txs
+    (
+     const std::vector<string_blob> txs
+     , const boost::uuids::uuid& source
+     );
   };
 } // levin
 } // net

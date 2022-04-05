@@ -76,14 +76,18 @@ namespace levin
 
   } // anonymous
 
-  notify::notify(std::shared_ptr<connections> p2p, const bool is_public)
+  notify::notify(const std::shared_ptr<connections> p2p, const bool is_public)
     : zone_(std::make_shared<detail::zone>(std::move(p2p), is_public))
   {
     if (!zone_->p2p)
       throw std::logic_error{"cryptonote::levin::notify cannot have nullptr p2p argument"};
   }
 
-  bool notify::send_txs(const std::vector<string_blob> txs, const boost::uuids::uuid& source)
+  bool notify::send_txs
+  (
+   const std::vector<string_blob> txs
+   , const boost::uuids::uuid& source
+   )
   {
     if (txs.empty())
       return true;
