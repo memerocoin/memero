@@ -143,7 +143,7 @@ namespace cryptonote {
              , "application/json; charset=utf-8"
              );
 
-          rpc_response();
+          json_response();
           break;
 
         default:
@@ -187,7 +187,7 @@ namespace cryptonote {
         ;
     }
 
-    void rpc_response()
+    void json_response()
     {
       const std::string body_ = request_.body();
 
