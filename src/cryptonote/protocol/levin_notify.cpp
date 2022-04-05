@@ -29,6 +29,9 @@
 
 #include "network/p2p/net_node.h" // circular dependency
 
+#include <algorithm>
+#include <random>
+
 namespace cryptonote
 {
 namespace levin
@@ -38,7 +41,11 @@ namespace levin
     std::string make_tx_payload(const std::span<const string_blob> txs)
     {
       NOTIFY_NEW_TRANSACTIONS::request request{};
-      request.txs = std::vector<string_blob>{txs.begin(), txs.end()};
+
+      auto txs_shuffle = std::vector<string_blob>{txs.begin(), txs.end()};
+      std::shuffle(txs_shuffle.begin(), txs_shuffle.end(), std::random_device());
+
+      request.txs = txs_shuffle;
 
       std::string fullBlob;
       if (!epee::serialization::store_t_to_binary(request, fullBlob))
