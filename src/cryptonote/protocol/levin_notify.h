@@ -29,12 +29,8 @@
 #pragma once
 
 #include "cryptonote/basic/type/string_blob_type.hpp"
-#include "cryptonote/protocol/connection_context.h"
 
 #include "tools/epee/include/net/levin_protocol_handler_async.h"
-
-#include <boost/asio.hpp>
-
 
 namespace cryptonote
 {
@@ -44,8 +40,6 @@ namespace levin
 
   namespace detail
   {
-    using p2p_context = nodetool::p2p_connection_context_t<cryptonote::cryptonote_connection_context>;
-
     struct zone
     {
       explicit zone(std::shared_ptr<connections> p2p, bool is_public)

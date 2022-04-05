@@ -38,6 +38,10 @@ namespace levin
 {
   namespace
   {
+    using p2p_context =
+      nodetool::p2p_connection_context_t
+      <cryptonote::cryptonote_connection_context>;
+
     std::string make_tx_payload(const std::span<const string_blob> txs)
     {
       NOTIFY_NEW_TRANSACTIONS::request request{};
@@ -62,7 +66,8 @@ namespace levin
      )
     {
       const cryptonote::string_blob blob = make_tx_payload(txs);
-      p2p.for_connection(destination, [&blob](detail::p2p_context& context) {
+
+      p2p.for_connection(destination, [&blob](p2p_context& context) {
         on_levin_traffic(context, true, true, false, blob.size(), NOTIFY_NEW_TRANSACTIONS::ID);
         return true;
       });
@@ -87,7 +92,7 @@ namespace levin
       return false;
 
     zone_->p2p->foreach_connection
-      ([&] (detail::p2p_context& context)
+      ([&] (p2p_context& context)
       {
         if
           (
