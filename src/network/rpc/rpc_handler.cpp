@@ -42,23 +42,8 @@ namespace rpc
       std::vector<std::uint64_t> distribution;
       std::uint64_t start_height, base;
 
-      // see if we can extend the cache - a common case
-      if (d.cached && amount == 0 && d.cached_from == from_height && to_height > d.cached_to)
-      {
-        std::vector<std::uint64_t> new_distribution;
-        if (!f(amount, d.cached_to + 1, to_height, start_height, new_distribution, base))
-          return std::nullopt;
-        distribution = d.cached_distribution;
-        distribution.reserve(distribution.size() + new_distribution.size());
-        for (const auto &e: new_distribution)
-          distribution.push_back(e);
-        start_height = d.cached_start_height;
-        base = d.cached_base;
-      }
-      else
-      {
-        if (!f(amount, from_height, to_height, start_height, distribution, base))
-          return std::nullopt;
+      if (!f(amount, from_height, to_height, start_height, distribution, base)) {
+        return {};
       }
 
       if (to_height > 0 && to_height >= from_height)
