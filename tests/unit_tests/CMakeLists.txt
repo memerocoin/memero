@@ -113,7 +113,6 @@ add_executable(unit_tests_core
 # output_size_histogram.cpp 
   ringct.cpp
   rpc_version_str.cpp
-  slow_memmem.cpp
   test_peerlist.cpp
   test_protocol_pack.cpp
   test_tx_utils.cpp

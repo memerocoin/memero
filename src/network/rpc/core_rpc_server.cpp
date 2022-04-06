@@ -802,23 +802,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  // equivalent of strstr, but with arbitrary bytes (ie, NULs)
-  // This does not differentiate between "not found" and "found at offset 0"
-  size_t slow_memmem(const void* start_buff, size_t buflen,const void* pat,size_t patlen)
-  {
-    const void* buf = start_buff;
-    const void* end=(const char*)buf+buflen;
-    if (patlen > buflen || patlen == 0) return 0;
-    while(buflen>0 && (buf=memchr(buf,((const char*)pat)[0],buflen-patlen+1)))
-    {
-      if(memcmp(buf,pat,patlen)==0)
-        return (const char*)buf - (const char*)start_buff;
-      buf=(const char*)buf+1;
-      buflen = (const char*)end - (const char*)buf;
-    }
-    return 0;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   uint64_t core_rpc_server::get_block_reward(const block& blk)
   {
     uint64_t reward = 0;
