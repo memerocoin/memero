@@ -1,0 +1,12 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "method": "get_output_distribution",
+  "params": {
+    "amounts": [0],
+    "client": "",
+    "from_height": 99744,
+    "to_height": 99748,
+    "cumulative": false
+  }
+}
