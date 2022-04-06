@@ -1214,26 +1214,15 @@ namespace cryptonote
     };
     typedef epee::misc_utils::struct_init<request_t> request;
 
-    struct distribution
-    {
-      rpc::output_distribution_data data;
-      uint64_t amount;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(amount)
-        KV_SERIALIZE_N(data.start_height, "start_height")
-        KV_SERIALIZE_N(data.distribution, "distribution")
-        KV_SERIALIZE_N(data.base, "base")
-      END_KV_SERIALIZE_MAP()
-    };
-
     struct response_t: public rpc_access_response_base
     {
-      std::vector<distribution> distributions;
+      rpc::output_distribution_data data;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
-        KV_SERIALIZE(distributions)
+        KV_SERIALIZE_N(data.start_height, "start_height")
+        KV_SERIALIZE_N(data.distribution, "distribution")
+        KV_SERIALIZE_N(data.base, "base")
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;

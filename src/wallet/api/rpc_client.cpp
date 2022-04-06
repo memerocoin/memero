@@ -121,18 +121,8 @@ bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64
   {
     return false;
   }
-  if (res.distributions.size() != 1)
-  {
-    LOG_WARNING("Failed to request output distribution: not the expected single result");
-    return false;
-  }
-  if (res.distributions[0].amount != 0)
-  {
-    LOG_WARNING("Failed to request output distribution: results are not for amount 0");
-    return false;
-  }
-  start_height = res.distributions[0].data.start_height;
-  distribution = std::move(res.distributions[0].data.distribution);
+  start_height = res.data.start_height;
+  distribution = std::move(res.data.distribution);
 
   return true;
 }

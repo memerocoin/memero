@@ -1320,7 +1320,7 @@ namespace cryptonote
       const rpc::output_distribution_data out_data =
         {distribution, start_height, base};
 
-      res.distributions.push_back({out_data, rct_amount});
+      res.data = out_data;
     }
     catch (const std::exception &e)
     {
