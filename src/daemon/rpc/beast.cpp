@@ -159,6 +159,7 @@ namespace cryptonote {
     template<class t_request, class t_response, typename T>
     void process_json(const T f) {
       const std::string body_ = request_.body();
+
       const std::optional<std::string> maybe_res = handle_json
         <
           t_request
@@ -180,10 +181,14 @@ namespace cryptonote {
       beast::ostream(response_.body())
         << *maybe_res
         ;
+
+      LOG_DEBUG(*maybe_res);
     }
 
     void json_response()
     {
+      LOG_DEBUG(std::string(request_.target()));
+      LOG_DEBUG(request_.body());
 
       if(request_.target() == "/json_rpc")
         {
@@ -328,6 +333,8 @@ namespace cryptonote {
 
       beast::ostream(response_.body())
         << epee::serialization::store_t_to_json(resp);
+      LOG_DEBUG
+        (epee::serialization::store_t_to_json(resp));
     }
 
 

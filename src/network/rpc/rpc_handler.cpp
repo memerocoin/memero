@@ -24,51 +24,26 @@ namespace rpc
   }
 
   std::optional<output_distribution_data>
-    RpcHandler::get_output_distribution(const std::function<bool(uint64_t, uint64_t, uint64_t, uint64_t&, std::vector<uint64_t>&, uint64_t&)> &f, uint64_t amount, uint64_t from_height, uint64_t to_height, const std::function<crypto::hash(uint64_t)> &get_hash, bool cumulative, uint64_t blockchain_height)
+    RpcHandler::get_output_distribution(const std::function<bool(uint64_t, uint64_t, uint64_t, uint64_t&, std::vector<uint64_t>&, uint64_t&)> &f, uint64_t amount, uint64_t from_height, uint64_t to_height, bool cumulative)
   {
       static struct D
       {
         std::mutex mutex;
         std::vector<std::uint64_t> cached_distribution;
         std::uint64_t cached_from, cached_to, cached_start_height, cached_base;
-        crypto::hash cached_m10_hash;
-        crypto::hash cached_top_hash;
         bool cached;
-        D(): cached_from(0), cached_to(0), cached_start_height(0), cached_base(0), cached_m10_hash(crypto::null_hash), cached_top_hash(crypto::null_hash), cached(false) {}
+        D(): cached_from(0), cached_to(0), cached_start_height(0), cached_base(0), cached(false) {}
       } d;
       const std::unique_lock<std::mutex> lock(d.mutex);
 
-      crypto::hash top_hash = crypto::null_hash;
-      if (d.cached_to < blockchain_height)
-        top_hash = get_hash(d.cached_to);
-      if (d.cached && amount == 0 && d.cached_from == from_height && d.cached_to == to_height && d.cached_top_hash == top_hash)
+      if (d.cached && amount == 0 && d.cached_from == from_height && d.cached_to == to_height)
         return process_distribution(cumulative, d.cached_start_height, d.cached_distribution, d.cached_base);
 
       std::vector<std::uint64_t> distribution;
       std::uint64_t start_height, base;
 
       // see if we can extend the cache - a common case
-      bool can_extend = d.cached && amount == 0 && d.cached_from == from_height && to_height > d.cached_to && top_hash == d.cached_top_hash;
-      if (!can_extend)
-      {
-        // we kept track of the hash 10 blocks below, if it exists, so if it matches,
-        // we can still pop the last 10 cached slots and try again
-        if (d.cached && amount == 0 && d.cached_from == from_height && d.cached_to - d.cached_from >= 10 && to_height > d.cached_to - 10)
-        {
-          crypto::hash hash10 = get_hash(d.cached_to - 10);
-          if (hash10 == d.cached_m10_hash)
-          {
-            d.cached_to -= 10;
-            d.cached_top_hash = hash10;
-            d.cached_m10_hash = crypto::null_hash;
-            LOG_ERROR_AND_RETURN_UNLESS(d.cached_distribution.size() >= 10, std::nullopt, "Cached distribution size does not match cached bounds");
-            for (int p = 0; p < 10; ++p)
-              d.cached_distribution.pop_back();
-            can_extend = true;
-          }
-        }
-      }
-      if (can_extend)
+      if (d.cached && amount == 0 && d.cached_from == from_height && to_height > d.cached_to)
       {
         std::vector<std::uint64_t> new_distribution;
         if (!f(amount, d.cached_to + 1, to_height, start_height, new_distribution, base))
@@ -97,8 +72,6 @@ namespace rpc
       {
         d.cached_from = from_height;
         d.cached_to = to_height;
-        d.cached_top_hash = get_hash(d.cached_to);
-        d.cached_m10_hash = d.cached_to >= 10 ? get_hash(d.cached_to - 10) : crypto::null_hash;
         d.cached_distribution = distribution;
         d.cached_start_height = start_height;
         d.cached_base = base;
