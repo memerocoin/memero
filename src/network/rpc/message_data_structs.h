@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "network/rpc/rpc_handler.h"
-
 #include "cryptonote/basic/functional/base.hpp"
 #include "math/blockchain/functional/difficulty.hpp"
 
@@ -180,12 +178,20 @@ namespace rpc
     std::string version;
   };
 
+  struct output_distribution_data
+  {
+    std::vector<std::uint64_t> distribution;
+    std::uint64_t start_height;
+    std::uint64_t base;
+  };
+
   struct output_distribution
   {
     output_distribution_data data;
     uint64_t amount;
     bool cumulative;
   };
+
 }  // namespace rpc
 
 }  // namespace cryptonote

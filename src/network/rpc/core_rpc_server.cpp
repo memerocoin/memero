@@ -1291,31 +1291,36 @@ namespace cryptonote
       // 0 is placeholder for the whole chain
       const uint64_t req_to_height = req.to_height ? req.to_height : (m_core.get_current_blockchain_height() - 1);
       constexpr uint64_t rct_amount = 0;
-      auto data = rpc::RpcHandler::get_output_distribution
-        (
-         std::bind
-         (
-          &cryptonote::core::get_output_distribution
-          , &m_core
-          , std::placeholders::_1
-          , std::placeholders::_2
-          , std::placeholders::_3
-          , std::placeholders::_4
-          , std::placeholders::_5
-          , std::placeholders::_6
+      std::vector<std::uint64_t> distribution;
+      std::uint64_t start_height, base;
+
+      if (!m_core.get_output_distribution
+          (
+           rct_amount
+           , req.from_height
+           , req_to_height
+           , start_height
+           , distribution
+           , base
+           )
           )
-         , rct_amount, req.from_height, req_to_height
-         , req.cumulative
-         );
-
-      if (!data)
         {
-          error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-          error_resp.message = "Failed to get output distribution";
-          return false;
-        }
+        error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
+        error_resp.message = "Failed to get output distribution";
+        return false;
+      }
 
-      res.distributions.push_back({std::move(*data), rct_amount});
+      if (!req.cumulative && !distribution.empty())
+      {
+        for (std::size_t n = distribution.size() - 1; 0 < n; --n)
+          distribution[n] -= distribution[n - 1];
+        distribution[0] -= base;
+      }
+
+      const rpc::output_distribution_data out_data =
+        {distribution, start_height, base};
+
+      res.distributions.push_back({out_data, rct_amount});
     }
     catch (const std::exception &e)
     {

@@ -30,7 +30,6 @@
 
 add_library(network_rpc_base
   rpc_args.cpp
-  rpc_handler.cpp
   core_rpc_server_error_codes.cpp
   rpc_version_str.cpp
   )

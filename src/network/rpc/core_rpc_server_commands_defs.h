@@ -31,7 +31,8 @@
 #pragma once
 
 
-#include "network/rpc/rpc_handler.h"
+#include "message_data_structs.h"
+
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 
 #include "tools/epee/include/string_tools.h"
