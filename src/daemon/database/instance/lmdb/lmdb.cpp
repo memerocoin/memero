@@ -3663,7 +3663,7 @@ void BlockchainLMDB::get_output_tx_and_index(const uint64_t& amount, const std::
   }
 }
 
-bool BlockchainLMDB::get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, std::vector<uint64_t> &distribution, uint64_t &base) const
+bool BlockchainLMDB::get_output_size_histogram(uint64_t amount, uint64_t from_height, uint64_t to_height, std::vector<uint64_t> &distribution, uint64_t &base) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" + std::string(__func__));
   check_open();

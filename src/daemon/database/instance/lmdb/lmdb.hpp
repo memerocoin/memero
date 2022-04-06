@@ -324,7 +324,7 @@ public:
 
   virtual bool can_thread_bulk_indices() const { return true; }
 
-  bool get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, std::vector<uint64_t> &distribution, uint64_t &base) const;
+  bool get_output_size_histogram(uint64_t amount, uint64_t from_height, uint64_t to_height, std::vector<uint64_t> &distribution, uint64_t &base) const;
 
   // helper functions
   static int compare_uint64(const MDB_val *a, const MDB_val *b);

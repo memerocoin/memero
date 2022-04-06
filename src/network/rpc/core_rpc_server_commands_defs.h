@@ -1195,7 +1195,7 @@ namespace cryptonote
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_GET_OUTPUT_DISTRIBUTION
+  struct COMMAND_RPC_GET_OUTPUT_SIZE_HISTOGRAM
   {
     struct request_t: public rpc_access_request_base
     {
@@ -1216,12 +1216,12 @@ namespace cryptonote
 
     struct response_t: public rpc_access_response_base
     {
-      rpc::output_distribution_data data;
+      rpc::output_size_histogram_data data;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
         KV_SERIALIZE_N(data.start_height, "start_height")
-        KV_SERIALIZE_N(data.distribution, "distribution")
+        KV_SERIALIZE_N(data.histogram, "distribution")
         KV_SERIALIZE_N(data.base, "base")
       END_KV_SERIALIZE_MAP()
     };

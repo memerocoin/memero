@@ -297,8 +297,8 @@ void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof_unsafe& p);
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::DaemonInfo info);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::DaemonInfo& info);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_distribution dist);
-void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_distribution& dist);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_size_histogram dist);
+void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_size_histogram& dist);
 
 template <typename T>
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::list<T> xs)

@@ -106,23 +106,23 @@ std::optional<std::string> RPC_Client::get_target_height(uint64_t &height) const
 
 bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution) const
 {
-  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request req{};
-  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response res{};
+  cryptonote::COMMAND_RPC_GET_OUTPUT_SIZE_HISTOGRAM::request req{};
+  cryptonote::COMMAND_RPC_GET_OUTPUT_SIZE_HISTOGRAM::response res{};
   req.amounts.push_back(0);
   req.from_height = 0;
   req.cumulative = true;
 
   try
   {
-    bool r = invoke_http_json_rpc("get_output_distribution", req, res);
-    THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
+    bool r = invoke_http_json_rpc("get_output_size_histogram", req, res);
+    THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_size_histogram");
   }
   catch(...)
   {
     return false;
   }
   start_height = res.data.start_height;
-  distribution = std::move(res.data.distribution);
+  distribution = std::move(res.data.histogram);
 
   return true;
 }
@@ -162,9 +162,9 @@ void RPC_Client::get_tx_outputs
     {
       // check we're clear enough of rct start, to avoid corner cases below
       THROW_WALLET_EXCEPTION_IF(rct_offsets.size() <= CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE,
-          error::get_output_distribution, "Not enough rct outputs");
+          error::get_output_size_histogram, "Not enough rct outputs");
       THROW_WALLET_EXCEPTION_IF(rct_offsets.back() <= max_rct_index,
-          error::get_output_distribution, "Daemon reports suspicious number of rct outputs");
+          error::get_output_size_histogram, "Daemon reports suspicious number of rct outputs");
     }
 
     // we ask for more, to have spares if some outputs are still locked

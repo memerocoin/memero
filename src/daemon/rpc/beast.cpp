@@ -439,9 +439,9 @@ namespace cryptonote {
                , on_relay_tx
                , COMMAND_RPC_RELAY_TX)
 
-      JSON_RPC("get_output_distribution"
-               , on_get_output_distribution
-               , COMMAND_RPC_GET_OUTPUT_DISTRIBUTION)
+      JSON_RPC("get_output_size_histogram"
+               , on_get_output_size_histogram
+               , COMMAND_RPC_GET_OUTPUT_SIZE_HISTOGRAM)
 
       JSON_RPC("flush_cache"
                  , on_flush_cache

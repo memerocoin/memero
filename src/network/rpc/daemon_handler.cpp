@@ -77,7 +77,7 @@ namespace rpc
       {"get_blocks_fast", handle_message<GetBlocksFast>},
       {"get_hashes_fast", handle_message<GetHashesFast>},
       {"get_info", handle_message<GetInfo>},
-      {"get_output_distribution", handle_message<GetOutputDistribution>},
+      {"get_output_size_histogram", handle_message<GetOutputDistribution>},
       {"get_output_keys", handle_message<GetOutputKeys>},
       {"get_peer_list", handle_message<GetPeerList>},
       {"get_transaction_pool", handle_message<GetTransactionPool>},
@@ -731,15 +731,15 @@ namespace rpc
       const uint64_t req_to_height = req.to_height ? req.to_height : (m_core.get_current_blockchain_height() - 1);
       for (std::uint64_t amount : req.amounts)
       {
-        auto data = rpc::RpcHandler::get_output_distribution([this](uint64_t amount, uint64_t from, uint64_t to, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) { return m_core.get_output_distribution(amount, from, to, start_height, distribution, base); }, amount, req.from_height, req_to_height, [this](uint64_t height) { return m_core.get_blockchain_storage().get_db().get_block_hash_from_height(height); }, req.cumulative, m_core.get_current_blockchain_height());
+        auto data = rpc::RpcHandler::get_output_size_histogram([this](uint64_t amount, uint64_t from, uint64_t to, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) { return m_core.get_output_size_histogram(amount, from, to, start_height, distribution, base); }, amount, req.from_height, req_to_height, [this](uint64_t height) { return m_core.get_blockchain_storage().get_db().get_block_hash_from_height(height); }, req.cumulative, m_core.get_current_blockchain_height());
         if (!data)
         {
           res.distributions.clear();
           res.status = Message::STATUS_FAILED;
-          res.error_details = "Failed to get output distribution";
+          res.error_details = "Failed to get output size histogram";
           return;
         }
-        res.distributions.push_back(output_distribution{std::move(*data), amount, req.cumulative});
+        res.distributions.push_back(output_size_histogram{std::move(*data), amount, req.cumulative});
       }
       res.status = Message::STATUS_OK;
     }

@@ -1,7 +1,7 @@
 {
   "id": "0",
   "jsonrpc": "2.0",
-  "method": "get_output_distribution",
+  "method": "get_output_size_histogram",
   "params": {
     "amounts": [0],
     "client": "",

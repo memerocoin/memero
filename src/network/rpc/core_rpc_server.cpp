@@ -1284,7 +1284,7 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_output_distribution(const COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request& req, COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response& res, epee::json_rpc::error& error_resp)
+  bool core_rpc_server::on_get_output_size_histogram(const COMMAND_RPC_GET_OUTPUT_SIZE_HISTOGRAM::request& req, COMMAND_RPC_GET_OUTPUT_SIZE_HISTOGRAM::response& res, epee::json_rpc::error& error_resp)
   {
     try
     {
@@ -1294,7 +1294,7 @@ namespace cryptonote
       std::vector<std::uint64_t> distribution;
       std::uint64_t start_height, base;
 
-      if (!m_core.get_output_distribution
+      if (!m_core.get_output_size_histogram
           (
            rct_amount
            , req.from_height
@@ -1306,7 +1306,7 @@ namespace cryptonote
           )
         {
         error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-        error_resp.message = "Failed to get output distribution";
+        error_resp.message = "Failed to get output size histogram";
         return false;
       }
 
@@ -1317,7 +1317,7 @@ namespace cryptonote
         distribution[0] -= base;
       }
 
-      const rpc::output_distribution_data out_data =
+      const rpc::output_size_histogram_data out_data =
         {distribution, start_height, base};
 
       res.data = out_data;
@@ -1325,7 +1325,7 @@ namespace cryptonote
     catch (const std::exception &e)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-      error_resp.message = "Failed to get output distribution";
+      error_resp.message = "Failed to get output size histogram";
       return false;
     }
 

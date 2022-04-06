@@ -329,7 +329,7 @@ BEGIN_RPC_MESSAGE_CLASS(GetOutputDistribution);
     RPC_MESSAGE_MEMBER(bool, cumulative);
   END_RPC_MESSAGE_REQUEST;
   BEGIN_RPC_MESSAGE_RESPONSE;
-    RPC_MESSAGE_MEMBER(std::vector<output_distribution>, distributions);
+    RPC_MESSAGE_MEMBER(std::vector<output_size_histogram>, distributions);
   END_RPC_MESSAGE_RESPONSE;
 END_RPC_MESSAGE_CLASS;
 

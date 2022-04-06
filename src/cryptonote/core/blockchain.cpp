@@ -2000,7 +2000,7 @@ void Blockchain::get_output_key_mask_unlocked(const uint64_t& amount, const uint
   unlocked = is_tx_spendtime_unlocked(m_db->get_tx_unlock_height(toi.first));
 }
 //------------------------------------------------------------------
-bool Blockchain::get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) const
+bool Blockchain::get_output_size_histogram(uint64_t amount, uint64_t from_height, uint64_t to_height, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) const
 {
   start_height = 0;
   base = 0;
@@ -2034,7 +2034,7 @@ bool Blockchain::get_output_distribution(uint64_t amount, uint64_t from_height, 
   }
   else
   {
-    return m_db->get_output_distribution(amount, start_height, to_height, distribution, base);
+    return m_db->get_output_size_histogram(amount, start_height, to_height, distribution, base);
   }
 }
 //------------------------------------------------------------------

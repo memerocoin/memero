@@ -110,7 +110,7 @@ add_executable(unit_tests_core
   net.cpp
 # node_server.cpp
 # // could fail
-# output_distribution.cpp 
+# output_size_histogram.cpp 
   ringct.cpp
   rpc_version_str.cpp
   slow_memmem.cpp

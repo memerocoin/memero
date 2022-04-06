@@ -1035,11 +1035,11 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::DaemonInfo& inf
   READ_JSON_VALUE_BY_KEY(val, info.start_time, start_time);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_distribution dist)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_size_histogram dist)
 {
   dest.StartObject();
 
-  WRITE_JSON_FIELD_FROM(dest, distribution, dist.data.distribution);
+  WRITE_JSON_FIELD_FROM(dest, distribution, dist.data.histogram);
   WRITE_JSON_FIELD_FROM(dest, amount, dist.amount);
   WRITE_JSON_FIELD_FROM(dest, start_height, dist.data.start_height);
   WRITE_JSON_FIELD_FROM(dest, base, dist.data.base);
@@ -1047,14 +1047,14 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
   dest.EndObject();
 }
 
-void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_distribution& dist)
+void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_size_histogram& dist)
 {
   if (!val.IsObject())
   {
     throw WRONG_TYPE("json object");
   }
 
-  READ_JSON_VALUE_BY_KEY(val, dist.data.distribution, distribution);
+  READ_JSON_VALUE_BY_KEY(val, dist.data.histogram, distribution);
   READ_JSON_VALUE_BY_KEY(val, dist.amount, amount);
   READ_JSON_VALUE_BY_KEY(val, dist.data.start_height, start_height);
   READ_JSON_VALUE_BY_KEY(val, dist.data.base, base);

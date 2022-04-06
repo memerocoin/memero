@@ -178,16 +178,16 @@ namespace rpc
     std::string version;
   };
 
-  struct output_distribution_data
+  struct output_size_histogram_data
   {
-    std::vector<std::uint64_t> distribution;
+    std::vector<std::uint64_t> histogram;
     std::uint64_t start_height;
     std::uint64_t base;
   };
 
-  struct output_distribution
+  struct output_size_histogram
   {
-    output_distribution_data data;
+    output_size_histogram_data data;
     uint64_t amount;
     bool cumulative;
   };
