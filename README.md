@@ -64,7 +64,6 @@ Alternatively, build with the project's [Nix](https://nixos.org) flake
 | subaddress prefix | `0x1a8b3` | `0x1a8b5` |
 | P2P port | 50708 | 51708 |
 | RPC port | 50709 | 51709 |
-| wallet RPC port | 45680 | 45680 |
 
 ## Run a node
 
