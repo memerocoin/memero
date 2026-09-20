@@ -1,0 +1,41 @@
+{
+  "name": "memero-desktop-wallet",
+  "version": "0.1.0",
+  "description": "Memero (MEM) non-custodial desktop wallet. Keys stay on your machine.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "org.memero.desktop",
+    "productName": "Memero Wallet",
+    "files": [
+      "main.js",
+      "wallet.html",
+      "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin",
+        "filter": ["**/*"]
+      }
+    ],
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Finance"
+    },
+    "win": {
+      "target": ["nsis"]
+    },
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.finance"
+    }
+  }
+}

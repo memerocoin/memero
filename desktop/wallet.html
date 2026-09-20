@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memero Desktop Wallet</title>
+  <link rel="icon" type="image/png" href="assets/favicon-32.png" />
+  <style>
+    :root {
+      --bg: #000000; --surface: #050a05; --border: #102010;
+      --text: #eaffea; --muted: #6a8f6a; --green: #01ff02; --glow: rgba(1,255,2,0.55);
+      --danger: #ff3355;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text); min-height: 100vh;
+      background-image: radial-gradient(ellipse at 50% 0%, #04180a 0%, #000000 60%);
+      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; line-height: 1.6;
+    }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 1.5rem; }
+    header { display: flex; align-items: center; gap: 0.7rem; border-bottom: 1px solid var(--border); padding-bottom: 0.7rem; margin-bottom: 1.3rem; }
+    .logo { height: 36px; width: 36px; border-radius: 8px; }
+    h1 { font-size: 1.2rem; color: var(--green); }
+    .muted { color: var(--muted); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; margin-bottom: 1.1rem; }
+    h2 { color: var(--green); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.8rem; }
+    label { display: block; color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 0.6rem 0 0.2rem; }
+    input {
+      width: 100%; background: #020602; border: 1px solid var(--border); color: var(--text);
+      border-radius: 7px; padding: 0.5rem 0.7rem; font-family: inherit; font-size: 0.9rem;
+    }
+    input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 10px var(--glow); }
+    button {
+      background: var(--green); color: #000; border: none; border-radius: 7px;
+      padding: 0.55rem 1.1rem; cursor: pointer; font-weight: 700; font-family: inherit; margin-top: 0.85rem;
+    }
+    button:hover { box-shadow: 0 0 14px var(--glow); }
+    button.secondary { background: transparent; color: var(--green); border: 1px solid var(--green); }
+    .row { display: flex; gap: 0.6rem; }
+    .row > * { flex: 1; }
+    .big { font-size: 1.8rem; color: var(--green); text-shadow: 0 0 12px var(--glow); }
+    .addr { word-break: break-all; background: #020602; border: 1px solid var(--border); border-radius: 7px; padding: 0.6rem; font-size: 0.85rem; }
+    .seed { word-break: break-all; }
+    .hide { display: none; }
+    .err { color: var(--danger); margin-top: 0.5rem; font-size: 0.85rem; }
+    .ok { color: var(--green); margin-top: 0.5rem; font-size: 0.85rem; }
+    .pill { display:inline-block; background: rgba(1,255,2,0.08); border:1px solid var(--green); color: var(--green); border-radius:999px; padding:0.04rem 0.55rem; font-size:0.68rem; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="logo" src="assets/logo.png" alt="Memero" onerror="this.style.display='none'" />
+    <h1>Memero Wallet</h1>
+    <span class="pill" id="netinfo">local</span>
+  </header>
+
+  <!-- Setup / unlock -->
+  <div class="card" id="setup-card">
+    <h2 id="setup-title">Open or create a wallet</h2>
+    <label>Wallet file path</label>
+    <input id="wallet-file" value="" placeholder="/home/user/.memero/my-wallet" />
+    <label>Password</label>
+    <input id="password" type="password" autocomplete="off" />
+    <div class="row">
+      <button onclick="loadWallet()">Open</button>
+      <button class="secondary" onclick="createWallet()">Create</button>
+    </div>
+    <label id="restore-label" style="display:none;">25-word seed (for restore)</label>
+    <input id="seed" style="display:none;" placeholder="25-word seed…" />
+    <button class="secondary" id="restore-btn" style="display:none;" onclick="restoreWallet()">Restore from seed</button>
+    <div class="err" id="setup-err"></div>
+  </div>
+
+  <!-- Wallet view -->
+  <div class="card hide" id="wallet-card">
+    <h2>Balance</h2>
+    <div class="big" id="balance">—</div>
+    <div class="muted">unlocked: <span id="unlocked">—</span></div>
+
+    <h2 style="margin-top:1rem">Receive</h2>
+    <div class="addr" id="address">…</div>
+
+    <h2 style="margin-top:1rem">Send</h2>
+    <label>Recipient address</label>
+    <input id="send-address" />
+    <label>Amount (MEM)</label>
+    <input id="send-amount" placeholder="1.0" />
+    <button onclick="send()">Send</button>
+
+    <div style="margin-top:1rem">
+      <button class="secondary" onclick="refresh()">Refresh</button>
+      <button class="secondary" onclick="showSeed()">Show seed</button>
+      <button class="secondary" onclick="lock()">Lock</button>
+    </div>
+    <div class="ok" id="send-ok"></div>
+    <div class="err" id="send-err"></div>
+  </div>
+
+  <div class="card hide" id="seed-card">
+    <h2>Recovery seed</h2>
+    <div class="seed" id="seed-display">…</div>
+    <button class="secondary" onclick="hideSeed()">Done</button>
+  </div>
+</div>
+
+<script>
+  const RPC = 'http://127.0.0.1:18082/json_rpc';
+  let loaded = false;
+
+  async function rpc(method, params = {}) {
+    const res = await fetch(RPC, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({jsonrpc:'2.0', id:'0', method, params})
+    });
+    const d = await res.json();
+    if (d.error) throw new Error(d.error.message);
+    return d.result;
+  }
+
+  function setErr(msg) { document.getElementById('setup-err').textContent = msg || ''; }
+
+  function showWallet() {
+    document.getElementById('setup-card').classList.add('hide');
+    document.getElementById('wallet-card').classList.remove('hide');
+  }
+
+  async function loadWallet() {
+    setErr('');
+    const file = document.getElementById('wallet-file').value.trim();
+    const password = document.getElementById('password').value;
+    try {
+      await rpc('load_wallet', {name: file, password});
+      loaded = true;
+      await refresh();
+      showWallet();
+    } catch(e) { setErr(e.message); }
+  }
+
+  async function createWallet() {
+    setErr('');
+    const file = document.getElementById('wallet-file').value.trim() || '/tmp/memero-wallet';
+    const password = document.getElementById('password').value;
+    try {
+      const r = await rpc('create_wallet', {name: file, password});
+      loaded = true;
+      document.getElementById('restore-label').style.display = 'none';
+      document.getElementById('seed').style.display = 'none';
+      document.getElementById('restore-btn').style.display = 'none';
+      document.getElementById('setup-err').textContent = 'SAVE THIS SEED: ' + r.seed;
+      await refresh();
+      showWallet();
+    } catch(e) { setErr(e.message); }
+  }
+
+  async function restoreWallet() {
+    setErr('');
+    const file = document.getElementById('wallet-file').value.trim() || '/tmp/memero-wallet';
+    const password = document.getElementById('password').value;
+    const seed = document.getElementById('seed').value.trim();
+    try {
+      await rpc('restore_wallet', {name: file, password, seed});
+      loaded = true;
+      await refresh();
+      showWallet();
+    } catch(e) { setErr(e.message); }
+  }
+
+  async function refresh() {
+    try {
+      await rpc('refresh');
+      const b = await rpc('get_balance');
+      document.getElementById('balance').textContent = (b.balance || '0') + ' MEM';
+      document.getElementById('unlocked').textContent = (b.unlocked_balance || '0') + ' MEM';
+      const a = await rpc('get_address');
+      document.getElementById('address').textContent = a.address;
+    } catch(e) { document.getElementById('send-err').textContent = e.message; }
+  }
+
+  async function send() {
+    const address = document.getElementById('send-address').value.trim();
+    const amount = document.getElementById('send-amount').value.trim();
+    document.getElementById('send-ok').textContent = '';
+    document.getElementById('send-err').textContent = '';
+    try {
+      const r = await rpc('transfer', {address, amount});
+      document.getElementById('send-ok').textContent = 'Sent! txid: ' + r.txid;
+      await refresh();
+    } catch(e) { document.getElementById('send-err').textContent = e.message; }
+  }
+
+  async function showSeed() {
+    const r = await rpc('get_seed');
+    document.getElementById('seed-display').textContent = r.seed;
+    document.getElementById('seed-card').classList.remove('hide');
+  }
+  function hideSeed() { document.getElementById('seed-card').classList.add('hide'); }
+
+  function lock() {
+    loaded = false;
+    document.getElementById('wallet-card').classList.add('hide');
+    document.getElementById('setup-card').classList.remove('hide');
+  }
+</script>
+</body>
+</html>
