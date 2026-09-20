@@ -84,8 +84,8 @@ namespace
     std::string name = params.value("name", "default");
     std::string password = params.value("password", "");
     g_wallet = std::make_unique<tools::wallet2>();
-    auto key = g_wallet->generate(name, epee::wipeable_string(password), std::nullopt);
     g_wallet->init(g_daemon_address);
+    auto key = g_wallet->generate(name, epee::wipeable_string(password), std::nullopt);
     g_wallet->store();
     // address
     std::string addr = g_wallet->get_address_as_str();
@@ -106,8 +106,8 @@ namespace
     if (!crypto::ElectrumWords::words_to_bytes(epee::wipeable_string(seed), recovery, language))
       return make_error(-1, "invalid seed");
     g_wallet = std::make_unique<tools::wallet2>();
-    g_wallet->generate(name, epee::wipeable_string(password), recovery);
     g_wallet->init(g_daemon_address);
+    g_wallet->generate(name, epee::wipeable_string(password), recovery);
     g_wallet->store();
     return {{"address", g_wallet->get_address_as_str()}};
   }
