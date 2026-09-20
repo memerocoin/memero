@@ -521,7 +521,7 @@ namespace rpc
     res.info.wide_cumulative_difficulty = m_core.get_blockchain_storage().get_db().get_block_cumulative_difficulty(res.info.height - 1);
     res.info.cumulative_difficulty = (res.info.wide_cumulative_difficulty & 0xffffffffffffffff).convert_to<uint64_t>();
     res.info.start_time = (uint64_t)m_core.get_start_time();
-    res.info.version = LOLNERO_VERSION;
+    res.info.version = MEMERO_VERSION;
 
     res.status = Message::STATUS_OK;
     res.error_details = "";

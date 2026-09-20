@@ -224,8 +224,8 @@ namespace cryptonote
            "Found old-style blockchain.bin in "
            + old_files.string()
            );
-        LOG_WARNING("Lolnero now uses a new format. You can either remove blockchain.bin to start syncing");
-        LOG_WARNING("the blockchain anew, or use lolnero-blockchain-export and lolnero-blockchain-import to");
+        LOG_WARNING("Memero now uses a new format. You can either remove blockchain.bin to start syncing");
+        LOG_WARNING("the blockchain anew, or use memero-blockchain-export and memero-blockchain-import to");
         LOG_WARNING("convert your existing blockchain.bin to the new format. See README.md for instructions.");
         return false;
       }
@@ -1302,7 +1302,7 @@ namespace cryptonote
            + (b == max_blocks_checked ? " or more" : "")
            + " blocks in the last "
            + std::to_string(seconds[n] / 60)
-           + " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Lolnero network or under attack, or your computer's time is off. Or it could be just sheer bad luck."
+           + " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Memero network or under attack, or your computer's time is off. Or it could be just sheer bad luck."
            );
 
         break; // no need to look further

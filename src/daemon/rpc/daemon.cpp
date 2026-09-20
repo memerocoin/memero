@@ -46,13 +46,13 @@ namespace daemonize {
   constexpr std::string_view p2p_str = "P2P";
 
   const std::string rpc_description =
-    "Lolnero daemon RPC server";
+    "Memero daemon RPC server";
 
   const std::string beast_rpc_description =
-    "Lolnero Beast daemon RPC server";
+    "Memero Beast daemon RPC server";
 
   const std::string p2p_description =
-    "Lolnero daemon P2P server";
+    "Memero daemon P2P server";
 
   void deinit_msg(const std::string_view x) {
     LOG_INFO("Deinitializing " + std::string(x) + " ...");

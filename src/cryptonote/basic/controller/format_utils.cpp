@@ -124,15 +124,15 @@ namespace cryptonote
     switch (decimal_point)
     {
       case 11:
-        return "lolnero";
+        return "memero";
       case 9:
-        return "millinero";
+        return "millimero";
       case 6:
-        return "micronero";
+        return "micromero";
       case 3:
-        return "nanonero";
+        return "nanomero";
       case 0:
-        return "piconero";
+        return "picomero";
       default:
         LOG_ERROR_AND_THROW
           (

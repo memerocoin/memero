@@ -1,5 +1,19 @@
 # ChangeLog
 
+## [0.1.0] - 2024 (Memero fork)
+
+### Changed
+
+* Rebranded from Lolnero to Memero (name, ticker MEM, network ID,
+  address prefixes, ports, binary names).
+* Replaced flat 300 reward with Monero-style decay
+  `(18,400,000 - emitted) >> 19`, hard cap 18,400,000 MEM.
+
+---
+
+_The changelog below is the original Lolnero history, retained for
+attribution._
+
 ## [0.9.10.55] - 2022-03-15
 
 ### Removed

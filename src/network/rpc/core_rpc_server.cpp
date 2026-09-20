@@ -108,7 +108,7 @@ namespace cryptonote
     res.free_space = m_core.get_free_space();
     res.offline = m_core.offline();
     res.database_size = m_core.get_blockchain_storage().get_db().get_database_size();
-    res.version = LOLNERO_VERSION_FULL;
+    res.version = MEMERO_VERSION_FULL;
     res.busy_syncing = m_p2p.get_payload_object().is_busy_syncing();
 
     res.status = CORE_RPC_STATUS_OK;

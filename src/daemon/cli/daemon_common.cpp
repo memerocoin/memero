@@ -35,10 +35,10 @@ copyright (c) 2012-2013 The Cryptonote developers
 namespace daemon_common {
 
   std::string get_version_string() {
-    return "Lolnero '"
-      + std::string(LOLNERO_RELEASE_NAME)
+    return "Memero '"
+      + std::string(MEMERO_RELEASE_NAME)
       + "' (v"
-      + std::string(LOLNERO_VERSION_FULL)
+      + std::string(MEMERO_VERSION_FULL)
       + ")";
   }
 

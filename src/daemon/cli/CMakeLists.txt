@@ -38,14 +38,14 @@ target_link_libraries(daemon_common
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 
-add_executable(lolnerod-cli
+add_executable(memerod-cli
   cli-main.cpp
   command_server.cpp
   command_parser_executor.cpp
   rpc_command_executor.cpp
   )
 
-target_link_libraries(lolnerod-cli
+target_link_libraries(memerod-cli
   daemon_common
   cryptonote_tx
   epee_storage
@@ -58,14 +58,14 @@ target_link_libraries(lolnerod-cli
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 
-set_property(TARGET lolnerod-cli
+set_property(TARGET memerod-cli
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-set_property(TARGET lolnerod-cli
+set_property(TARGET memerod-cli
   PROPERTY
-    OUTPUT_NAME "lolnerod")
+    OUTPUT_NAME "memerod")
 
 
-install(TARGETS lolnerod-cli DESTINATION bin)
+install(TARGETS memerod-cli DESTINATION bin)
 

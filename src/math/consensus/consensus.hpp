@@ -33,7 +33,7 @@
 using namespace rct;
 
 namespace consensus {
-  constexpr bool rule_1_you_don_t_talk_about_lolnero() {
+  constexpr bool rule_1_you_don_t_talk_about_memero() {
     return true;
   }
 

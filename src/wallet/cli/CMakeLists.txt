@@ -32,11 +32,11 @@ add_library(wallet_cli_support
   controller.cpp
   )
 
-add_executable(lolnero
+add_executable(memero
   simplewallet.cpp
   )
 
-target_link_libraries(lolnero
+target_link_libraries(memero
   epee_storage
 
   network_type
@@ -51,15 +51,15 @@ target_link_libraries(lolnero
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 
-set_property(TARGET lolnero
+set_property(TARGET memero
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-set_property(TARGET lolnero
+set_property(TARGET memero
   PROPERTY
-    OUTPUT_NAME lolnero)
+    OUTPUT_NAME memero)
 
-install(TARGETS lolnero DESTINATION bin)
+install(TARGETS memero DESTINATION bin)
 
 
 # install(TARGETS wallet_cli_support)

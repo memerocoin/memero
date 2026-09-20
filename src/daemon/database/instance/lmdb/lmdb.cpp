@@ -1471,7 +1471,7 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
         mdb_env_close(m_env);
         m_open = false;
         LOG_FATAL("Existing lmdb database needs to be converted, which cannot be done on a read-only database.");
-        LOG_FATAL("Please run lolnerod once to convert the database.");
+        LOG_FATAL("Please run memerod once to convert the database.");
         return;
       }
       // Note that there was a schema change within version 0 as well.

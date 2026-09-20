@@ -118,7 +118,7 @@ namespace config
   constexpr std::string_view HASH_KEY_CLSAG_AGG_0 = "CLSAG_agg_0";
   constexpr std::string_view HASH_KEY_CLSAG_AGG_1 = "CLSAG_agg_1";
 
-  constexpr std::string_view HASH_KEY_TX_OUTPUT_SIGNATURES_V1 = "Lolnero_Tx_Output_Signatures_V1_";
+  constexpr std::string_view HASH_KEY_TX_OUTPUT_SIGNATURES_V1 = "Memero_Tx_Output_Signatures_V1_";
 
   constexpr unsigned MESSAGE_SIGNING_VERSION = 1u;
 
@@ -127,7 +127,7 @@ namespace config
 
   namespace lol
   {
-    constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
+    constexpr std::string_view CRYPTONOTE_NAME = "memero";
     constexpr std::string_view RPC_DEFAULT_HOST = "localhost";
     constexpr std::string_view BLOCKCHAIN_DATABASE_FILENAME = "data.mdb";
     constexpr std::string_view BLOCKCHAIN_DATABASE_LOCK_FILENAME = "lock.mdb";
@@ -155,7 +155,7 @@ namespace config
     constexpr std::string_view x_sep    = "xxxxxxx ";
     constexpr std::string_view tab_sep  = "        ";
 
-    constexpr std::string_view money_symbol = "λ";
+    constexpr std::string_view money_symbol = "μ";
 
     constexpr size_t reorg_buffer = 3;
     constexpr size_t get_out_retry = 3;

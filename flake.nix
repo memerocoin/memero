@@ -22,11 +22,11 @@
               ; clangStdenvLatest = llvmPackages_14.stdenv
               ; version = builtins.substring 0 8 self.lastModifiedDate
 
-              ; lolnero-template =
+              ; memero-template =
                   {
                     stdenv
                   , opencl ? false
-                  , name ? "lolnero"
+                  , name ? "memero"
                   }: stdenv.mkDerivation {
                     pname = name
                     ; inherit version
@@ -63,33 +63,33 @@
                   }
               ; in
               {
-                lolnero = lolnero-template { stdenv = stdenvLatest; }
+                memero = memero-template { stdenv = stdenvLatest; }
 
-                ; lolnero-opencl = lolnero-template
+                ; memero-opencl = memero-template
                   {
-                    name = "lolnero-opencl"
+                    name = "memero-opencl"
                     ; stdenv = stdenvLatest
                     ; opencl = true
                     ;
                   }
 
-                ; lolnero-clang = lolnero-template
+                ; memero-clang = memero-template
                   {
-                    name = "lolnero-clang"
+                    name = "memero-clang"
                     ; stdenv = clangStdenvLatest
                     ;
                   }
 
-                ; lolnero-clang-opencl = lolnero-template
+                ; memero-clang-opencl = memero-template
                   {
-                    name = "lolnero-clang-opencl"
+                    name = "memero-clang-opencl"
                     ; stdenv = clangStdenvLatest
                     ; opencl = true
                     ;
                   }
 
-                ; lolnero-lib = stdenvLatest.mkDerivation {
-                    pname = "lolnero-lib"
+                ; memero-lib = stdenvLatest.mkDerivation {
+                    pname = "memero-lib"
                     ; inherit version
                     ; src = ./.
 
@@ -108,8 +108,8 @@
                     ;
                   }
 
-                ; lolnero-with-tests = stdenvLatest.mkDerivation {
-                    pname = "lolnero-with-tests"
+                ; memero-with-tests = stdenvLatest.mkDerivation {
+                    pname = "memero-with-tests"
                     ; inherit version
                     ; src = ./.
 
@@ -141,7 +141,7 @@
                 ;
               }
                 
-          ; nixosModules.lolnero =
+          ; nixosModules.memero =
               { pkgs, ... }:
               {
                 nixpkgs.overlays = [ self.overlay ]
@@ -150,44 +150,44 @@
                 
           ; checks = forAllSystems (system:
               {
-                inherit (nixpkgsFor.${system}) lolnero-with-tests
+                inherit (nixpkgsFor.${system}) memero-with-tests
                 ;
               })
             
           ; packages = forAllSystems (system:
               {
-                inherit (nixpkgsFor.${system}) lolnero
-                ; inherit (nixpkgsFor.${system}) lolnero-opencl
-                ; inherit (nixpkgsFor.${system}) lolnero-clang
-                ; inherit (nixpkgsFor.${system}) lolnero-clang-opencl
-                ; inherit (nixpkgsFor.${system}) lolnero-lib
+                inherit (nixpkgsFor.${system}) memero
+                ; inherit (nixpkgsFor.${system}) memero-opencl
+                ; inherit (nixpkgsFor.${system}) memero-clang
+                ; inherit (nixpkgsFor.${system}) memero-clang-opencl
+                ; inherit (nixpkgsFor.${system}) memero-lib
                 ;
               })
             
-          ; defaultPackage = forAllSystems (system: self.packages.${system}.lolnero)
+          ; defaultPackage = forAllSystems (system: self.packages.${system}.memero)
             
           ; apps = forAllSystems
             (
               system:
               {
-                lolnerod-rpc =
+                memerod-rpc =
                   {
                     type = "app"
-                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod-rpc"
+                    ; program = "${self.defaultPackage.${system}}/bin/memerod-rpc"
                     ;
                   }
 
-                ; lolnerod =
+                ; memerod =
                   {
                     type = "app"
-                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod"
+                    ; program = "${self.defaultPackage.${system}}/bin/memerod"
                     ;
                   }
                     
-                ; lolnero =
+                ; memero =
                     {
                       type = "app"
-                      ; program = "${self.defaultPackage.${system}}/bin/lolnero"
+                      ; program = "${self.defaultPackage.${system}}/bin/memero"
                       ;
                     }
                 ;
@@ -203,11 +203,11 @@
                 ; gccLatest = pkgs.gcc11
                 ; clangLatest = pkgs.llvmPackages_14.clang
 
-                ; CMakeFlags_Lolnero =
+                ; CMakeFlags_Memero =
                     ''
                     ''
 
-                ; CMakeFlags_Lolnero_OpenCL =
+                ; CMakeFlags_Memero_OpenCL =
                     ''
                         -DUSE_OPENCL=ON
                     ''
@@ -245,7 +245,7 @@
 
                 ; configureReleaseCommon =
                     ''
-                        ${pkgs.cmake}/bin/cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}
+                        ${pkgs.cmake}/bin/cmake ${CMakeFlags_Memero} ${CMakeCCacheFlags}
                     ''
 
                 ; configureCommon = configureReleaseCommon + CMakeDevFlags
@@ -262,7 +262,7 @@
                 ;
               in
                 pkgs.stdenvNoCC.mkDerivation {
-                  name = "lolnero-dev-shell"
+                  name = "memero-dev-shell"
                   ; buildInputs =
                       [gccLatest clangLatest] ++
                       (
@@ -281,7 +281,7 @@
                         ]
                       )
 
-                  ; inherit CMakeFlags_Lolnero
+                  ; inherit CMakeFlags_Memero
                   ; inherit CMakeCCacheFlags
                   ; inherit CMakeClangFlags
                   ; inherit CMakeGCCFlags

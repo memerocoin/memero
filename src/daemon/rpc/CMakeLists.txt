@@ -27,28 +27,28 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_executable(lolnerod-rpc
+add_executable(memerod-rpc
   rpc-main.cpp
   daemon.cpp
   )
 
-target_link_libraries(lolnerod-rpc
+target_link_libraries(memerod-rpc
   beast
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 
 
-set_property(TARGET lolnerod-rpc
+set_property(TARGET memerod-rpc
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-set_property(TARGET lolnerod-rpc
+set_property(TARGET memerod-rpc
   PROPERTY
-    OUTPUT_NAME "lolnerod-rpc")
+    OUTPUT_NAME "memerod-rpc")
 
 
-install(TARGETS lolnerod-rpc DESTINATION bin)
+install(TARGETS memerod-rpc DESTINATION bin)
 
 add_library(beast
   beast.cpp

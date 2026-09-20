@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string_view>
 
-extern const std::string_view LOLNERO_VERSION;
-extern const std::string_view LOLNERO_RELEASE_NAME;
-const std::string_view LOLNERO_VERSION_FULL = LOLNERO_VERSION;
+extern const std::string_view MEMERO_VERSION;
+extern const std::string_view MEMERO_RELEASE_NAME;
+const std::string_view MEMERO_VERSION_FULL = MEMERO_VERSION;
 

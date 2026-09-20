@@ -2206,7 +2206,7 @@ skip:
          epee::LogLevel::Info
          , epee::GLOBAL_CATEGORY
          , epee::yellow
-         , "You are now synchronized with the network. You may now start lolnero."
+         , "You are now synchronized with the network. You may now start memero."
          );
 
       LOG_CATEGORY_COLOR
@@ -2674,7 +2674,7 @@ skip:
           m_core.set_target_blockchain_height(target);
           if (target == 0 && context.m_state > cryptonote_connection_context::state_before_handshake && !m_stopping)
             {
-              LOG_GLOBAL("lolnerod is now disconnected from the network");
+              LOG_GLOBAL("memerod is now disconnected from the network");
               m_ask_for_txpool_complement = true;
             }
         }

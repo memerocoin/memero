@@ -296,15 +296,15 @@ bool simple_wallet::set_unit(const std::vector<std::string> &args/* = std::vecto
   const std::string &unit = args[1];
   unsigned int decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT;
 
-  if (unit == "lolnero")
+  if (unit == "memero")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT;
-  else if (unit == "millinero")
+  else if (unit == "millimero")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT - 3;
-  else if (unit == "micronero")
+  else if (unit == "micromero")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT - 6;
-  else if (unit == "nanonero")
+  else if (unit == "nanomero")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT - 9;
-  else if (unit == "piconero")
+  else if (unit == "picomero")
     decimal_point = 0;
   else
   {
@@ -400,7 +400,7 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
     message_writer() << "";
     message_writer() << "account                     - Show account.";
     message_writer() << "address                     - Show address.";
-    message_writer() << "refresh                     - Synchronize wallet with the Lolnero network.";
+    message_writer() << "refresh                     - Synchronize wallet with the Memero network.";
     message_writer() << "transfer <address> <amount> - Send LOL to an address.";
     message_writer() << "exit                        - Exit wallet.";
     message_writer() << "";
@@ -538,7 +538,7 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("always-confirm-transfers", set_always_confirm_transfers, ("0 or 1"));
     CHECK_SIMPLE_VARIABLE("store-tx-info", set_store_tx_info, ("0 or 1"));
     CHECK_SIMPLE_VARIABLE("priority", set_default_priority, ("0, 1, 2, 3, or 4, or one of ") << wallet::functional::join_priority_strings(", "));
-    CHECK_SIMPLE_VARIABLE("unit", set_unit, ("lolnero, millinero, micronero, nanonero, piconero"));
+    CHECK_SIMPLE_VARIABLE("unit", set_unit, ("memero, millimero, micromero, nanomero, picomero"));
     CHECK_SIMPLE_VARIABLE("merge-destinations", set_merge_destinations, ("0 or 1"));
     CHECK_SIMPLE_VARIABLE("confirm-export-overwrite", set_confirm_export_overwrite, ("0 or 1"));
     CHECK_SIMPLE_VARIABLE("refresh-from-block-height", set_refresh_from_block_height, ("block height"));
@@ -1681,7 +1681,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     }
     else
     {
-      if (boost::starts_with(local_args[i], "lolnero:"))
+      if (boost::starts_with(local_args[i], "memero:"))
         fail_msg_writer() << ("Invalid last argument: ") << local_args.back() << ": " << error;
       else
         fail_msg_writer() << ("Invalid last argument: ") << local_args.back();
@@ -2555,7 +2555,7 @@ void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_
     {
       cryptonote::string_blob blob = tx_to_blob(ptx.tx);
       const std::string blob_hex = epee::string_tools::buff_to_hex_nodelimer(blob);
-      const std::string filename = "raw_lolnero_tx" + (ptx_vector.size() == 1 ? "" : ("_" + std::to_string(i++)));
+      const std::string filename = "raw_memero_tx" + (ptx_vector.size() == 1 ? "" : ("_" + std::to_string(i++)));
       if (wallet::logic::controller::wallet::save_to_file(filename, blob_hex))
         success_msg_writer(true) << ("Transaction successfully saved to ") << filename << (", txid ") << txid;
       else
@@ -2599,7 +2599,7 @@ int main(int argc, char* argv[])
   std::tie(vm, should_terminate) = wallet_args::main
     (
      argc, argv,
-     "lolnero [--open=<filename>|--new=<filename>]",
+     "memero [--open=<filename>|--new=<filename>]",
      "",
      desc_params,
      positional_options,

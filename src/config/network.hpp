@@ -57,31 +57,27 @@ namespace cryptonote
   };
 
   constexpr config_t mainnet = {
-    0xf0f72, // haha
-    0x18faf3, // hoho
-    45678,
-    45679,
+    0x5d4a, // me (Memero mainnet address prefix)
+    0x1a8b3, // mo (Memero subaddress prefix)
+    50708,
+    50709,
     { {
-      0x69, 0x42, 0xEF, 0x66 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x10
+      0x4F, 0x6C, 0x14, 0xDA, 0x1B, 0x50, 0xE8, 0x8A, 0xA7, 0x45, 0x5A, 0x9D, 0xAF, 0x77, 0xBD, 0x91
     } },
-    "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121012a1a936be5d91c01ee876e38c13fab0ee11cbe86011a2bf7740fb5ebd39d267d",
-    // twitter trending Oct 11th, 2020 14:58 (UTC)
-    /*
-      echo -n "#NationalComingOutDay Oct 11th, 2020 14:58 (UTC)" | sha256sum
-    */
-    0x2fab0975
+    "", // genesis tx is regenerated at first run (rebrand)
+    0
   };
 
   constexpr config_t testnet = {
-    0xf4, // hp
-    0x26f4, // hs
-    44444,
-    44445,
+    0x5d4c, // me test
+    0x1a8b5, // mo test
+    51708,
+    51709,
     { {
-      0x10, 0x42, 0xEE, 0x66, 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x11
+      0xBD, 0x02, 0xEA, 0x90, 0x36, 0xFC, 0x33, 0x5D, 0xCF, 0x4F, 0x0B, 0xE9, 0x3C, 0xEC, 0x2A, 0x71
     } },
-    "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd088071210160eb755f618a2336055dee60f307fe0ded81c5b37b53d310175ca9ee69b0c8ad",
-    42
+    "", // genesis tx is regenerated at first run (rebrand)
+    0
   };
 
   constexpr config_t get_config(const network_type nettype)
