@@ -78,11 +78,29 @@ To add a peer:
 ./build/bin/memerod-rpc --add-peer <SEED_NODE_IP>
 ```
 
+### Seed node
+
+The primary Memero seed node runs at:
+
+```
+107.172.243.15:50708
+```
+
+Connect to it with:
+
+```sh
+./build/bin/memerod-rpc --add-peer 107.172.243.15
+```
+
 ## Run the wallet
 
 ```sh
 ./build/bin/memero --daemon-address localhost:50709
 ```
+
+## Mining
+
+See [doc/MINING.md](doc/MINING.md) for how to solo-mine the bootstrap phase.
 
 ## License
 
