@@ -253,6 +253,16 @@ namespace cryptonote
     uint64_t get_current_blockchain_height() const;
 
     /**
+     * @brief get the total amount of coins already generated (minted)
+     * before a given height
+     *
+     * @param height the height (0-based) whose preceding cumulated
+     *        minted coin count is returned
+     * @return the already-generated coins before `height`, or 0 if height is 0
+     */
+    uint64_t get_already_generated_coins(uint64_t height) const;
+
+    /**
      * @brief get the hash of the most recent block on the blockchain
      *
      * @return the hash

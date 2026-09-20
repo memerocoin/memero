@@ -59,15 +59,24 @@ namespace consensus {
    );
 
 
-  consteval uint64_t get_block_reward() {
-    return get_coin_amount() * 300ull;
+  // Monero-style block reward: a fixed fraction of the remaining
+  // unminted supply, decaying exponentially toward the hard cap.
+  //   reward = (money_supply - already_generated_coins) >> emission_speed_factor
+  constexpr uint64_t get_block_reward(const uint64_t already_generated_coins) {
+    const uint64_t remaining =
+      already_generated_coins >= get_money_supply()
+      ? 0
+      : get_money_supply() - already_generated_coins;
+    return remaining >> get_emission_speed_factor();
   }
 
-  consteval bool rule_5_block_reward_is_constant_300() {
-    return get_block_reward() == get_coin_amount() * 300ull;
+  consteval bool rule_5_block_reward_uses_memero_emission_curve() {
+    // The reward must be exactly the Memero decay formula at the start
+    // of the chain (already_generated_coins == 0).
+    return get_block_reward(0) == (get_money_supply() >> get_emission_speed_factor());
   }
 
-  static_assert(rule_5_block_reward_is_constant_300());
+  static_assert(rule_5_block_reward_uses_memero_emission_curve());
 
   consteval uint64_t get_minimum_block_size_bound() {
     constexpr uint64_t min_block_size = 128ull * 1024ull; // 128 kB
@@ -205,9 +214,10 @@ namespace consensus {
   (
    const std::span<const amount_t> xs
    , const amount_t fee
+   , const uint64_t already_generated_coins
    )
   {
-    return get_block_reward() + fee == std::reduce(xs.begin(), xs.end());
+    return get_block_reward(already_generated_coins) + fee == std::reduce(xs.begin(), xs.end());
   }
 
   constexpr uint64_t get_coinbase_unlock_height(const uint64_t height) {

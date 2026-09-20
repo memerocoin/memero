@@ -492,6 +492,7 @@ namespace cryptonote
    , const size_t current_block_weight
    , const uint64_t fee
    , const spend_view_public_keys miner_address
+   , const uint64_t already_generated_coins
    )
   {
     transaction tx;
@@ -511,7 +512,7 @@ namespace cryptonote
       LOG_PRINT_L0("Block is too big");
       return {};
     }
-    uint64_t block_reward = consensus::get_block_reward();
+    uint64_t block_reward = consensus::get_block_reward(already_generated_coins);
 
     block_reward += fee;
 

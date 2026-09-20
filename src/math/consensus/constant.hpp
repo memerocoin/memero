@@ -27,6 +27,18 @@ namespace consensus {
     return COIN;
   }
 
+  // Memero total supply (hard cap), in atomic units.
+  consteval uint64_t get_money_supply() {
+    return get_coin_amount() * 18400000ull; // 18,400,000 MEM
+  }
+
+  // Number of bits to shift in the Monero-style emission curve:
+  //   reward = (money_supply - already_generated) >> EMISSION_SPEED_FACTOR
+  // >>19 with 5-minute blocks emits ~90% of supply in ~11.5 years.
+  consteval uint64_t get_emission_speed_factor() {
+    return 19ull;
+  }
+
   consteval uint64_t get_coinbase_unlock_time() {
     return 60ull;
   }

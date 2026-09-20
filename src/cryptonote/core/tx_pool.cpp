@@ -1259,6 +1259,8 @@ namespace cryptonote
     total_weight = 0;
     fee = 0;
 
+    const uint64_t already_generated_coins = m_blockchain.get_already_generated_coins(height);
+
     //baseline empty block
     if (!consensus::is_block_size_valid(height, total_weight))
     {
@@ -1266,7 +1268,7 @@ namespace cryptonote
       return false;
     }
 
-    uint64_t best_coinbase = consensus::get_block_reward();
+    uint64_t best_coinbase = consensus::get_block_reward(already_generated_coins);
 
     uint64_t max_total_weight = consensus::get_block_size_bound(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> output_key_images;
@@ -1326,7 +1328,7 @@ namespace cryptonote
           LOG_PRINT_L2("  would exceed maximum block weight");
           continue;
         }
-        coinbase = consensus::get_block_reward() + fee + meta.fee;
+        coinbase = consensus::get_block_reward(already_generated_coins) + fee + meta.fee;
         if (coinbase < template_accept_threshold(best_coinbase))
         {
           LOG_PRINT_L2("  would decrease coinbase to "

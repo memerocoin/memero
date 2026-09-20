@@ -256,6 +256,12 @@ uint64_t Blockchain::get_current_blockchain_height() const
   return m_db->height();
 }
 //------------------------------------------------------------------
+uint64_t Blockchain::get_already_generated_coins(uint64_t height) const
+{
+  LOG_PRINT_L3("Blockchain::" + std::string(__func__));
+  return height > 0 ? m_db->get_block_already_generated_coins(height - 1) : 0;
+}
+//------------------------------------------------------------------
 //FIXME: possibly move this into the constructor, to avoid accidentally
 //       dereferencing a null BlockchainDB pointer
 bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline, diff_t fixed_difficulty)
@@ -1160,6 +1166,7 @@ std::optional<coinbase_tx> Blockchain::validate_miner_transaction
  , const coinbase_tx tx
  , const size_t cumulative_block_weight
  , const uint64_t fee
+ , const uint64_t already_generated_coins
  ) const
 {
   LOG_PRINT_L3("Blockchain::" + std::string(__func__));
@@ -1182,7 +1189,7 @@ std::optional<coinbase_tx> Blockchain::validate_miner_transaction
      , [](const auto& x) { return x.amount; }
      );
 
-  if(!consensus::rule_19_coinbase_tx_should_be_balanced(output_amount, fee))
+  if(!consensus::rule_19_coinbase_tx_should_be_balanced(output_amount, fee, already_generated_coins))
   {
     LOG_ERROR_VER("coinbase transaction is not balanced.");
     return {};
@@ -1375,8 +1382,10 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
    */
   //make blocks coin-base tx looks close to real coinbase tx to get truthful blob weight
   // FIXME: max_outs of miner_tx for lol should be 32?
+  const uint64_t coins_before_this_block
+    = (height > 0 ? m_db->get_block_already_generated_coins(height - 1) : 0);
   const auto miner_tx_no_coinbase_weight =
-    construct_miner_tx(height, txs_weight, fee, miner_address);
+    construct_miner_tx(height, txs_weight, fee, miner_address, coins_before_this_block);
 
   LOG_ERROR_AND_RETURN_UNLESS(miner_tx_no_coinbase_weight, false, "Failed to construct miner tx, first chance");
 
@@ -1388,7 +1397,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
   for (size_t try_count = 0; try_count != 10; ++try_count)
   {
     const auto miner_tx =
-      construct_miner_tx(height, cumulative_weight, fee, miner_address);
+      construct_miner_tx(height, cumulative_weight, fee, miner_address, coins_before_this_block);
 
     LOG_ERROR_AND_RETURN_UNLESS(miner_tx, false, "Failed to construct miner tx, second chance");
 
@@ -3089,14 +3098,14 @@ leave:
 
   m_blocks_txs_check.clear();
 
-  const uint64_t base_reward = consensus::get_block_reward();
-  const uint64_t already_generated_coins
+  const uint64_t coins_before_this_block
     = (
        blockchain_height
        ? m_db->get_block_already_generated_coins(blockchain_height - 1)
        : 0
-       ) + base_reward
-    ;
+       );
+  const uint64_t base_reward = consensus::get_block_reward(coins_before_this_block);
+  const uint64_t already_generated_coins = coins_before_this_block + base_reward;
 
   const uint64_t block_height = cryptonote::get_block_height(bl);
   if (block_height != 0) {
@@ -3106,6 +3115,7 @@ leave:
        , *maybe_coinbase_tx
        , cumulative_block_weight
        , fee_summary
+       , coins_before_this_block
        );
 
     if(!maybe_validated_coinbase_tx)

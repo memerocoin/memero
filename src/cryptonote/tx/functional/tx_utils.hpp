@@ -141,6 +141,7 @@ namespace cryptonote
    , const size_t current_block_weight
    , const uint64_t fee
    , const spend_view_public_keys miner_address
+   , const uint64_t already_generated_coins
    );
 
 

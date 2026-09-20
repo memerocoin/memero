@@ -64,8 +64,10 @@ namespace cryptonote
     { {
       0x4F, 0x6C, 0x14, 0xDA, 0x1B, 0x50, 0xE8, 0x8A, 0xA7, 0x45, 0x5A, 0x9D, 0xAF, 0x77, 0xBD, 0x91
     } },
-    "", // genesis tx is regenerated at first run (rebrand)
-    0
+    "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121012a1a936be5d91c01ee876e38c13fab0ee11cbe86011a2bf7740fb5ebd39d267d",
+    // TODO(rebrand): regenerate a fresh genesis coinbase tx + nonce for Memero
+    // (this is the original Lolnero genesis blob, retained as bootstrapping data).
+    0x2fab0975
   };
 
   constexpr config_t testnet = {
@@ -76,8 +78,8 @@ namespace cryptonote
     { {
       0xBD, 0x02, 0xEA, 0x90, 0x36, 0xFC, 0x33, 0x5D, 0xCF, 0x4F, 0x0B, 0xE9, 0x3C, 0xEC, 0x2A, 0x71
     } },
-    "", // genesis tx is regenerated at first run (rebrand)
-    0
+    "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd088071210160eb755f618a2336055dee60f307fe0ded81c5b37b53d310175ca9ee69b0c8ad",
+    42
   };
 
   constexpr config_t get_config(const network_type nettype)
