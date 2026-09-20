@@ -38,17 +38,17 @@ dead CryptoNote coin.
 
 ## Known follow-ups (TODO)
 
-1. **Regenerate genesis block.** The current genesis blob is Lolnero's
-   original (its coinbase has Lolnero's old hardcoded reward and goes to
-   an old-prefix address). For a clean launch, generate a fresh genesis
-   coinbase tx + nonce for Memero and set it in `src/config/network.hpp`.
-   (Block 1+ emission is already correct; only the genesis coinbase is
-   legacy.)
+1. **Regenerate genesis block (optional, cosmetic).** The current genesis
+   blob is Lolnero's original; its coinbase is a standard Monero-family
+   sentinel placeholder (`2^40 - 1` atomic units) paid to an unspendable
+   output. It is *not* consensus-critical (height 0 bypasses reward
+   validation) and does not block launching. The genesis hash is
+   deterministic (`a2be2680...`). For aesthetic completeness one could
+   regenerate a fresh coinbase tx + nonce, but it is not required.
 
-2. **Wipe old checkpoints.** `src/math/consensus/consensus.cpp` still has
-   Lolnero's hardcoded `checkpoints` and `diff_checks` maps (old chain
-   hashes). Remove them or a fresh chain will fail checkpoint validation
-   at those heights.
+2. **Checkpoints: none.** There are no hardcoded checkpoint or
+   difficulty-check maps in this codebase (the old Monero checkpoint
+   system was already removed upstream). Nothing to wipe.
 
 3. **Mobile wallet / seed app.** The separate `fuwa/lolnero-wallet` and
    `fuwa/lolnero-seed` repos (Flutter Android) need rebrand + re-pointing
