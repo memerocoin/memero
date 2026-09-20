@@ -63,9 +63,13 @@ namespace cryptonote {
 
     if (HEIGHT == 0) { return 1; }
 
-    // constant initial diff for CPU farms which never came
+    // constant initial difficulty for CPU farms which never came.
+    // Memero lowers this from the original 2^38 to 2^20 so a single
+    // hobbyist miner can solo-mine the bootstrap phase (first ~147
+    // blocks) before LWMA-1 takes over. This is a deliberate,
+    // consensus-visible bootstrap choice.
     constexpr diff_t _b = 1;
-    if (HEIGHT < N + 3) { return _b << 38; }
+    if (HEIGHT < N + 3) { return _b << 20; }
 
 
     LOG_ERROR_AND_THROW_UNLESS
