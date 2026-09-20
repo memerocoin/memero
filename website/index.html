@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Memero (MEM) — a private, ASIC-friendly cryptocurrency</title>
   <meta name="description" content="Memero (MEM) is a private, ASIC-friendly cryptocurrency with a fair Monero-style emission curve and a hard supply cap of 18.4 million MEM." />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png" />
   <style>
     :root {
       --bg: #0e0e12;
@@ -27,11 +29,7 @@
     a:hover { text-decoration: underline; }
     .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
     header { text-align: center; padding: 3rem 0 2rem; }
-    .logo {
-      font-size: 3rem; font-weight: 700; letter-spacing: -0.02em;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
+    .logo { height: 180px; display: block; margin: 0 auto 0.5rem; }
     .ticker { font-family: ui-monospace, monospace; color: var(--muted); margin-top: 0.25rem; }
     .tagline { max-width: 520px; margin: 1rem auto 0; color: var(--muted); }
     section { margin: 2.5rem 0; }
@@ -66,7 +64,7 @@
 <body>
   <div class="wrap">
     <header>
-      <div class="logo">Memero</div>
+      <img class="logo" src="assets/logo.png" alt="Memero logo" />
       <div class="ticker">MEM</div>
       <p class="tagline">A private, ASIC-friendly cryptocurrency with a fair emission curve and a hard supply cap.</p>
     </header>
