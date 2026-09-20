@@ -35,6 +35,7 @@
 #include "math/hash/functional/hash.hpp"
 
 #include <cstdint>
+#include <random>
 
 namespace crypto {
 

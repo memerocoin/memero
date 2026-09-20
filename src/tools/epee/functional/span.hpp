@@ -30,8 +30,10 @@
 
 #include <string>
 #include <cstring>
+#include <cstdint>
 #include <span>
 #include <optional>
+#include <type_traits>
 
 namespace epee
 {

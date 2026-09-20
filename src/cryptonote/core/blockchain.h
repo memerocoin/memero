@@ -1065,6 +1065,7 @@ namespace cryptonote
      , const coinbase_tx tx
      , const size_t cumulative_block_weight
      , const uint64_t fee
+     , const uint64_t already_generated_coins
      ) const;
 
     /**

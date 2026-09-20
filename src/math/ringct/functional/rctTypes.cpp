@@ -31,6 +31,8 @@
 #include "rctTypes.hpp"
 #include "rctOps.hpp"
 
+#include <algorithm>
+
 
 namespace rct {
 

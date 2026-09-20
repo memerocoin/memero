@@ -32,6 +32,8 @@
 #include "math/crypto/functional/key.hpp"
 #include "math/crypto/controller/random.hpp"
 
+#include <algorithm>
+
 
 #include <boost/uuid/nil_generator.hpp>
 

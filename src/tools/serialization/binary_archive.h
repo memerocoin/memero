@@ -37,6 +37,7 @@
 #include "tools/common/varint.h"
 
 #include <cassert>
+#include <cstdint>
 #include <iostream>
 #include <iterator>
 #include <type_traits>

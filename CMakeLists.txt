@@ -86,9 +86,17 @@ include_directories(${Boost_INCLUDE_DIRS})
 ## sodium
 find_library(SODIUM_LIBRARY sodium REQUIRED)
 
+## tbb
+add_definitions(-DTBB_SUPPRESS_DEPRECATED_MESSAGES)
+find_package(TBB REQUIRED)
+link_libraries(TBB::tbb)
+
 ## rapidjson
+find_package(RapidJSON QUIET)
 if (ANDROID)
   include_directories(vendor/rapidjson/include)
+else()
+  include_directories(/usr/include)
 endif()
 
 ## opencl

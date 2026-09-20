@@ -29,6 +29,9 @@
 
 #include <thread>
 #include <algorithm>
+#include <vector>
+#include <chrono>
+#include <cstddef>
 
 #include <boost/utility/value_init.hpp>
 
