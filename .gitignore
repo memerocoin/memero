@@ -122,3 +122,4 @@ vendor/rapidjson
 ### nix-build
 result
 
+/build-android

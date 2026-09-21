@@ -86,15 +86,25 @@ include_directories(${Boost_INCLUDE_DIRS})
 ## sodium
 find_library(SODIUM_LIBRARY sodium REQUIRED)
 
-## tbb
-add_definitions(-DTBB_SUPPRESS_DEPRECATED_MESSAGES)
-find_package(TBB REQUIRED)
-link_libraries(TBB::tbb)
+## tbb (optional — only needed when building the daemon/miner with
+## std::execution::par_unseq; the wallet path uses std::execution::seq)
+option(USE_TBB "Link against TBB for parallel execution" ON)
+if(USE_TBB)
+  find_package(TBB QUIET)
+  if(TBB_FOUND)
+    add_definitions(-DTBB_SUPPRESS_DEPRECATED_MESSAGES)
+    link_libraries(TBB::tbb)
+  else()
+    message(STATUS "TBB not found — building with sequential execution (seq)")
+  endif()
+endif()
 
 ## rapidjson
 find_package(RapidJSON QUIET)
-if (ANDROID)
-  include_directories(vendor/rapidjson/include)
+if (ANDROID AND EXISTS "${CMAKE_SOURCE_DIR}/vendor/rapidjson/include")
+  include_directories(${CMAKE_SOURCE_DIR}/vendor/rapidjson/include)
+elseif (ANDROID)
+  include_directories(/opt/memero-android/out/include)
 else()
   include_directories(/usr/include)
 endif()

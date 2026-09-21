@@ -23,7 +23,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include <boost/functional/hash.hpp>
 
+#include <compare>
+
 namespace crypto {
+  // Lexicographic three-way compare for fixed-size byte arrays (avoids
+  // std::array's C++20 spaceship, which older Android NDK libc++ lacks).
+  template <typename A, typename B>
+  inline std::strong_ordering compare_3way(const A& a, const B& b) noexcept {
+    for (size_t i = 0; i < a.size(); ++i) {
+      if (a[i] < b[i]) return std::strong_ordering::less;
+      if (a[i] > b[i]) return std::strong_ordering::greater;
+    }
+    return std::strong_ordering::equal;
+  }
+
   struct secret_key: ec_scalar{
   };
 
@@ -35,7 +48,9 @@ namespace crypto {
   // public key with another base P, where P is hash_to_point(public key)
   struct key_image: ec_point {
     auto operator <=> (const key_image &x) const noexcept {
-      return data <=> x.data;
+      // NOTE: avoid std::array's C++20 spaceship (not available in libc++ of
+      // older Android NDK); use lexicographic data compare instead.
+      return compare_3way(data, x.data);
     }
   };
 

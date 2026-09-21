@@ -1,6 +1,7 @@
 # Memero wallet RPC (non-custodial, localhost JSON-RPC)
 
-find_package(nlohmann_json 3.2.0 REQUIRED)
+# nlohmann_json is header-only; find it on the include path
+find_package(nlohmann_json 3.2.0 QUIET)
 
 add_executable(memero-wallet-rpc
   wallet_rpc_main.cpp
@@ -20,7 +21,6 @@ target_link_libraries(memero-wallet-rpc
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   ${Boost_SYSTEM_LIBRARY}
 )
-
 set_property(TARGET memero-wallet-rpc
   PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 

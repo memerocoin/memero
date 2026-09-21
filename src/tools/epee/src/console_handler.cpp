@@ -29,6 +29,9 @@
 
 #include <sys/select.h>
 
+#include <vector>
+#include <string>
+
 namespace epee
 {
 
