@@ -225,6 +225,17 @@
         for (const [k, v] of rows) {
           table.innerHTML += '<tr><th>' + k + '</th><td class="hash">' + v + '</td></tr>';
         }
+        // Also fetch full block JSON to show miner tx output details.
+        try {
+          const full = await rpc('get_block', { height });
+          const bj = full.json ? JSON.parse(full.json) : null;
+          if (bj && bj.miner_tx && bj.miner_tx.vout) {
+            const outs = bj.miner_tx.vout.map((o, i) =>
+              'out#' + i + ' ' + formatMEM(o.amount)).join(' · ');
+            table.innerHTML += '<tr><th>Miner outputs</th><td class="hash">' + outs + '</td></tr>';
+            table.innerHTML += '<tr><th>Unlock height</th><td class="hash">' + bj.miner_tx.unlock_height + '</td></tr>';
+          }
+        } catch (e) { /* full block json optional */ }
         pre.style.display = 'none';
         detail.style.display = 'block';
         detail.scrollIntoView({ behavior: 'smooth' });
