@@ -101,6 +101,12 @@ Connect to it with:
 
 See [doc/MINING.md](doc/MINING.md) for how to solo-mine the bootstrap phase.
 
+## More docs
+
+- [doc/GET-STARTED.md](doc/GET-STARTED.md) — full beginner walkthrough
+- [doc/PACKAGING.md](doc/PACKAGING.md) — build desktop/Android wallet packages
+- [doc/ANDROID.md](doc/ANDROID.md) — Android ARM64 cross-compile
+
 ## License
 
 Memero retains the upstream copyright headers of Monero / Wownero / Lolnero.
