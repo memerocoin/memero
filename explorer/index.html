@@ -98,8 +98,10 @@
       <div class="grid" id="stats">
         <div class="stat"><div class="num" id="s-height">—</div><div class="lbl">Height</div></div>
         <div class="stat"><div class="num" id="s-diff">—</div><div class="lbl">Difficulty</div></div>
+        <div class="stat"><div class="num" id="s-hashrate">—</div><div class="lbl">Hash rate</div></div>
         <div class="stat"><div class="num" id="s-target">—</div><div class="lbl">Target (s)</div></div>
         <div class="stat"><div class="num" id="s-txcount">—</div><div class="lbl">Tx count</div></div>
+        <div class="stat"><div class="num" id="s-pool">—</div><div class="lbl">Tx pool</div></div>
         <div class="stat"><div class="num" id="s-supply">—</div><div class="lbl">Emitted</div></div>
       </div>
     </div>
@@ -126,6 +128,7 @@
     </div>
 
     <div class="footer">
+      <p>Server time: <span id="servertime">—</span></p>
       <p>rpc <span id="version" class="mono">—</span> · top hash <span id="top-hash" class="mono">—</span></p>
       <p style="margin-top:0.4rem;"><a href="https://memero.lol">memero.lol</a> · <a href="https://github.com/memerocoin/memero">github.com/memerocoin/memero</a></p>
     </div>
@@ -161,10 +164,13 @@
         document.getElementById('s-diff').textContent = formatNum(info.difficulty);
         document.getElementById('s-target').textContent = info.target;
         document.getElementById('s-txcount').textContent = info.tx_count;
+        document.getElementById('s-pool').textContent = info.tx_pool_size ?? 0;
+        document.getElementById('s-hashrate').textContent = formatHashrate(info);
         document.getElementById('s-supply').textContent = formatEmitted(info);
         document.getElementById('nettype').textContent = info.mainnet ? 'mainnet' : (info.testnet ? 'testnet' : 'stagenet');
         document.getElementById('version').textContent = info.version;
         document.getElementById('top-hash').textContent = shortHash(info.top_block_hash);
+        document.getElementById('servertime').textContent = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
         await loadBlocks(info.height);
       } catch (e) {
         document.getElementById('blocks-tbody').innerHTML = '<tr><td colspan="5" class="muted">Error: ' + e.message + '</td></tr>';
@@ -180,9 +186,26 @@
     }
 
     function formatEmitted(info) {
-      if (info.height < 2) return formatNum(3509521484375);
-      return info.height + ' blk';
+      // Memero emission: reward = (18.4M - emitted) >> 19, hard cap 18,400,000 MEM.
+      // Iterate the decay exactly (cheap for a few hundred blocks).
+      const supply = 18400000n * 100000000000n;
+      let emitted = 0n;
+      const h = BigInt(info.height || 0);
+      for (let i = 0n; i < h; i++) {
+        const remaining = emitted >= supply ? 0n : supply - emitted;
+        emitted += remaining >> 19n;
+      }
+      return formatNum(Number(emitted / 100000000000n)) + ' MEM';
     }
+
+    function formatHashrate(info) {
+      // Hash rate ≈ difficulty / block_target (hashes per second).
+      if (!info.difficulty || !info.target) return '—';
+      const rate = info.difficulty / info.target;
+      if (rate >= 1e6) return (rate/1e6).toFixed(3) + ' MH/s';
+      if (rate >= 1e3) return (rate/1e3).toFixed(1) + ' KH/s';
+      return rate.toFixed(0) + ' H/s';
+    }    }
 
     async function loadBlocks(height) {
       const tbody = document.getElementById('blocks-tbody');
