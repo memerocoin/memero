@@ -205,7 +205,7 @@
       if (rate >= 1e6) return (rate/1e6).toFixed(3) + ' MH/s';
       if (rate >= 1e3) return (rate/1e3).toFixed(1) + ' KH/s';
       return rate.toFixed(0) + ' H/s';
-    }    }
+    }
 
     async function loadBlocks(height) {
       const tbody = document.getElementById('blocks-tbody');
